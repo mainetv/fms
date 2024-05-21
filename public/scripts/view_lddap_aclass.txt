@@ -1,0 +1,60 @@
+SELECT
+dvnet.id,
+    dv.id as dv_id,
+    dv.lddap_id AS lddap_id,
+    lddap.ada_id AS ada_id,
+    dv.total_dv_net_amount AS total_dv_net_amount,
+   allotment_class_id,
+   (CASE WHEN (allotment_class_id=1) THEN sum(net_amount) ELSE 0 END) as ps_amount,
+   (CASE WHEN (allotment_class_id=2) THEN sum(net_amount) ELSE 0 END) as mooe_amount,
+   (CASE WHEN (allotment_class_id=3) THEN sum(net_amount) ELSE 0 END) as co_amount
+FROM view_dvs dv
+LEFT JOIN view_dv_rs_net dvnet on dv.id=dvnet.dv_id
+LEFT JOIN lddap ON dv.lddap_id = lddap.id
+where dvnet.is_active=1 and dvnet.is_deleted=0
+group by dv.id
+
+
+ $view_lddap = DB::table('view_lddap')
+            ->select(DB::raw("lddap_no, lddap_date, fund, 
+              (SELECT SUM(total_dv_net_amount) FROM dv_rs_net LEFT JOIN disbursement_vouchers ON dv_rs_net .dv_id=disbursement_vouchers.id             
+              WHERE disbursement_vouchers.lddap_id=$lddap_id and dv_rs_net.is_active=1 and dv_rs_net.is_deleted=0) as total,
+              (SELECT SUM(total_dv_net_amount) FROM dv_rs_net LEFT JOIN disbursement_vouchers ON dv_rs_net .dv_id=disbursement_vouchers.id
+              LEFT JOIN view_rs_pap_total ON dv_rs_net .rs_id=view_rs_pap_total.rs_id 
+              WHERE disbursement_vouchers.lddap_id=$lddap_id and dv_rs_net.is_active=1 and dv_rs_net.is_deleted=0
+               and view_rs_pap_total.allotment_class_acronym='PS') as total_ps,
+              (SELECT SUM(total_dv_net_amount) FROM dv_rs_net LEFT JOIN disbursement_vouchers ON dv_rs_net .dv_id=disbursement_vouchers.id
+              LEFT JOIN view_rs_pap_total ON dv_rs_net .rs_id=view_rs_pap_total.rs_id 
+              WHERE disbursement_vouchers.lddap_id=$lddap_id and dv_rs_net.is_active=1 and dv_rs_net.is_deleted=0
+               and view_rs_pap_total.allotment_class_acronym='MOOE') as total_mooe, 
+              (SELECT SUM(total_dv_net_amount) FROM dv_rs_net LEFT JOIN disbursement_vouchers ON dv_rs_net .dv_id=disbursement_vouchers.id
+              LEFT JOIN view_rs_pap_total ON dv_rs_net .rs_id=view_rs_pap_total.rs_id 
+              WHERE disbursement_vouchers.lddap_id=$lddap_id and dv_rs_net.is_active=1 and dv_rs_net.is_deleted=0
+               and view_rs_pap_total.allotment_class_acronym='CO') as total_co"))
+            ->where('view_lddap.id', $lddap_id)->groupBy('lddap_no')->get();
+
+
+
+ SELECT a.allotment_class_id,dvnet.* 
+ FROM `dv_rs_net` dvnet
+
+left join rs_pap rspap on rspap.rs_id=rs.id
+left join view_allotment a on rspap.allotment_id=a.id
+group by id
+
+*old
+SELECT
+    dv.lddap_id AS lddap_id,
+    fmsdb.lddap.ada_id AS ada_id,
+    dvnet.rs_id AS rs_id,
+    dvnet.dv_id AS dv_id,
+    dv.total_dv_net_amount AS total_dv_net_amount,
+    (SELECT SUM(dv1.net_amount) FROM fmsdb.dv_rs_net dv1 WHERE dv1.dv_id = dv.id AND dv1.allotment_class_id = '1' and is_active=1 and is_deleted=0) AS ps_amount,
+	 (SELECT SUM(dv1.net_amount) FROM fmsdb.dv_rs_net dv1 WHERE dv1.dv_id = dv.id AND dv1.allotment_class_id = '2' and is_active=1 and is_deleted=0) AS  mooe_amount,
+	 (SELECT SUM(dv1.net_amount) FROM fmsdb.dv_rs_net dv1 WHERE dv1.dv_id = dv.id AND dv1.allotment_class_id = '3' and is_active=1 and is_deleted=0) AS  co_amount,
+	 dvnet.is_active AS is_active,
+	 dvnet.is_deleted AS is_deleted
+FROM fmsdb.dv_rs_net dvnet
+LEFT JOIN fmsdb.disbursement_vouchers dv ON dvnet.dv_id = dv.id
+LEFT JOIN fmsdb.lddap ON dv.lddap_id = fmsdb.lddap.id
+WHERE dvnet.is_active = 1 AND dvnet.is_deleted = 0

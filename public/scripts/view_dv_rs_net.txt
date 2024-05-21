@@ -1,0 +1,44 @@
+SELECT
+    dvnet.id AS id,
+    dvnet.dv_id AS dv_id,
+    dvnet.rs_id AS rs_id,
+    rsp.allotment_class_id AS allotment_class_id,
+    rsp.allotment_class_acronym AS allotment_class_acronym,
+    (CASE WHEN(rs.rs_date IS NULL) THEN rs.rs_date ELSE rs.rs_date END) as rs_date,
+    rs.rs_type_id AS rs_type_id,
+    rs.fund_id AS fund_id,
+    rs.rs_no AS rs_no,
+    divi.division_acronym AS division_acronym,
+    rs.payee_id AS payee_id,
+    rs.particulars AS particulars,
+    rs.total_rs_pap_amount AS total_rs_pap_amount,
+    dvnet.gross_amount AS gross_amount,
+    dvnet.tax_one AS tax_one,
+    dvnet.tax_two AS tax_two,
+    dvnet.tax_twob AS tax_twob,
+    dvnet.tax_three AS tax_three,
+    dvnet.tax_four AS tax_four,
+    dvnet.tax_five AS tax_five,
+    dvnet.tax_six AS tax_six,
+    dvnet.wtax AS wtax,
+    dvnet.other_tax AS other_tax,
+    dvnet.liquidated_damages AS liquidated_damages,
+    dvnet.other_deductions AS other_deductions,
+    dvnet.net_amount AS net_amount,
+    dvnet.is_active AS is_active,
+    dvnet.is_deleted AS is_deleted,
+    dvnet.created_at AS created_at,
+    dvnet.updated_at AS updated_at
+FROM dv_rs_net dvnet
+LEFT JOIN disbursement_vouchers dv ON dvnet.dv_id = dv.id
+LEFT JOIN request_status rs ON dvnet.rs_id = rs.id
+LEFT JOIN commonlibrariesdb.pcaarrd_divisions divi ON rs.division_id = divi.id
+LEFT JOIN view_rs_pap rsp ON dvnet.rs_id = rsp.rs_id
+where dvnet.is_active=1 and dvnet.is_deleted=0
+GROUP BY dvnet.id
+
+ SELECT a.allotment_class_id,dvnet.*FROM `dv_rs_net` dvnet
+left join request_status rs on dvnet.rs_id=rs.id
+left join rs_pap rspap on rsp.rs_id=rs.id
+left join view_allotment a on rsp.allotment_id=a.id
+group by id

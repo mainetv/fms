@@ -1,0 +1,23 @@
+SELECT
+    ada_lddap.id AS id,
+    ada_lddap.ada_id AS ada_id,
+    ada_lddap.lddap_id AS lddap_id,
+    lddap.lddap_no AS lddap_no,
+    lddap.lddap_date AS lddap_date,
+    f.fund AS fund,
+    lddap.nca_no AS nca_no,
+    lddap.acic_no AS acic_no,
+    banks.bank_account_no AS bank_account_no,
+    ada_lddap.ps_amount AS ps_amount,
+    ada_lddap.mooe_amount AS mooe_amount,
+    ada_lddap.co_amount AS co_amount,
+    lddap.total_lddap_net_amount AS total_lddap_net_amount,
+    ada_lddap.is_active AS is_active,
+    ada_lddap.is_deleted AS is_deleted,
+    ada_lddap.created_at AS created_at,
+    ada_lddap.updated_at AS updated_at
+FROM ada_lddap
+LEFT JOIN lddap ON ada_lddap.lddap_id = lddap.id
+LEFT JOIN commonlibrariesdb.funds f ON lddap.fund_id = f.id
+LEFT JOIN library_bank_accounts banks ON lddap.bank_account_id = banks.id
+

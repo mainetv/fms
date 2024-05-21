@@ -1,0 +1,14 @@
+SELECT
+    cp_com.id,
+    cp.division_id,
+    cp.year,
+    cash_program_id,
+    comment,
+    comment_by,
+    is_resolved,
+    cp_com.is_active,
+    cp_com.is_deleted
+FROM
+    cp_comments cp_com
+LEFT JOIN monthly_cash_programs cp ON
+    cp_com.cash_program_id = cp.id;

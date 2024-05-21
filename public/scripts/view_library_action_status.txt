@@ -1,0 +1,13 @@
+SELECT
+    lib_action.id,
+    lib_action.action,
+    lib_action.status_id,
+    lib_status.status,
+    action_by_user_role_id
+FROM  library_budget_proposal_action lib_action
+JOIN library_budget_proposal_status lib_status ON lib_action.status_id = lib_status.id
+JOIN user_roles ON lib_action.action_by_user_role_id = user_roles.id
+
+            
+        
+    

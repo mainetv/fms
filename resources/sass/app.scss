@@ -1,0 +1,34 @@
+// Fonts
+// @import url('https://fonts.googleapis.com/css?family=Nunito');
+@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback');
+
+// Font Awesome
+// You probably already include the core styles
+// @import "~@fortawesome/fontawesome-free/scss/fontawesome.scss";
+// @import "~admin-lte/node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss";
+
+// For Duotones you need both of these files
+// @import "~@fortawesome/fontawesome-free/scss/duotone.scss";
+// @import "./fontawesome/scss/_duotone-icons.scss";
+
+// You can include all the other styles the same as before
+// @import "~@fortawesome/fontawesome-free/scss/solid.scss";
+// @import "~@fortawesome/fontawesome-free/scss/regular.scss";
+// @import "~@fortawesome/fontawesome-free/scss/brands.scss";
+// @import "~admin-lte/node_modules/@fortawesome/fontawesome-free/scss/solid.scss";
+// @import "~admin-lte/node_modules/@fortawesome/fontawesome-free/scss/regular.scss";
+// @import "~admin-lte/node_modules/@fortawesome/fontawesome-free/scss/brands.scss";
+
+// Variables
+@import 'variables';
+
+// import Bootstrap
+// @import '~bootstrap/scss/bootstrap';
+
+// AdminLTE
+@import '~admin-lte/dist/css/adminlte.css';
+// @import '~admin-lte/plugins/overlayScrollbars/css/OverlayScrollbars.min.css';
+// @import '~admin-lte/plugins/sweetalert2/sweetalert2.min.css';
+
+// Custom
+@import "custom";

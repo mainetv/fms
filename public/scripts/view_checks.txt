@@ -1,0 +1,31 @@
+SELECT
+    c.id AS id,
+    c.check_date AS check_date,  
+    c.check_no AS check_no,
+    c.fund_id AS fund_id,
+    f.fund AS fund,
+    c.bank_account_id AS bank_account_id,
+    banks.bank_account_no AS bank_account_no,
+    bank_acronym,
+    fund_cluster,
+    c.acic_id AS acic_id,
+    c.dv_id AS dv_id,
+    payee,
+    dv.particulars AS particulars,
+    total_dv_gross_amount,
+    SUM(tax_one + tax_two + tax_twob + tax_three + tax_five + tax_six + wtax + other_tax) AS total_tax,   
+    SUM(liquidated_damages + other_deductions) AS other_deductions,   
+    total_dv_net_amount,
+    c.date_released AS date_released,
+    c.is_active AS is_active,
+    c.is_deleted AS is_deleted,
+    c.created_at AS created_at,
+    c.updated_at AS updated_at
+FROM checks c
+LEFT JOIN disbursement_vouchers dv ON c.dv_id=dv.id
+LEFT JOIN dv_rs_net dvnet on dv.id=dvnet.dv_id
+LEFT JOIN library_payees p on dv.payee_id=p.id
+LEFT JOIN view_library_bank_accounts banks ON c.bank_account_id = banks.id
+LEFT JOIN commonlibrariesdb.funds f ON c.fund_id = f.id
+WHERE dvnet.is_active=1 and dvnet.is_deleted=0 and c.is_active=1 and c.is_deleted=0
+group by c.id

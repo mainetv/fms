@@ -1,0 +1,156 @@
+
+SELECT
+vw_lddap.dv_id,
+lddap.id as lddap_check_id,
+lddap.lddap_no as lddap_check_no,
+lddap.lddap_date as lddap_check_date,
+lddap.fund_id,
+fund,
+lddap.nca_no,
+p.payee,
+total_dv_gross_amount,
+total_dv_net_amount,
+p.bank_account_name as payee_bank_account_name,
+SUM( tax_one + tax_two + tax_twob + tax_three + tax_five + tax_six + wtax + other_tax)  AS total_tax, 
+SUM(liquidated_damages + other_deductions)  AS other_deductions,
+rs.rs_no,
+(CASE WHEN(object_expenditure IS NULL) THEN expense_account ELSE object_expenditure END) AS accnt_obj,
+(CASE WHEN(object_expenditure IS NULL) THEN expense_account_code ELSE object_code END) AS accnt_obj_code,
+lddap.is_active,
+lddap.is_deleted
+FROM view_lddap_dvs vw_lddap
+LEFT JOIN view_dv_rs_net dvnet on vw_lddap.dv_id=dvnet.dv_id
+LEFT JOIN library_payees p on vw_lddap.payee_id=p.id
+LEFT JOIN lddap ON vw_lddap.lddap_id=lddap.id
+LEFT JOIN request_status rs on dvnet.rs_id=rs.id
+LEFT JOIN view_rs_pap_total rsp on rs.id=rsp.rs_id
+LEFT JOIN allotment a on rsp.allotment_id=a.id
+LEFT JOIN library_expense_account lib_exp_accnt on a.expense_account_id=lib_exp_accnt.id
+LEFT JOIN library_object_expenditure lib_obj_exp on a.object_expenditure_id=lib_obj_exp.id
+LEFT JOIN commonlibrariesdb.funds f on lddap.fund_id=f.id
+where payment_mode_id=1 and vw_lddap.is_active=1 and vw_lddap.is_deleted=0
+group by dv_id
+UNION
+SELECT
+    checks.dv_id,
+    checks.id as lddap_check_id,
+    check_no AS lddap_check_no,
+    check_date AS lddap_check_date,
+    checks.fund_id AS fund_id,
+    f.fund AS fund,
+    NULL AS nca_no,
+    p.payee,
+    total_dv_gross_amount,
+    total_dv_net_amount,
+    p.bank_account_name as payee_bank_account_name,
+    SUM( tax_one + tax_two + tax_twob + tax_three + tax_five + tax_six + wtax + other_tax)  AS total_tax, 
+    SUM(liquidated_damages + other_deductions)  AS other_deductions,
+    rs.rs_no,
+   (CASE WHEN(object_expenditure IS NULL) THEN expense_account ELSE object_expenditure END) AS accnt_obj,
+   (CASE WHEN(object_expenditure IS NULL) THEN expense_account_code ELSE object_code END) AS accnt_obj_code,
+    checks.is_active,
+    checks.is_deleted
+FROM checks
+LEFT JOIN disbursement_vouchers dv ON checks.dv_id=dv.id
+LEFT JOIN view_dv_rs_net dvnet on dv.id=dvnet.dv_id
+LEFT JOIN library_payees p on dv.payee_id=p.id
+LEFT JOIN request_status rs on dvnet.rs_id=rs.id
+LEFT JOIN view_rs_pap_total rsp on rs.id=rsp.rs_id
+LEFT JOIN allotment a on rsp.allotment_id=a.id
+LEFT JOIN library_expense_account lib_exp_accnt on a.expense_account_id=lib_exp_accnt.id
+LEFT JOIN library_object_expenditure lib_obj_exp on a.object_expenditure_id=lib_obj_exp.id
+LEFT JOIN commonlibrariesdb.funds f on checks.fund_id=f.id
+where checks.is_active=1 and checks.is_deleted=0
+group by dv_id
+
+
+where lddap_date>='2023-06-01' and lddap_date<='2023-06-31' and fund_id=1 order by lddap_date asc, nca_no, payee
+
+***old
+SELECT
+    fmsdb.lddap.lddap_date AS lddap_date,
+    fmsdb.lddap.fund_id AS fund_id,
+    f.fund AS fund,
+    fmsdb.lddap.lddap_no AS lddap_no,
+    fmsdb.lddap.nca_no AS nca_no,
+    p.payee AS payee,
+    dv.total_dv_gross_amount AS total_dv_gross_amount,
+    dv.total_dv_net_amount AS total_dv_net_amount,
+    p.bank_account_name AS payee_bank_account_name,
+    SUM(dvnet.tax_one + dvnet.tax_two + dvnet.tax_twob+ dvnet.tax_three + dvnet.tax_five+ dvnet.tax_six + dvnet.wtax+ dvnet.other_tax) AS total_tax,
+    SUM(dvnet.liquidated_damages + dvnet.other_deductions) AS other_deductions,
+    rs.rs_no AS rs_no,
+    obj.object_code AS object_code,
+    fmsdb.lddap.is_active AS is_active,
+    fmsdb.lddap.is_deleted AS is_deleted
+FROM fmsdb.disbursement_vouchers dv
+LEFT JOIN fmsdb.dv_rs_net dvnet ON dv.id = dvnet.dv_id
+LEFT JOIN fmsdb.library_payees p  ON dv.payee_id = p.id
+LEFT JOIN fmsdb.lddap ON dv.lddap_id = fmsdb.lddap.id
+LEFT JOIN fmsdb.request_status rs ON dvnet.rs_id = rs.id
+LEFT JOIN fmsdb.rs_pap rsp ON rs.id = rsp.rs_id
+LEFT JOIN fmsdb.allotment a ON rsp.allotment_id = a.id
+LEFT JOIN fmsdb.library_object_expenditure obj ON a.object_expenditure_id = obj.id
+LEFT JOIN commonlibrariesdb.funds f ON fmsdb.lddap.fund_id = f.id
+GROUP BY dv.id
+
+SELECT
+    lddap_dv.id AS id,
+    lddap.lddap_date,
+    dv.id AS dv_id,
+    lddap.id AS lddap_id,
+    lddap.lddap_no,
+    nca_no,
+    lddap.fund_id,
+    fund,
+    dv.dv_no AS dv_no,
+    dv.dv_date AS dv_date,
+    dv.payee AS payee,
+    dv.payee_id AS payee_id,
+    payee_parent_id,
+    dv.bank_acronym AS bank_acronym,
+    dv.bank_branch AS bank_branch,
+    dv.bank_account_name AS payee_bank_account_name,
+    dv.bank_account_no AS payee_bank_account_no,
+    SUM( tax_one + tax_two + tax_twob + tax_three + tax_five + tax_six + wtax + other_tax)  AS total_tax, 
+    SUM(liquidated_damages+other_deductions)  AS other_deductions,       
+    dv.total_dv_gross_amount AS total_dv_gross_amount,
+    dv.total_dv_net_amount AS total_dv_net_amount,
+    rs_no,
+object_code,
+    dv.is_active AS is_active,
+    dv.is_deleted AS is_deleted,
+    dv.created_at AS created_at,
+    dv.updated_at AS updated_at
+FROM lddap_dv
+LEFT JOIN lddap ON lddap_dv.lddap_id = lddap.id
+JOIN view_dvs dv ON lddap_dv.dv_id = dv.id
+LEFT JOIN dv_rs_net dvnet on dv.id=dvnet.dv_id
+LEFT JOIN request_status rs on dvnet.rs_id=rs.id
+LEFT JOIN rs_pap rsp on rs.id=rsp.rs_id
+LEFT JOIN allotment a on rsp.allotment_id=a.id
+LEFT JOIN library_object_expenditure obj on a.object_expenditure_id=obj.id
+LEFT JOIN commonlibrariesdb.funds f on lddap.fund_id=f.id
+WHERE lddap_dv.is_active = 1 AND lddap_dv.is_deleted = 0
+group by rs
+
+
+
+SUM( tax_one + tax_two + tax_twob + tax_three + tax_five + tax_six + wtax + other_tax)  AS total_tax, 
+SUM(liquidated_damages + other_deductions)  AS other_deduction,
+tax_one,tax_two,tax_twob,tax_three,tax_five,tax_six,wtax,other_tax,
+liquidated_damages,other_deductions,
+
+
+(SELECT SUM( tax_one + tax_two + tax_twob + tax_three + tax_five + tax_six + wtax + other_tax) FROM dv_rs_net WHERE dv_id=dv.id and is_active=1 and is_deleted=0) AS total_tax, 
+(SELECT SUM(liquidated_damages+other_deductions) FROM dv_rs_net WHERE dv_id=dv.id and is_active=1 and is_deleted=0) AS other_deductions,
+
+SELECT b.adadate, b.fund, b.adano, b.ncano, payee, dvamount,  
+(SELECT acctname FROM pcaarrd_disb.payees WHERE payeeid=a.payeeid) AS acctname, 
+(SELECT SUM(ONE+two+twob+three+five+six+wtax) FROM vouchers_dtl b WHERE dvid=a.dvid) AS wtax, 
+(SELECT SUM(cdc+pmpc+hdmf+others) FROM vouchers_dtl WHERE dvid=a.dvid) AS otherded,
+(SELECT obrno FROM pcaarrd_acctng.vouchers_dtl g LEFT JOIN pcaarrd_acctng.vouchers h ON g.dvid=h.dvid WHERE g.dvid=a.dvid LIMIT 1) AS orsno, 
+(SELECT dacct FROM pcaarrd_acctng.vouchers_dtl WHERE dvid=a.dvid LIMIT 1) AS dacct 
+FROM vouchers a 
+LEFT JOIN ada b ON a.adaid=b.adaid 
+WHERE b.adadate >= '$fdate' AND b.adadate <= '$tdate' and b.fund='$xfund' ORDER BY adadate, fund, ncano, payee

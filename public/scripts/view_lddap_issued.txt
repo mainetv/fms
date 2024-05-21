@@ -1,0 +1,17 @@
+SELECT
+    lddap.id AS id,
+    lddap.lddap_date AS lddap_date,
+    lddap.lddap_no AS lddap_no,
+    dv1.rs_no AS rs_no,
+    dv.dv_no AS dv_no,
+    dv1.dv_id AS dv_id,
+    dv.payee AS payee,
+    dv.total_dv_net_amount AS total_dv_net_amount,
+    lddap.fund_id AS fund_id,
+    lddap.is_active AS is_active,
+    lddap.is_deleted AS is_deleted
+FROM lddap_dv
+LEFT JOIN view_dvs dv ON lddap_dv.lddap_id = dv.lddap_id
+LEFT JOIN view_dv_rs_net dv1 ON dv.id = dv1.dv_id
+WHERE lddap.payment_mode_id = 1
+GROUP BY dv.id

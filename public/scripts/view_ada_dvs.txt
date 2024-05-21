@@ -1,0 +1,49 @@
+SELECT
+    ada_lddap.id as id,
+    ada.id AS ada_id,
+    ada_date,
+    ada_no,
+    ada.check_no,    
+    lddap.id AS lddap_id,
+    lddap.lddap_date,
+    lddap.lddap_no,    
+    rs.id as rs_id,
+    rs_no,
+    (CASE WHEN(rs.rs_date IS NULL) THEN rs.rs_date ELSE rs.rs_date END) as rs_date,
+    divi.division_acronym as rs_division_acronym,
+    dv.id AS dv_id,
+    dv.dv_no AS dv_no,
+    dv.dv_date,
+    dv.division_acronym as dv_division_acronym,
+    f.fund AS fund,
+    lddap.fund_id,
+    ada.bank_account_id,
+    b.bank_account_no,
+    b.bank_acronym,
+    dv.payee AS payee,
+    dv.payee_id AS payee_id,    
+    dv.particulars,
+    payee_parent_id,
+    dv.payee_bank_acronym AS payee_bank_acronym,
+    dv.payee_bank_account_name AS payee_bank_account_name,
+    dv.payee_bank_account_no AS payee_bank_account_no,
+    dv.total_dv_gross_amount AS total_dv_gross_amount,
+    dv.total_dv_net_amount AS total_dv_net_amount,
+    dv.is_active AS is_active,
+    dv.is_deleted AS is_deleted,
+    dv.created_at AS created_at,
+    dv.updated_at AS updated_at
+FROM ada_lddap
+LEFT JOIN ada ON ada_lddap.ada_id=ada.id
+LEFT JOIN lddap_dv ON ada_lddap.lddap_id=lddap_dv.lddap_id
+LEFT JOIN lddap ON lddap_dv.lddap_id = lddap.id
+LEFT JOIN view_dvs dv ON lddap_dv.dv_id = dv.id
+LEFT JOIN dv_rs_net dvnet ON dv.id=dvnet.dv_id
+LEFT JOIN request_status rs ON dvnet.rs_id=rs.id
+LEFT JOIN rs_pap rsp ON rs.id=rsp.rs_id
+LEFT JOIN commonlibrariesdb.pcaarrd_divisions divi ON rs.division_id=divi.id
+LEFT JOIN commonlibrariesdb.funds f ON lddap.fund_id = f.id
+LEFT JOIN view_library_bank_accounts b ON ada.bank_account_id = b.id
+WHERE lddap.payment_mode_id = 1 and lddap_dv.is_active = 1 AND lddap_dv.is_deleted = 0
+and ada_lddap.is_active=1 and ada_lddap.is_deleted=0
+group by dv.id

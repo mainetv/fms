@@ -1,0 +1,26 @@
+SELECT
+    cash_programs.*,
+    commonlibrariesdb.pcaarrd_divisions.division_acronym,
+    fiscal_year1,
+    fiscal_year2,
+    fiscal_year3,
+   jan_amount,
+   feb_amount,
+   mar_amount,
+   apr_amount,
+   may_amount,
+   jun_amount,
+   jul_amount,
+   aug_amount,
+   sep_amount,
+   oct_amount,
+   nov_amount,
+   dec_amount
+FROM cash_programs
+INNER JOIN fiscal_year ON cash_programs.year = fiscal_year.year
+INNER JOIN commonlibrariesdb.pcaarrd_divisions ON
+    cash_programs.division_id = commonlibrariesdb.pcaarrd_divisions.id
+INNER JOIN cp_object_expenditure cp_obj_exp ON cash_programs.id=cp_obj_exp.cp_id
+WHERE
+    cash_programs.division_id = 19 AND cash_programs.year = 2022 AND cash_programs.is_active = 1 AND cash_programs.is_deleted = 0
+    group by id;

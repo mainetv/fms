@@ -1,0 +1,80 @@
+SELECT
+    lddap.id AS id,
+    lddap.lddap_no AS lddap_no,
+    lddap.lddap_date AS lddap_date,
+    lddap.payment_mode_id AS payment_mode_id,
+    lib_payment.payment_mode AS payment_mode,
+    lddap.fund_id AS fund_id,
+    f.fund AS fund,
+    f.fund_prefix AS fund_prefix,
+    lddap.nca_no AS nca_no,
+    lddap.bank_account_id AS bank_account_id,
+    bank_account_no,
+    lddap.check_no AS check_no,
+    lddap.acic_no AS acic_no,
+    ada.id AS ada_id,
+    ada.ada_date AS ada_date,
+    ada.ada_no AS ada_no,
+    lddap.total_lddap_gross_amount AS total_lddap_gross_amount,
+    lddap.total_lddap_net_amount AS total_lddap_net_amount,
+    lddap.signatory1 AS signatory1,
+    lddap.signatory1_position AS signatory1_position,
+    lddap.signatory2 AS signatory2,
+    lddap.signatory2_position AS signatory2_position,
+    lddap.signatory3 AS signatory3,
+    lddap.signatory3_position AS signatory3_position,
+    lddap.signatory4 AS signatory4,
+    lddap.signatory4_position AS signatory4_position,
+    lddap.signatory5 AS signatory5,
+    lddap.signatory5_position AS signatory5_position,
+    date_transferred AS date_transferred,
+    lddap.is_active AS is_active,
+    lddap.is_deleted AS is_deleted,
+    lddap.created_at AS created_at,
+    lddap.updated_at AS updated_at
+FROM lddap
+LEFT JOIN commonlibrariesdb.funds f ON lddap.fund_id = f.id
+LEFT JOIN library_payment_mode lib_payment ON lddap.payment_mode_id = lib_payment.id
+LEFT JOIN library_bank_accounts banks ON lddap.bank_account_id = banks.id
+LEFT JOIN ada ON  lddap.ada_id = ada.id
+where payment_mode_id=1
+UNION
+SELECT
+    checks.id AS id,
+    check_no AS lddap_no,
+    check_date AS lddap_date,
+    '2' AS payment_mode_id,
+    NULL AS payment_mode,
+    checks.fund_id AS fund_id,
+    f.fund AS fund,
+    f.fund_prefix AS fund_prefix,
+    NULL AS nca_no,
+    checks.bank_account_id AS bank_account_id,
+    bank_account_no,
+    NULL AS check_no,
+    NULL AS acic_no,
+    NULL AS ada_id,
+    NULL AS ada_date,
+    NULL AS ada_no,
+    dv.total_dv_gross_amount AS total_dv_gross_amount,
+    dv.total_dv_net_amount AS total_dv_net_amount,
+    NULL AS signatory1,
+    NULL AS signatory1_position,
+    NULL AS signatory2,
+    NULL AS signatory2_position,
+    NULL AS signatory3,
+    NULL AS signatory3_position,
+    NULL AS signatory4,
+    NULL AS signatory4_position,
+    NULL AS signatory5,
+    NULL AS signatory5_position,
+    date_released AS date_transferred,
+    checks.is_active AS is_active,
+    checks.is_deleted AS is_deleted,
+    checks.created_at AS created_at,
+    checks.updated_at AS updated_at
+FROM checks
+LEFT JOIN disbursement_vouchers dv ON checks.dv_id=dv.id
+LEFT JOIN commonlibrariesdb.funds f ON checks.fund_id = f.id
+LEFT JOIN library_bank_accounts banks ON checks.bank_account_id = banks.id
+where checks.is_active=1 and checks.is_deleted=0

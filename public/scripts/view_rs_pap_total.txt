@@ -1,0 +1,27 @@
+SELECT
+    rsp.id AS id,
+    rs.division_id AS rs_division_id,
+    divi.division_acronym AS rs_division_acronym,
+    rsp.rs_id AS rs_id,
+    rs.rs_no AS rs_no,
+    (CASE WHEN(rs.rs_date IS NULL) THEN rs.rs_date ELSE rs.rs_date END) as rs_date,
+    (CASE WHEN(rs.rs_date IS NULL) THEN  YEAR(rs.rs_date) ELSE  YEAR(rs.rs_date1) END) as year,
+    rsp.allotment_id AS allotment_id,
+    a.division_id AS allotment_division_id,
+    a.division_acronym AS allotment_division_acronym,
+    a.year AS allotment_year,
+    a.allotment_class_id AS allotment_class_id,
+    a.allotment_class_number AS allotment_class_number,
+    a.allotment_class_acronym AS allotment_class_acronym,
+    (SELECT SUM(rsp1.amount) FROM rs_pap rsp1 WHERE (rsp1.rs_id = rsp.rs_id) GROUP BY rsp1.rs_id) AS total_rs_amount,
+    rsp.notice_adjustment_no AS notice_adjustment_no,
+    rsp.notice_adjustment_date AS notice_adjustment_date,
+    rsp.is_active AS is_active,
+    rsp.is_deleted AS is_deleted,
+    rsp.created_at AS created_at,
+    rsp.updated_at AS updated_at
+FROM rs_pap rsp
+LEFT JOIN view_allotment a ON rsp.allotment_id = a.is_deleted
+LEFT JOIN request_status rs ON rsp.rs_id = rs.id
+LEFT JOIN commonlibrariesdb.pcaarrd_divisions divi ON rs.division_id = divi.id
+GROUP BY rsp.rs_id

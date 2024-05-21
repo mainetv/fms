@@ -1,0 +1,82 @@
+SELECT
+    adjustment.id,
+    allotment_id,
+    adjustment_type_id,
+    adjustment_type,
+    adjustment.date,
+    adjustment.reference_no,
+    (q1_allotment+q2_allotment+q3_allotment+q4_allotment) as annual_allotment,
+    (SELECT SUM(annual_adjustment) FROM view_adjustment WHERE view_adjustment.allotment_id=allotment.id
+     and view_adjustment.is_active=1 and view_adjustment.is_deleted=0) as annual_adjustment,
+    (SELECT (SUM(annual_adjustment) + (a1.q1_allotment+a1.q2_allotment+a1.q3_allotment+a1.q4_allotment)) FROM view_adjustment     
+        LEFT JOIN allotment a1 ON view_adjustment.allotment_id=a1.id
+    WHERE view_adjustment.allotment_id=allotment.id and view_adjustment.is_active=1 and view_adjustment.is_deleted=0) as annual_total,
+    q1_allotment,
+    q2_allotment,
+    q3_allotment,
+    q4_allotment,
+    (SELECT SUM(q1_adjustment) FROM view_adjustment WHERE view_adjustment.allotment_id=allotment.id
+     and view_adjustment.is_active=1 and view_adjustment.is_deleted=0) as q1_adjustment,
+    (SELECT SUM(q2_adjustment) FROM view_adjustment WHERE view_adjustment.allotment_id=allotment.id
+     and view_adjustment.is_active=1 and view_adjustment.is_deleted=0) as q2_adjustment,
+    (SELECT SUM(q3_adjustment) FROM view_adjustment WHERE view_adjustment.allotment_id=allotment.id
+     and view_adjustment.is_active=1 and view_adjustment.is_deleted=0) as q3_adjustment,
+    (SELECT SUM(q4_adjustment) FROM view_adjustment WHERE view_adjustment.allotment_id=allotment.id
+     and view_adjustment.is_active=1 and view_adjustment.is_deleted=0) as q4_adjustment,
+      (q1_allotment + (SELECT sum(view_adjustment.q1_adjustment) FROM view_adjustment WHERE view_adjustment.allotment_id=allotment.id
+ and view_adjustment.is_active=1 and view_adjustment.is_deleted=0)) as q1_total, 
+ (q2_allotment + (SELECT sum(view_adjustment.q2_adjustment) FROM view_adjustment WHERE view_adjustment.allotment_id=allotment.id
+ and view_adjustment.is_active=1 and view_adjustment.is_deleted=0)) as q2_total,   
+ (q3_allotment + (SELECT sum(view_adjustment.q3_adjustment) FROM view_adjustment WHERE view_adjustment.allotment_id=allotment.id
+ and view_adjustment.is_active=1 and view_adjustment.is_deleted=0)) as q3_total,
+ (q4_allotment + (SELECT sum(view_adjustment.q4_adjustment) FROM view_adjustment WHERE view_adjustment.allotment_id=allotment.id
+ and view_adjustment.is_active=1 and view_adjustment.is_deleted=0)) as q4_total, 
+adjustment.remarks AS remarks,
+   adjustment.is_active AS is_active,
+   adjustment.is_deleted AS is_deleted,
+   adjustment.created_at AS created_at,
+   adjustment.updated_at AS updated_at
+FROM adjustment 
+left join allotment ON adjustment.allotment_id=allotment.id
+    JOIN library_adjustment_types adj_types
+    ON   adjustment.adjustment_type_id = adj_types.id
+    group by adjustment.allotment_id
+
+
+
+
+
+
+--old
+SELECT
+   adj.id AS id,
+   adj.allotment_id AS allotment_id,
+   adj.adjustment_type_id AS adjustment_type_id,
+   adj_types.adjustment_type AS adjustment_type,
+   adj.date AS date,
+   adj.reference_no AS reference_no,
+   (allot.q1_allotment + allot.q2_allotment + allot.q3_allotment + allot.q4_allotment) AS annual_allotment,
+   SUM(annual_adjustment) AS annual_adjustment,   
+   allot.q1_allotment AS q1_allotment,
+   allot.q2_allotment AS q2_allotment,
+   allot.q3_allotment AS q3_allotment,
+   allot.q4_allotment AS q4_allotment, 
+   SUM(q1_adjustment) AS q1_adjustment, 
+   SUM(q2_adjustment) AS q2_adjustment,
+   SUM(q3_adjustment) AS q3_adjustment, 
+   SUM(q4_adjustment) AS q4_adjustment,
+   (q1_allotment + SUM(q1_adjustment)) AS q1_total,
+   (q2_allotment + SUM(q2_adjustment)) AS q2_total, 
+   (q3_allotment + SUM(q3_adjustment)) AS q3_total,
+   (q4_allotment + SUM(q4_adjustment)) AS q4_total,   
+   (adj.q1_adjustment + adj.q2_adjustment + adj.q3_adjustment + adj.q4_adjustment 
+      + allot.q1_allotment + allot.q2_allotment + allot.q3_allotment + allot.q4_allotment) AS annual_total,   
+   adj.remarks AS remarks,
+   adj.is_active AS is_active,
+   adj.is_deleted AS is_deleted,
+   adj.created_at AS created_at,
+   adj.updated_at AS updated_at
+FROM fmsdb.view_adjustment adj
+JOIN fmsdb.allotment allot ON adj.allotment_id = allot.id
+JOIN fmsdb.library_adjustment_types adj_types ON adj.adjustment_type_id = adj_types.id
+GROUP BY allotment_id

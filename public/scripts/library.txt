@@ -1,0 +1,32 @@
+**library activity
+   SELECT
+      lib_act.id AS id,
+      lib_act.activity AS activity,
+      lib_act.activity_code AS activity_code,
+      lib_act.description AS description,
+      lib_act.is_continuing AS is_continuing,
+      lib_act.request_status_type_id AS request_status_type_id,
+      lib_act.tags AS tags,
+      lib_act.is_active AS is_active,
+      lib_act.is_deleted AS is_deleted,
+      lib_act.created_at AS created_at,
+      lib_act.updated_at AS updated_at,
+      rs_type.request_status_type AS request_status_type
+   FROM fmsdb.library_activity lib_act
+   LEFT JOIN commonlibrariesdb.request_status_types rs_type ON lib_act.request_status_type_id = rs_type.id
+
+**library expense title
+   SELECT lib_expe_title.id,
+   lib_expe_title.expense_account,
+   lib_act.activity,
+   lib_expe_title.activity_id,
+   lib_expe_title.is_continuing,
+   lib_expe_title.is_active,
+   lib_expe_title.is_continuing,
+   lib_expe_title.created_at,
+   lib_expe_title.updated_at
+     FROM library_expense_account lib_expe_title
+   INNER JOIN library_activity lib_act ON lib_expe_title.activity_id=lib_act.id;
+            
+        
+    

@@ -1,0 +1,130 @@
+SELECT 
+    rs.id, 
+    rs.rs_type_id,
+    dv.id as dv_id, 
+     divi.division_acronym as allotment_division_acronym, 
+    divi1.division_acronym as rs_division_acronym, 
+    (CASE WHEN(rs.rs_date IS NULL) THEN rs.rs_date ELSE rs.rs_date END) as rs_date,
+    rs_no, 
+    payee, 
+    total_rs_pap_amount,
+    pap_code,
+   (CASE WHEN(object_expenditure IS NULL) THEN expense_account ELSE object_expenditure END) AS accnt_obj,
+   (CASE WHEN(object_expenditure IS NULL) THEN expense_account_code ELSE object_code END) AS accnt_obj_code,
+    dv_no, 
+    (CASE WHEN total_dv_net_amount is NULL THEN 0 ELSE total_dv_net_amount END) as total_dv_net_amount,
+    (total_rs_pap_amount - (CASE WHEN total_dv_net_amount is NULL THEN 0 ELSE total_dv_net_amount END)) as balance,
+    (select lddap_no from lddap where lddap.id=dv.lddap_id) as lddap_check_no,
+    rs.is_active, 
+    rs.is_deleted
+from request_status rs
+left join rs_pap rsp on rs.id=rsp.rs_id
+left join view_allotment a on rsp.allotment_id=a.id
+left join commonlibrariesdb.pcaarrd_divisions divi on a.division_id=divi.id
+left join commonlibrariesdb.pcaarrd_divisions divi1 on rs.division_id=divi1.id
+left join disbursement_vouchers dv on dv.id=(select dv_id from dv_rs_net where dv_rs_net.rs_id=rs.id limit 1)
+left join library_payees p on rs.payee_id=p.id
+where length(rs.rs_no)>16
+union
+SELECT 
+    rs.id, 
+    rs.rs_type_id, 
+    dv.id as dv_id, 
+    divi.division_acronym as allotment_division_acronym, 
+    divi1.division_acronym as rs_division_acronym, 
+    (CASE WHEN(rs.rs_date IS NULL) THEN rs.rs_date ELSE rs.rs_date END) as rs_date,
+    rs_no, 
+    payee, 
+    total_rs_pap_amount,
+    pap_code,
+   (CASE WHEN(object_expenditure IS NULL) THEN expense_account ELSE object_expenditure END) AS accnt_obj,
+   (CASE WHEN(object_expenditure IS NULL) THEN expense_account_code ELSE object_code END) AS accnt_obj_code,
+    dv_no,
+    (CASE WHEN total_dv_net_amount is NULL THEN 0 ELSE total_dv_net_amount END) as total_dv_net_amount,
+    (total_rs_pap_amount-(CASE WHEN total_dv_net_amount is NULL THEN 0 ELSE total_dv_net_amount END)) as balance,
+    (select check_no from checks where checks.dv_id=dv.id) as lddap_check_no,
+    rs.is_active, 
+    rs.is_deleted
+from request_status rs
+left join rs_pap rsp on rs.id=rsp.rs_id
+left join view_allotment a on rsp.allotment_id=a.id
+left join commonlibrariesdb.pcaarrd_divisions divi on a.division_id=divi.id
+left join commonlibrariesdb.pcaarrd_divisions divi1 on rs.division_id=divi1.id
+left join disbursement_vouchers dv on dv.id=(select dv_id from dv_rs_net where dv_rs_net.rs_id=rs.id limit 1)
+left join library_payees p on rs.payee_id=p.id
+where length(rs.rs_no)>16
+
+**fais
+    SELECT
+    d.unitcode AS unitcode,
+    a.orsdate AS orsdate,
+    a.orsno AS orsno,
+    a.payeename AS payeename,
+    a.amount AS amount,
+    c.dvno AS dvno,
+    c.dvamount AS dvamount,
+    c.checkno AS checkno,
+    (SELECT pcaarrd_acctng.ada.adano  FROM  pcaarrd_acctng.ada WHERE pcaarrd_acctng.ada.adaid = c.adaid) AS adano,
+    (SELECT  CONCAT(RTRIM(pcaarrd_cash.cash.cashno),'/',pcaarrd_cash.cash.recid) FROM pcaarrd_cash.cash  WHERE pcaarrd_cash.cash.recid = c.cashrecid) AS cashrecno
+    FROM  pcaarrd_disb.ors_hdr a
+    LEFT JOIN pcaarrd_acctng.vouchers c
+        ON  c.dvid =(SELECT pcaarrd_acctng.vouchers_dtl.dvid FROM pcaarrd_acctng.vouchers_dtl WHERE pcaarrd_acctng.vouchers_dtl.orsid = a.orsid LIMIT 1)
+    LEFT JOIN pcaarrd_acctng.units d ON a.unitid = d.unitid 
+    WHERE LENGTH(a.orsno) > 16
+
+
+**export from fms rs, rspsp and allotment
+SELECT rs.id, rs.rs_type_id,rs_no,rs_date,
+rs.division_id as rs_division_id,divs.division_acronym as rs_division_acronym, fund_id, payee_id,payee,particulars,
+total_rs_activity_amount,total_rs_pap_amount, 
+rsp.id as rspap_id, allotment_id, a.division_id as allotment_division_id, divs1.division_acronym as allotment_division_acronym, rsp.amount,
+pap_code,activity,object_expenditure,
+showall,signatory1,signatory1_position,signatory1b,signatory1b_position,is_locked,locked_at,cancelled_at,rs.created_at,rs.updated_at FROM rs_pap rsp
+left join request_status rs on rsp.rs_id=rs.id
+left join commonlibrariesdb.pcaarrd_divisions divs on rs.division_id=divs.id
+left join library_payees p on rs.payee_id=p.id  
+left join view_allotment a on rsp.allotment_id=a.id
+left join commonlibrariesdb.pcaarrd_divisions divs1 on a.division_id=divs1.id
+where rs.id is not null and rsp.is_active=1 and rsp.is_deleted=0
+ORDER BY `rs`.`id`  ASC
+
+**export from fais rs, rspsp and allotment
+SELECT
+    rs.orsid,
+    rs.obligtype,
+    orsno,
+    orsdate,
+    u.unitcode,
+    rs.fundid,
+    payeeid,
+    payeename,
+    particulars,
+    ( SELECT SUM(amount) FROM ors_activity rs1 WHERE rs1.orsid = rs.orsid) AS rsactivityamount,
+    (SELECT SUM(amount)FROM ors_pap rs2 WHERE rs2.orsid = rs.orsid) AS rspapamount,
+    rsp.recid,
+    a.alibid,
+    a.unitcode AS allotment_division,
+    rsp.amount,
+    p.papcode AS allotment_pap,    
+    act.activity AS allotment_activity,
+    o.acctdesc AS allotment_object,
+    showall,
+    signatory1,
+    signpos1,
+    signatory1b,
+    signpos1b,
+    signatory1c,
+    signpos1c,
+    signatory1d,
+    signpos1d,
+    signatory3,
+    signpos3,
+    datecreated
+FROM  ors_hdr rs
+LEFT JOIN ors_pap rsp ON  rs.orsid = rsp.orsid
+LEFT JOIN pcaarrd_acctng.units u ON rs.unitid = u.unitid
+LEFT JOIN allotment_lib a ON rsp.alibid = a.alibid
+LEFT JOIN pap p ON a.papcode = p.papcode
+LEFT JOIN activity act ON a.activityid = act.activityid
+LEFT JOIN chart_acct o ON a.acctid = o.acctid
+WHERE YEAR(orsdate) = 2023 AND rs.obligtype = 'ORS'

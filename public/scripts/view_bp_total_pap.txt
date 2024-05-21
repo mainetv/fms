@@ -1,0 +1,36 @@
+SELECT
+    x.bp_pap_id AS bp_pap_id,
+    SUM(x.fy1_amount) AS fy1_amount,
+    SUM(x.fy2_amount) AS fy2_amount,
+    SUM(x.fy3_amount) AS fy3_amount
+FROM    
+    ((SELECT
+        vw_bp_obj_exp.bp_pap_id AS bp_pap_id,
+        SUM(vw_bp_obj_exp.fy1_amount) AS fy1_amount,
+        SUM(vw_bp_obj_exp.fy2_amount) AS fy2_amount,
+        SUM(vw_bp_obj_exp.fy3_amount) AS fy3_amount
+    FROM
+        view_bp_object_expenditure vw_bp_obj_exp
+    WHERE vw_bp_obj_exp.pap_is_active = 1 AND vw_bp_obj_exp.pap_is_deleted = 0
+             AND vw_bp_obj_exp.activity_is_active = 1 AND vw_bp_obj_exp.activity_is_deleted = 0
+             AND vw_bp_obj_exp.expense_account_is_active = 1 AND vw_bp_obj_exp.expense_account_is_deleted = 0
+             AND vw_bp_obj_exp.expenditure_is_active = 1 AND vw_bp_obj_exp.expenditure_is_deleted = 0
+             AND vw_bp_obj_exp.subactivity_is_active IS NULL
+    )     
+    UNION
+   (SELECT
+      vw_bp_obj_exp.bp_pap_id AS bp_pap_id,
+      SUM(vw_bp_obj_exp.fy1_amount) AS fy1_amount,
+      SUM(vw_bp_obj_exp.fy2_amount) AS fy2_amount,
+      SUM(vw_bp_obj_exp.fy3_amount) AS fy3_amount
+   FROM
+      View_bp_object_expenditure vw_bp_obj_exp
+   WHERE vw_bp_obj_exp.pap_is_active = 1
+   AND vw_bp_obj_exp.pap_is_deleted = 0 AND vw_bp_obj_exp.activity_is_active = 1
+   AND vw_bp_obj_exp.activity_is_deleted = 0 AND vw_bp_obj_exp.subactivity_is_active = 1
+   AND vw_bp_obj_exp.subactivity_is_deleted = 0 AND vw_bp_obj_exp.expense_account_is_active = 1
+   AND vw_bp_obj_exp.expense_account_is_deleted = 0 AND vw_bp_obj_exp.expenditure_is_active = 1
+   AND vw_bp_obj_exp.expenditure_is_deleted = 0)) x GROUP BY x.bp_pap_id;
+
+
+   

@@ -1,0 +1,57 @@
+SELECT
+   fmsdb.cp.id AS id,
+   cp.reference_bp_id,
+   fmsdb.cp.year AS year,    
+   divi.division_acronym AS division_acronym,
+   lib_pap.pap AS pap,
+   lib_pap.pap_code AS pap_code,
+   lib_act.activity AS activity,
+   lib_subact.subactivity AS subactivity,
+   lib_aclass.allotment_class AS allotment_class,
+   lib_exp_accnt.expense_account AS expense_account,
+   lib_exp_accnt.expense_account_code AS expense_account_code,
+   lib_obj_exp.object_expenditure AS object_expenditure,
+   lib_obj_exp.object_code AS object_code,
+   lib_obj_spe.object_specific AS object_specific, 
+   divi_pooled.division_acronym AS pooled_at_division_acronym,  
+   fmsdb.cp.division_id AS division_id,
+   fmsdb.cp.pap_id AS pap_id,
+   fmsdb.cp.activity_id AS activity_id,
+   fmsdb.cp.subactivity_id AS subactivity_id,
+   lib_exp_accnt.allotment_class_id AS allotment_class_id,    
+   fmsdb.cp.expense_account_id AS expense_account_id,
+   fmsdb.cp.object_expenditure_id AS object_expenditure_id,
+   fmsdb.cp.object_specific_id AS object_specific_id,
+   fmsdb.cp.pooled_at_division_id AS pooled_at_division_id,
+   lib_aclass.allotment_class_acronym AS allotment_class_acronym,
+   fy.fiscal_year1 AS fiscal_year1,
+   fy.fiscal_year2 AS fiscal_year2,
+   fy.fiscal_year3 AS fiscal_year3,
+   jan_amount,
+   feb_amount,
+   mar_amount,
+   apr_amount,
+   may_amount,
+   jun_amount,
+   jul_amount,
+   aug_amount,
+   sep_amount,
+   oct_amount,
+   nov_amount,
+   dec_amount,
+    cp.is_active,
+    cp.is_deleted
+FROM fmsdb.monthly_cash_programs cp
+LEFT JOIN fmsdb.fiscal_year fy ON fmsdb.cp.year = fy.year
+LEFT JOIN fmsdb.library_pap lib_pap ON fmsdb.cp.pap_id = lib_pap.id
+LEFT JOIN fmsdb.library_activity lib_act ON fmsdb.cp.activity_id = lib_act.id
+LEFT JOIN fmsdb.library_subactivity lib_subact ON fmsdb.cp.subactivity_id = lib_subact.id
+LEFT JOIN fmsdb.library_expense_account lib_exp_accnt ON fmsdb.cp.expense_account_id = lib_exp_accnt.id
+LEFT JOIN fmsdb.library_object_expenditure lib_obj_exp ON fmsdb.cp.object_expenditure_id = lib_obj_exp.id
+LEFT JOIN fmsdb.library_allotment_class lib_aclass ON lib_obj_exp.allotment_class_id = lib_aclass.id
+LEFT JOIN fmsdb.library_object_specific lib_obj_spe ON fmsdb.cp.object_specific_id = lib_obj_spe.id
+LEFT JOIN commonlibrariesdb.pcaarrd_divisions divi ON fmsdb.cp.division_id = divi.id
+LEFT JOIN commonlibrariesdb.pcaarrd_divisions divi_pooled ON fmsdb.cp.pooled_at_division_id = divi_pooled.id
+            
+        
+    

@@ -1,0 +1,29 @@
+SELECT
+    bp_activity_id,
+    SUM(fy1_amount) AS fy1_amount,
+    SUM(fy2_amount) AS fy1_amount,
+    SUM(fy3_amount) AS fy1_amount
+FROM
+    view_bp_total_activity_pap
+WHERE
+    bp_activity_id = 1;
+
+
+SELECT
+    cp_activity_id,
+    SUM(jan_amount) AS jan_amount,
+    SUM(feb_amount) AS feb_amount,
+    SUM(mar_amount) AS mar_amount,
+    SUM(apr_amount) AS apr_amount,
+    SUM(may_amount) AS may_amount,
+    SUM(jun_amount) AS jun_amount,
+    SUM(jul_amount) AS jul_amount,
+    SUM(aug_amount) AS aug_amount,
+    SUM(sep_amount) AS sep_amount,
+    SUM(oct_amount) AS oct_amount,
+    SUM(nov_amount) AS nov_amount,
+    SUM(dec_amount) AS dec_amount    
+FROM
+    view_cp_total_activity_pap
+WHERE
+    cp_activity_id = 1;

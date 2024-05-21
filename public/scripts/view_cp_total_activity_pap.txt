@@ -1,0 +1,20 @@
+SELECT
+    cp_act.id AS id,
+    cp.year AS year,    
+    cp.division_id AS division_id,
+    cp.id AS cp_id,
+    cp_act.cp_pap_id AS cp_pap_id,
+    cp_pap.pap_id AS pap_id,
+    lib_pap.pap_code AS pap_code,
+    lib_pap.pap AS pap,
+    cp_act.activity_id AS activity_id,
+    lib_act.activity AS activity,
+    lib_act.is_continuing AS is_continuing,
+    cp_act.is_active AS is_active,
+    cp_act.is_deleted AS is_deleted
+FROM fmsdb.cp_activity cp_act
+JOIN fmsdb.cp_pap ON cp_act.cp_pap_id = cp_pap.id
+JOIN fmsdb.cash_programs cp ON cp_pap.cash_program_id = cp.id
+
+JOIN fmsdb.library_activity lib_act ON cp_act.activity_id = lib_act.id
+JOIN fmsdb.library_pap lib_pap ON cp_pap.pap_id = lib_pap.id

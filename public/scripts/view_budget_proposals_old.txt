@@ -1,0 +1,15 @@
+select
+  budget_proposals.*,
+  divisions.division_acronym,
+  fiscal_year1,
+  fiscal_year2,
+  fiscal_year3
+from
+  budget_proposals
+  inner join fiscal_year on budget_proposals.year = fiscal_year.year
+  inner join commonlibrariesdb.pcaarrd_divisions divisions ON budget_proposals.division_id=divisions.id
+where
+  budget_proposals.division_id = 19
+  and budget_proposals.year = 2022
+  and budget_proposals.is_active = 1
+  and budget_proposals.is_deleted = 0;

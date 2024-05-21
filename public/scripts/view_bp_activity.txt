@@ -1,0 +1,49 @@
+SELECT
+        bp.division_id,
+        divi.division_acronym,
+        year,        
+        bp.id AS bp_id,
+        bp_pap.id AS bp_pap_id,  
+        lib_pap.id AS pap_id,    
+        lib_pap.pap,
+        lib_pap.pap_code,
+
+        bp_act.id AS bp_activity_id,   
+        lib_act.id AS activity_id,
+        lib_act.activity AS activity,            
+
+        NULL AS bp_subactivity_id,
+        NULL AS subactivity_id,
+        NULL AS subactivity,  
+        
+        NULL AS allotment_class_id,
+        NULL AS allotment_class,
+        NULL AS bp_expense_account_id,  
+        NULL AS expense_account_id,   
+        NULL AS expense_account,
+
+        NULL AS bp_object_expenditure_id,
+        NULL AS object_expenditure_id,
+        NULL AS object_expenditure,
+
+        bp_pap.is_active AS pap_is_active,
+        bp_pap.is_deleted AS pap_is_deleted, 
+
+        bp_act.is_active AS activity_is_active,
+        bp_act.is_deleted AS activity_is_deleted, 
+
+        NULL AS subactivity_is_active,
+        NULL AS subactivity_is_deleted,   
+
+        NULL AS expense_account_is_active,
+        NULL AS expense_account_is_deleted, 
+
+        NULL AS expenditure_is_active,
+        NULL AS expenditure_is_deleted
+    FROM bp_activity bp_act
+    INNER JOIN bp_pap ON bp_act.bp_pap_id=bp_pap.id    
+    INNER JOIN budget_proposals bp ON bp_pap.budget_proposal_id=bp.id 
+
+    INNER JOIN library_activity lib_act ON bp_act.activity_id=lib_act.id
+    INNER JOIN fmsdb.library_pap lib_pap ON bp_pap.pap_id = lib_pap.id    
+    LEFT JOIN commonlibrariesdb.pcaarrd_divisions divi ON bp.division_id=divi.id 

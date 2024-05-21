@@ -1,0 +1,45 @@
+SELECT
+    fmsdb.users.id AS id,
+    fmsdb.users.emp_code AS emp_code,
+    fmsdb.users.user_role_id AS user_role_id,
+    fmsdb.user_roles.name AS user_role,
+    fmsdb.users.username AS username,
+    fmsdb.users.email AS email,
+    CONCAT
+        (hrms_user.lname,
+        ', ',
+        hrms_user.fname,
+        ' ',
+        LEFT(hrms_user.mname, 1),
+        '.')
+     AS fullname,
+    hrms_user.lname AS lname,
+    hrms_user.fname AS fname,
+    hrms_user.mname AS mname,
+    hrms_user.division AS division,
+    comlib_divi.id AS division_id,
+    comlib_divi.division_acronym AS division_acronym,
+    comlib_divi.cluster_id AS cluster_id,
+    comlib_clus.division_acronym AS cluster_acronym,
+    comlib_divi.is_cluster,
+    fmsdb.users.email_verified_at AS email_verified_at,
+    fmsdb.users.password AS password,
+    fmsdb.users.two_factor_secret AS two_factor_secret,
+    fmsdb.users.two_factor_recovery_codes AS two_factor_recovery_codes,
+    fmsdb.users.remember_token AS remember_token,
+    fmsdb.users.current_team_id AS current_team_id,
+    fmsdb.users.profile_photo_path AS profile_photo_path,
+    fmsdb.users.is_active AS is_active,
+    fmsdb.users.is_deleted AS is_deleted,
+    fmsdb.users.created_at AS created_at,
+    fmsdb.users.updated_at AS updated_at    
+FROM fmsdb.users
+JOIN hrmsdb.users hrms_user ON fmsdb.users.emp_code = hrms_user.username
+JOIN fmsdb.user_roles ON fmsdb.users.user_role_id = fmsdb.user_roles.id
+JOIN commonlibrariesdb.pcaarrd_divisions comlib_divi ON hrms_user.division = comlib_divi.division_id
+LEFT JOIN commonlibrariesdb.pcaarrd_divisions comlib_clus ON comlib_divi.cluster_id = comlib_clus.id
+            
+        
+    
+
+    id, request_type, rs_no, rs_date, division, fund_id, payee_id, particulars, amount, showall,signatory1, signatory1_position, signatory2, signatory2_position, signatory3, signatory3_position, signatory4, signatory4_position, signatory5, signatory5_position, locked_at, cancelled_at, user_id, created_at

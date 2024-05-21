@@ -1,0 +1,393 @@
+SELECT
+allot.alibid as id,
+divs.id as division_id,
+ayear as year,
+fundid as allotment_fund_id,
+    papdesc,
+    ppaid,
+    act.activity, 
+    allot.activityid,
+    subact.subactivity,
+    allot.subactivityid,
+    allot.acctid,
+    acctdesc,
+    pooled_divi.id as pooled_at_division_id,
+    aq1 as q1_allotment,
+    aq2 as q2_allotment,
+    aq3 as q3_allotment,
+    aq4 as q4_allotment    
+FROM
+    allotment_lib allot
+    LEFT JOIN fmsdb.library_pap lib_pap ON allot.papcode=lib_pap.pap_code
+    LEFT JOIN fmsdb.library_activity lib_act ON allot.activityid=lib_act.old_id
+LEFT JOIN fmsdb.library_subactivity lib_subact ON allot.subactivityid=lib_subact.old_id
+LEFT JOIN fmsdb.library_object_expenditure lib_exp ON allot.acctid=lib_exp.old_id
+LEFT JOIN pap ON allot.papcode = pap.papcode
+LEFT JOIN activity act ON allot.activityid = act.activityid
+LEFT JOIN subactivity subact ON allot.subactivityid = subact.subactivityid
+LEFT JOIN chart_acct accnt ON allot.acctid = accnt.acctid
+LEFT JOIN commonlibrariesdb.request_status_types rs_types ON allot.obligtype=rs_types.request_status_type
+LEFT JOIN commonlibrariesdb.pcaarrd_divisions divs ON allot.unitid=divs.unit_id
+LEFT JOIN commonlibrariesdb.pcaarrd_divisions pooled_divi ON allot.pooled=pooled_divi.unit_id
+LEFT JOIN commonlibrariesdb.allotment_fund afund ON allot.fundid=afund.old_id
+WHERE ayear>=2017 and rs_types.id=1  order by allot.alibid
+
+**map fais old id allotment to fms new id allotment for gsheet
+SELECT
+    allot.alibid as id,
+    divs.id as division_id,
+    ayear as year,
+    rs_types.id as rs_type_id, 
+    afund.id as allotment_fund_id,
+    lib_pap.pap as pap,
+    lib_pap.id as pap_id,
+    lib_act.activity AS activity,
+    lib_act.id AS activity_id,
+    lib_subact.subactivity AS subactivity,
+    lib_subact.id AS subactivity_id,
+    lib_accnt.expense_account AS expense_account,
+    lib_accnt.id AS expense_account_id,
+    lib_expen.object_expenditure AS object_expenditure,
+    lib_expen.id AS object_expenditure_id,
+    allot.acctid,
+    pooled_divi.id as pooled_at_division_id,
+    aq1 as q1_allotment,
+    aq2 as q2_allotment,
+    aq3 as q3_allotment,
+    aq4 as q4_allotment 
+FROM   allotment_lib allot
+LEFT JOIN fmsdb.library_pap lib_pap ON allot.papcode = lib_pap.pap_code
+LEFT JOIN fmsdb.library_activity lib_act ON allot.activityid = lib_act.old_id
+LEFT JOIN fmsdb.library_subactivity lib_subact ON allot.subactivityid = lib_subact.old_id
+LEFT JOIN fmsdb.library_object_expenditure lib_expen ON allot.acctid = lib_expen.old_id
+LEFT JOIN fmsdb.library_expense_account lib_accnt ON lib_expen.expense_account_id = lib_accnt.id
+LEFT JOIN commonlibrariesdb.allotment_fund afund ON allot.fundid=afund.old_id
+LEFT JOIN commonlibrariesdb.request_status_types rs_types ON allot.obligtype=rs_types.request_status_type
+LEFT JOIN commonlibrariesdb.pcaarrd_divisions divs ON allot.unitid=divs.unit_id
+LEFT JOIN commonlibrariesdb.pcaarrd_divisions pooled_divi ON allot.pooled=pooled_divi.unit_id
+where rs_types.id!=1
+
+**map fais old id allotment to fms new id allotment IDs only
+SELECT
+    allot.alibid as id,
+    divs.id as division_id,
+    ayear as year,
+    rs_types.id as rs_type_id, 
+    afund.id as allotment_fund_id,
+    lib_pap.id as pap_id,
+    lib_act.id AS activity_id,
+    lib_subact.id AS subactivity_id,
+    lib_accnt.id AS expense_account_id,
+    lib_expen.id AS object_expenditure_id,
+    pooled_divi.id as pooled_at_division_id,
+    activityid as old_activityid,
+subactivityid as old_subactivityid,
+acctid as old_expenditureid,
+    aq1 as q1_allotment,
+    aq2 as q2_allotment,
+    aq3 as q3_allotment,
+    aq4 as q4_allotment 
+FROM   allotment_lib allot
+LEFT JOIN fmsdb.library_pap lib_pap ON allot.papcode = lib_pap.pap_code
+LEFT JOIN fmsdb.library_activity lib_act ON allot.activityid = lib_act.old_id
+LEFT JOIN fmsdb.library_subactivity lib_subact ON allot.subactivityid = lib_subact.old_id
+LEFT JOIN fmsdb.library_object_expenditure lib_expen ON allot.acctid = lib_expen.old_id
+LEFT JOIN fmsdb.library_expense_account lib_accnt ON lib_expen.expense_account_id = lib_accnt.id
+LEFT JOIN commonlibrariesdb.allotment_fund afund ON allot.fundid=afund.old_id
+LEFT JOIN commonlibrariesdb.request_status_types rs_types ON allot.obligtype=rs_types.request_status_type
+LEFT JOIN commonlibrariesdb.pcaarrd_divisions divs ON allot.unitid=divs.unit_id
+LEFT JOIN commonlibrariesdb.pcaarrd_divisions pooled_divi ON allot.pooled=pooled_divi.unit_id
+where (ayear between 2019 and 2023) and rs_types.id!=1
+
+
+*ors_hdr
+SELECT
+    ors.orsid,    
+     rs_type.id AS rs_type_id,
+     orsno,
+    orsdate,
+    divs.id as division_id,
+    fundid,
+    p.id as payee_id,
+    payee,
+    particulars,
+    (select sum(amount) from ors_activity ors1 where ors1.orsid=ors.orsid) as rsactivityamount,
+    (select sum(amount) from ors_pap ors2 where ors2.orsid=ors.orsid) as rspapamount,
+    showall,
+    signatory1,
+    signpos1,
+    signatory1b,
+    signpos1b,
+    signatory1c,
+    signpos1c,
+    signatory1d,
+    signpos1d,
+    signatory3,
+    signpos3,    
+    datecreated    
+FROM
+    ors_hdr ors
+LEFT JOIN commonlibrariesdb.pcaarrd_divisions divs ON ors.unitid = divs.unit_id
+LEFT JOIN commonlibrariesdb.request_status_types rs_type ON ors.obligtype = rs_type.request_status_type
+LEFT JOIN fmsdb.library_payees p ON ors.payeeid=p.old_id
+WHERE rs_type.id!=1
+
+*ors_activity
+SELECT
+    recid, rsact.orsid, rsact.alibid,rsact.amount
+FROM  ors_activity rsact
+LEFT JOIN ors_hdr rs ON rsact.orsid = rs.orsid
+WHERE YEAR(orsdate) between 2022 and 2023  
+ORDER BY `rsact`.`recid`  ASC
+
+*ors_pap
+SELECT
+    rspap.*,
+    rs.orsdate
+FROM
+    ors_pap rspap
+LEFT JOIN ors_hdr rs ON
+    rspap.orsid = rs.orsid
+WHERE YEAR(orsdate) = 2023 ORDER BY rspap.recid ASC
+
+
+ORDER BY CAST(dv_no AS UNSIGNED) desc, dv_no desc;
+
+
+ **vouchers
+SELECT
+    v.dvid AS dvid,    
+    v1.adaid AS lddap_id,
+    v1.dvno AS dv_no,
+    v.dvdate AS dvdate,
+    v1.dvdate as dvdate1,
+    divs.id AS division_id,
+    v.fund AS fund,
+    p.id AS payee_id,  
+    p.payee,  
+    v.payee AS old_payee,    
+    v.dvamount AS dvgrossamount,
+    (select (CASE WHEN netamount is NULL THEN sum(amount) ELSE sum(netamount) END) from pcaarrd_acctng.vouchers_dtl vdet where vdet.dvid=v1.dvid) as dvnetamount,   
+    v.particulars AS particulars,   
+    v.orsid AS orsid,
+     (select orsno from ors_hdr where ors_hdr.orsid=v.orsid) as ors_no,
+    v.signatory1 AS signatory1,
+    v.signpos1 AS signpos1,
+    v.signatory2 AS signatory2,
+    v.signpos2 AS signpos2,
+    v.signatory3 AS signatory3,
+    v.signpos3 AS signpos3,  
+    v.taxtype AS taxtype,
+    v.paytype AS paytype,
+    v.dateout AS dateout,
+    v.outto AS outto,
+    v.receivedfrom AS receivedfrom,
+    v.datereturned AS datereturned,        
+    v.pono AS pono,
+    v.podate AS podate,
+    v.invoiceno AS invoiceno,
+    v.invoicedate AS invoicedate,
+    v.jobconno AS jobconno,
+    v.jobcondate AS jobcondate,
+    v.orno AS orno,
+    v.ordate AS ordate,
+    v.codno AS codno,    
+    v.dvdateinput AS dvdateinput,
+    v.lastupdate AS lastupdate
+FROM pcaarrd_disb.vouchers v
+LEFT JOIN commonlibrariesdb.pcaarrd_divisions divs ON v.dvunit=divs.unit_id
+LEFT JOIN fmsdb.library_payees p ON v.payeeid=p.old_id
+LEFT JOIN pcaarrd_acctng.vouchers v1 ON v.dvid = v1.disbdvid
+where year(v.dvdate)=2022 group by v.dvid
+
+**vouchers dtl
+SELECT
+    v.dvid AS dv_id,
+    v.orsid AS ors_id,
+    ors.fundid,
+    v2.amount as gross,
+    ONE,
+    two,
+    twob,
+    three,
+    five,
+    six,
+    wtax,
+    others,
+    netamount,
+    v1.dvdate,
+    v1.lastupdate
+FROM vouchers v
+LEFT JOIN pcaarrd_acctng.vouchers v1 ON v.dvid = v1.disbdvid
+LEFT JOIN pcaarrd_acctng.vouchers_dtl v2 ON v1.dvid = v2.dvid
+LEFT JOIN ors_hdr ors on v2.orsid=ors.orsid
+where v2.recid is not null and year(v1.dvdate)=2022
+
+    ***for dvrsnet allotment_class_id
+    SELECT a.allotment_class_id,dvnet.*FROM `dv_rs_net` dvnet
+left join request_status rs on dvnet.rs_id=rs.id
+left join rs_pap rspap on rspap.rs_id=rs.id
+left join view_allotment a on rspap.allotment_id=a.id
+group by id
+
+**lddap accounting ada
+SELECT
+    lddap.adaid AS lddap_id,
+    ada.advid AS ada_id,
+    adano AS lddap_no,
+    adadate AS lddap_date,
+    fund,
+    ncano,
+    b.id AS bank_account_id,
+    acicno,
+    lddap.amount as total_lddap_gross_amount,
+    lddap.amount as total_lddap_net_amount,
+    signatory1,
+    position1,
+    signatory2,
+    position2,
+    signatory3,
+    position3,
+    signatory4,
+    position4,
+    signatory5,
+    position5
+    FROM
+        ada lddap
+    LEFT JOIN fmsdb.library_bank_accounts b
+    ON
+        lddap.bankacct = b.bank_account_no
+    LEFT JOIN pcaarrd_fais.fais_ada_advice_dtl ada
+    ON
+        lddap.adaid = ada.lddapid
+    WHERE
+        YEAR(adadate) = 2023;
+        
+
+
+**cash ada
+SELECT
+    ada.advid as ada_id, advno as ada_no, advdate as ada_date, fund,checkno,psamount,mooeamount,coamount,totalamount,datetrans,datecreated,
+    b.id AS bank_account_id,
+    (select signatory1 from reports_signatory where reportcode='lddap2') as signatory1,
+     (select position1 from reports_signatory where reportcode='lddap2') as position1, 
+     (select signatory2 from reports_signatory where reportcode='lddap2') as signator2,
+     (select position2 from reports_signatory where reportcode='lddap2') as position2,
+      (select signatory3 from reports_signatory where reportcode='lddap2') as signatory3,
+     (select position3 from reports_signatory where reportcode='lddap2') as position3,
+      (select signatory4 from reports_signatory where reportcode='lddap2') as signatory4,
+     (select position4 from reports_signatory where reportcode='lddap2') as position4,
+      (select signatory5 from reports_signatory where reportcode='lddap2') as signatory5,
+        (select position5 from reports_signatory where reportcode='lddap2') as position5
+    FROM fais_ada_advice ada
+    LEFT JOIN fmsdb.library_bank_accounts b ON ada.bankacctno = b.bank_account_no;
+
+*cash ada details-lddap
+SELECT
+    ada_lddap.advdtlid,
+    ada_lddap.advid AS ada_id,
+    ada_lddap.lddapid AS lddap_id,
+    ada_lddap.checkno,
+    ada_lddap.psamount,
+    ada_lddap.mooeamount,
+    ada_lddap.coamount
+FROM
+    fais_ada_advice_dtl ada_lddap
+LEFT JOIN fais_ada_advice ada ON
+    ada_lddap.advid = ada.advid
+where year(ada.advdate)=2023
+
+*cash checks
+SELECT recid, dvid, date as check_date, checkno, fundb as fund, fund as fund_check, 
+banks.id as bank_account_id, pnature.id as payment_nature_id,debit,credit,balance,gross,aclass.id as allotment_class_id, 
+signatories1, signatories2,daterel as date_released FROM `checks`
+LEFT JOIN fmsdb.library_bank_accounts banks ON checks.bankacct=banks.bank_account_no
+LEFT JOIN fmsdb.library_allotment_class aclass ON checks.type=aclass.allotment_class_acronym  
+LEFT JOIN fmsdb.library_payment_nature pnature ON checks.nature=pnature.nature_of_payment
+LEFT JOIN fmsdb.library_fund_check lib_fcheck ON checks.fund = lib_fcheck.fund
+ORDER BY `allotment_class_id`  DESC;
+
+*fais checks
+SELECT     
+    ch.checkid AS id,
+    checkno,
+    checkdate,
+    dvid,
+    fundcode,
+    banks.id as bank_account_id,
+    acicid,
+    payeename,
+    gross,
+    otherded,
+    wtax,
+    netamount,
+    datereleased,
+    datecreated  FROM fais_check ch
+LEFT JOIN fmsdb.library_bank_accounts banks ON ch.bankacctno = banks.bank_account_no
+ where year(checkdate)=2023;
+
+
+*import vouchers 
+id,rs_type_id,rs_no,rs_date,division_id,fund_id,payee_id,particulars,total_amount,
+signatory1,signatory1_position,signatory2,signatory2_position,signatory3,signatory3_position,created_at
+
+*import voucher new
+id,lddap_id,dv_no,dv_date,dv_date1,division_id,fund_id,payee_id,total_dv_gross_amount,total_dv_net_amount,particulars,
+signatory1,signatory1_position,signatory2,signatory2_position,signatory3,signatory3_position,tax_type_id,pay_type_id,
+date_out,out_to,received_from,date_returned,po_no,po_date,invoice_no,invoice_date,jobcon_no,jobcon_date,or_no,or_date,cod_no,created_at,updated_at
+
+id,lddap_id,dv_no,dv_date,dv_date1,division_id,fund_id,payee_id,total_dv_gross_amount,total_dv_net_amount,particulars,
+signatory1,signatory1_position,signatory2,signatory2_position,signatory3,signatory3_position,tax_type_id,pay_type_id,
+date_out,out_to,received_from,date_returned,po_no,po_date,invoice_no,invoice_date,jobcon_no,jobcon_date,or_no,or_date,created_at,updated_at
+
+*import voucher rs
+dv_id,rs_id,amount,created_at,updated_at
+
+*import voucher net
+id, dv_id,rs_id,gross_amount,tax_one,tax_two,tax_twob,tax_three,tax_five,tax_six,wtax,other_deductions,net_amount,allotment_class_id,created_at,updated_at
+
+*import allotment
+id,division_id,year,rs_type_id,allotment_fund_id,pap_id,activity_id,subactivity_id,expense_account_id, object_expenditure_id,
+pooled_at_division_id,q1_allotment,q2_allotment,q3_allotment,q4_allotment,
+created_at,updated_at
+
+id,division_id,year,rs_type_id,allotment_fund_id,pap_id,activity_id,subactivity_id,expense_account_id, object_expenditure_id,pooled_at_division_id,q1_allotment,q2_allotment,q3_allotment,q4_allotment
+
+id,division_id,year,rs_type_id,allotment_fund_id,pap_id,activity_id,subactivity_id,expense_account_id, object_expenditure_id,object_specific_id,pooled_at_division_id
+
+*import rs
+id,rs_type_id,rs_no,rs_date,rs_date1,division_id,fund_id,payee_id,particulars,total_rs_activity_amount,total_rs_pap_amount,showall,
+signatory1,signatory1_position,signatory1b,signatory1b_position,signatory2,signatory2_position,signatory3,signatory3_position,signatory4,signatory4_position,
+is_locked,created_at
+,updated_at
+24
+
+*import rs activity pap
+id,rs_id,allotment_id,amount,created_at
+
+id,rs_id,allotment_id,amount,notice_adjustment_no,notice_adjustment_date,created_at
+
+*import ada details
+id,ada_id,lddap_id,check_no,ps_amount,mooe_amount,co_amount
+
+*import ada
+id,ada_no,ada_date,fund_id,bank_account_id,check_no,total_ps_amount,total_mooe_amount,total_co_amount,date_transferred,
+signatory1,signatory1_position,signatory2,signatory2_position,signatory3,signatory3_position,signatory4,signatory4_position,signatory5,signatory5_position,
+created_at
+
+*import lddap
+id,ada_id, lddap_no,lddap_date,payment_mode_id,fund_id,nca_no,bank_account_id,acic_no,total_lddap_gross_amount,total_lddap_net_amount,
+signatory1,signatory1_position,signatory2,signatory2_position,signatory3,signatory3_position,signatory4,signatory4_position,signatory5,signatory5_position,created_at
+
+*import payees
+id,old_id,payee_type_id,organization_type_id,payee,previously_named,organization_name,organization_acronynm,title,first_name,middle_initial,last_name,
+suffix,tin,bank_id,bank_branch,bank_account_name,bank_account_no,address,office_address,email_address,contact_no,is_lbp_enrolled,is_active
+
+*import activity
+id,old_id,activity,activity_code,division_id,appropriation_id,request_status_type_id,is_active
+
+*import subactivity
+id,old_id,subactivity,subactivity_code,activity_id,division_id,tier,is_active
+
+*import checks
+id, dv_id, check_date, check_no,fund_id,bank_account_id,acic_id,gross_amount, other_tax,wtax,net_amount,date_released,created_at

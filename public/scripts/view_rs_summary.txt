@@ -1,0 +1,72 @@
+SELECT
+    rs_pap.id AS id,    
+    rs.id AS rs_id,
+    rs.rs_type_id AS rs_type_id,
+    rs.rs_no AS rs_no,
+     rs.rs_date1,
+     (CASE WHEN(rs.rs_date1 IS NULL) THEN rs.rs_date ELSE rs.rs_date1 END) as rs_date,
+    notice_adjustment_no,
+    notice_adjustment_date,
+    a.id as allotment_id,
+    divi.division_acronym AS rs_division_acronym,
+    payee,
+    rs.particulars AS particulars,
+    rs.total_rs_activity_amount as total_rs_activity_amount,
+    rs.total_rs_pap_amount as total_rs_pap_amount,
+    rs_pap.amount as amount,
+    a.division_acronym AS allotment_division_acronym,  
+    pap,
+    pap_code,    
+    activity,
+    subactivity,    
+    expense_account,
+    object_expenditure,
+    object_specific,
+    expense_account_code,
+    object_code,      
+    activity_id,   
+    subactivity_id,   
+    expense_account_id,
+    object_expenditure_id,
+    object_specific_id,
+    allotment_class_id,
+    allotment_class_acronym,    
+    rs.cancelled_at AS cancelled_at,
+    is_gia,
+    rs.is_active,
+    rs.is_deleted,
+    rs_pap.is_active as rsp_is_active,
+    rs_pap.is_deleted as rsp_is_deleted,
+    rs.created_at AS created_at,
+    rs.updated_at AS updated_at
+FROM rs_pap
+LEFT JOIN request_status rs on rs_pap.rs_id=rs.id
+LEFT JOIN commonlibrariesdb.pcaarrd_divisions divi ON rs.division_id = divi.id
+LEFT JOIN fmsdb.view_library_payees vw_payees ON rs.payee_id = fmsdb.vw_payees.id
+LEFT JOIN view_allotment a on rs_pap.allotment_id=a.id
+where rs_pap.is_active=1 and rs_pap.is_deleted=0
+
+where rs.rs_type_id=1 and
+((rs_no<>'' and rs_date>='2023-06-09' and rs_date<='2023-06-09' and notice_adjustment_date is null) 
+OR (notice_adjustment_date>='2023-06-09' and notice_adjustment_date<='2023-06-09'))
+order by pap asc, allotment_class_id asc, object_code asc, division_acronym asc
+
+
+
+SELECT if(SUBSTRING(a.acctcode,1,13)='5-02-99-08000' or SUBSTRING(a.acctcode,1,13)='5-02-14-99000' 
+    or SUBSTRING(a.acctcode,1,13)='5-02-14-02000','MOOE-GIA',c.aclass) as aclass, f.activity, g.subactivity, b.payeename, 
+    b.orsno, a.norsanum, d.unitcode, b.orsdate, concat(e.papcode,'-',e.papdesc) as papdesc, a.papcode, a.acctcode, c.acctdesc, a.amount,     
+    (SELECT alibid FROM allotment_lib WHERE papcode=a.papcode AND unitid=a.unitid AND acctid=a.acctid AND activityid=a.activityid limit 1) AS ostatus 
+    FROM ors_pap a 
+    LEFT JOIN ors_hdr b ON a.orsid=b.orsid 
+    LEFT JOIN chart_acct c ON a.acctid=c.acctid 
+    LEFT JOIN pcaarrd_acctng.units d ON a.unitid=d.unitid 
+    left join pap e on a.papcode=e.papcode     
+    left join activity f on f.activityid=a.activityid
+    left join subactivity g on g.subactivityid=a.subactivityid
+
+
+WHERE orsno <> '' AND orsdate >= '$fdate' AND orsdate <= '$tdate' and length(orsno) > 20 and norsadate is null and b.obligtype='$obligtype' or  
+     orsno <> '' AND orsdate >= '$fdate' AND orsdate <= '$tdate' and length(orsno) > 20  and norsadate='0000-00-00' and b.obligtype='$obligtype' or 
+     norsadate >= '$fdate' AND norsadate <= '$tdate' and b.obligtype='$obligtype' 
+     ORDER BY papcode, aclass desc, acctcode, unitcode

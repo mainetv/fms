@@ -1,0 +1,188 @@
+
+SELECT
+        bp.division_id,
+        divi.division_acronym,
+        year, 
+
+        bp.id AS bp_id,
+        bp_pap.id AS bp_pap_id,  
+        bp_act.id AS bp_activity_id, 
+        NULL AS bp_subactivity_id,
+        bp_exp_acc.id AS bp_expense_account_id,  
+        bp_obj_exp.id AS bp_object_expenditure_id,
+        
+        lib_pap.id AS pap_id,
+        lib_act.id AS activity_id,
+        NULL AS subactivity_id,
+        lib_obj_exp.allotment_class_id,
+        lib_exp_acc.id AS expense_account_id, 
+        lib_obj_exp.id AS object_expenditure_id, 
+        lib_obj_spe.id AS object_specific_id,
+        pooled_divi.division_id AS pooled_at_division_id,
+
+        lib_pap.pap,
+        lib_pap.pap_code,        
+        lib_act.activity AS activity,   
+        NULL AS subactivity,  
+        aclass.allotment_class,
+        lib_exp_acc.expense_account AS expense_account,
+        lib_exp_acc.expense_account_code AS expense_account_code,
+        lib_obj_exp.object_expenditure AS object_expenditure,
+        lib_obj_exp.object_code AS object_code,
+        lib_obj_spe.object_specific AS object_specific,
+        pooled_divi.division_acronym AS pooled_at_division_acronym,
+
+        bp_pap.is_active AS pap_is_active,
+        bp_pap.is_deleted AS pap_is_deleted, 
+
+        bp_act.is_active AS activity_is_active,
+        bp_act.is_deleted AS activity_is_deleted, 
+
+        NULL AS subactivity_is_active,
+        NULL AS subactivity_is_deleted,   
+
+        bp_exp_acc.is_active AS expense_account_is_active,
+        bp_exp_acc.is_deleted AS expense_account_is_deleted, 
+
+        bp_obj_exp.is_active AS expenditure_is_active,
+        bp_obj_exp.is_deleted AS expenditure_is_deleted
+    FROM bp_object_expenditure bp_obj_exp
+    JOIn fmsdb.bp_expense_account bp_exp_acc ON bp_obj_exp.bp_expense_account_id=bp_exp_acc.id
+    JOIN fmsdb.bp_activity bp_act ON bp_exp_acc.bp_activity_id = bp_act.id
+    JOIN fmsdb.bp_pap ON bp_act.bp_pap_id = bp_pap.id
+    JOIN budget_proposals bp ON bp_pap.budget_proposal_id=bp.id 
+
+    LEFT JOIN library_object_specific lib_obj_spe ON bp_obj_exp.object_specific_id=lib_obj_spe.id
+    JOIN library_object_expenditure lib_obj_exp ON bp_obj_exp.object_expenditure_id=lib_obj_exp.id
+    JOIN fmsdb.library_expense_account lib_exp_acc ON bp_exp_acc.expense_account_id = lib_exp_acc.id
+    JOIN fmsdb.library_activity lib_act ON bp_act.activity_id = lib_act.id
+    JOIN fmsdb.library_pap lib_pap ON bp_pap.pap_id = lib_pap.id        
+    LEFT JOIN library_allotment_class aclass ON lib_exp_acc.allotment_class_id=aclass.id
+    LEFT JOIN commonlibrariesdb.pcaarrd_divisions divi ON bp.division_id=divi.id
+    LEFT JOIN commonlibrariesdb.pcaarrd_divisions pooled_divi ON bp_obj_exp.pooled_at_division_id=pooled_divi.id 
+    where bp_exp_acc.bp_subactivity_id IS NULL and bp_obj_exp.id IS NOT NULL
+
+UNION
+
+SELECT
+        bp.division_id,
+        divi.division_acronym,
+        year,            
+
+        bp.id AS bp_id,
+        bp_pap.id AS bp_pap_id,  
+        bp_act.id AS bp_activity_id, 
+        bp_subact.id AS bp_subactivity_id,
+        bp_exp_acc.id AS bp_expense_account_id,  
+        bp_obj_exp.id AS bp_object_expenditure_id,
+        
+        lib_pap.id AS pap_id,
+        lib_act.id AS activity_id,
+        lib_subact.id AS subactivity_id,
+        lib_obj_exp.allotment_class_id,
+        lib_exp_acc.id AS expense_account_id, 
+        lib_obj_exp.id AS object_expenditure_id, 
+        lib_obj_spe.id AS object_specific_id,
+        pooled_divi.division_id AS pooled_at_division_id,
+
+        lib_pap.pap,
+        lib_pap.pap_code,        
+        lib_act.activity AS activity,   
+        lib_subact.subactivity AS subactivity,  
+        aclass.allotment_class,
+        lib_exp_acc.expense_account AS expense_account,
+        lib_exp_acc.expense_account_code AS expense_account_code,
+        lib_obj_exp.object_expenditure AS object_expenditure,
+        lib_obj_exp.object_code AS object_code,
+        lib_obj_spe.object_specific AS object_specific,
+        pooled_divi.division_acronym AS pooled_at_division_acronym,
+
+        bp_pap.is_active AS pap_is_active,
+        bp_pap.is_deleted AS pap_is_deleted, 
+
+        bp_act.is_active AS activity_is_active,
+        bp_act.is_deleted AS activity_is_deleted, 
+
+        bp_subact.is_active AS subactivity_is_active,
+        bp_subact.is_deleted AS subactivity_is_deleted,   
+
+        bp_exp_acc.is_active AS expense_account_is_active,
+        bp_exp_acc.is_deleted AS expense_account_is_deleted, 
+
+        bp_obj_exp.is_active AS expenditure_is_active,
+        bp_obj_exp.is_deleted AS expenditure_is_deleted
+    FROM bp_object_expenditure bp_obj_exp
+    INNER JOIN fmsdb.bp_expense_account bp_exp_acc ON bp_obj_exp.bp_expense_account_id=bp_exp_acc.id
+    INNER JOIN fmsdb.bp_subactivity bp_subact ON bp_exp_acc.bp_subactivity_id = bp_subact.id
+    INNER JOIN fmsdb.bp_activity bp_act ON bp_subact.bp_activity_id = bp_act.id
+    INNER JOIN fmsdb.bp_pap ON bp_act.bp_pap_id = bp_pap.id
+    INNER JOIN budget_proposals bp ON bp_pap.budget_proposal_id=bp.id 
+
+    LEFT JOIN library_object_specific lib_obj_spe ON bp_obj_exp.object_specific_id=lib_obj_spe.id
+    INNER JOIN library_object_expenditure lib_obj_exp ON bp_obj_exp.object_expenditure_id=lib_obj_exp.id
+    INNER JOIN fmsdb.library_expense_account lib_exp_acc ON bp_exp_acc.expense_account_id = lib_exp_acc.id
+    INNER JOIN fmsdb.library_subactivity lib_subact ON bp_subact.subactivity_id = lib_subact.id
+    INNER JOIN fmsdb.library_activity lib_act ON bp_act.activity_id = lib_act.id
+    INNER JOIN fmsdb.library_pap lib_pap ON bp_pap.pap_id = lib_pap.id    
+    LEFT JOIN library_allotment_class aclass ON lib_exp_acc.allotment_class_id=aclass.id    
+    LEFT JOIN commonlibrariesdb.pcaarrd_divisions divi ON bp.division_id=divi.id 
+    LEFT JOIN commonlibrariesdb.pcaarrd_divisions pooled_divi ON bp_obj_exp.pooled_at_division_id=pooled_divi.id 
+    where bp_exp_acc.bp_subactivity_id IS NOT NULL and bp_obj_exp.id IS NOT NULL      
+        
+UNION
+
+SELECT
+        bp.division_id,
+        divi.division_acronym,
+        year,   
+
+        bp.id AS bp_id,
+        bp_pap.id AS bp_pap_id,  
+        NULL AS bp_activity_id, 
+        NULL AS bp_subactivity_id,  
+        NULL AS bp_expense_account_id, 
+        NULL AS bp_object_expenditure_id,
+
+        lib_pap.id AS pap_id,  
+        NULL AS activity_id,
+        NULL AS subactivity_id,        
+        NULL AS allotment_class_id,
+        NULL AS expense_account_id,   
+        NULL AS object_expenditure_id,
+        NULL AS object_specific_id,
+        NULL AS pooled_at_division_id,
+
+        lib_pap.pap,
+        lib_pap.pap_code,
+        NULL AS activity,    
+        NULL AS subactivity,  
+        NULL AS allotment_class,
+        NULL AS expense_account,
+        NULL AS expense_account_code,
+        NULL AS object_expenditure,
+        NULL AS object_code,
+        NULL AS object_specific,
+        NULL AS pooled_at_division_acronym,
+
+        bp_pap.is_active AS pap_is_active,
+        bp_pap.is_deleted AS pap_is_deleted, 
+
+        NULL AS activity_is_active,
+        NULL AS activity_is_deleted, 
+
+        NULL AS subactivity_is_active,
+        NULL AS subactivity_is_deleted,   
+
+        NULL AS expense_account_is_active,
+        NULL AS expense_account_is_deleted, 
+
+        NULL AS expenditure_is_active,
+        NULL AS expenditure_is_deleted
+    FROM bp_pap    
+    JOIN budget_proposals bp ON bp_pap.budget_proposal_id=bp.id 
+
+    JOIN fmsdb.library_pap lib_pap ON bp_pap.pap_id = lib_pap.id    
+    LEFT JOIN commonlibrariesdb.pcaarrd_divisions divi ON bp.division_id=divi.id    
+
+
+  

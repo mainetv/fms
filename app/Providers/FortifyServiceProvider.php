@@ -1,0 +1,74 @@
+<?php
+
+namespace App\Providers;
+
+use App\Actions\Fortify\CreateNewUser;
+use App\Actions\Fortify\ResetUserPassword;
+use App\Actions\Fortify\UpdateUserPassword;
+use App\Actions\Fortify\UpdateUserProfileInformation;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\ServiceProvider;
+use Laravel\Fortify\Fortify;
+use App\Models\UserRolesModel;
+use App\Models\User;
+use App\Models\ViewHRMSUsersModel;
+use Hash;
+
+class FortifyServiceProvider extends ServiceProvider
+{
+    /**
+     * Register any application services.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        //
+    }
+
+    /**
+     * Bootstrap any application services.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        Fortify::registerView(function () {
+			$employees = ViewHRMSUsersModel::whereNull('deleted_at')->orderBy('lname', 'ASC')->get();
+			$user_roles = UserRolesModel::where('is_active', 1)->where('is_deleted', 0)
+				->orderBy('id', 'ASC')->get();
+			// dd($employees);
+			return view('auth.register')
+				->with(compact('employees'))
+				->with(compact('user_roles'));
+			
+		}); //maine
+
+        Fortify::createUsersUsing(CreateNewUser::class);
+        Fortify::updateUserProfileInformationUsing(UpdateUserProfileInformation::class);
+        Fortify::updateUserPasswordsUsing(UpdateUserPassword::class);
+        Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
+
+        Fortify::authenticateUsing(function (Request $request) {
+			$user = User::where('email', $request->username)
+				->orWhere('username', $request->username)->first();
+
+			if ($user && Hash::check($request->password, $user->password))
+			{
+				return $user;
+			}
+		}); //maine
+
+        RateLimiter::for('login', function (Request $request) {
+            $email = (string) $request->email;
+
+            return Limit::perMinute(5)->by($email.$request->ip());
+        });
+
+        RateLimiter::for('two-factor', function (Request $request) {
+            return Limit::perMinute(5)->by($request->session()->get('login.id'));
+        });
+    }
+}

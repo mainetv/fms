@@ -1,0 +1,12 @@
+SELECT
+    bp_pap.id AS id,
+    bp.division_id AS division_id,
+    bp.year AS year,
+    lib_pap.pap_code AS pap_code,
+    lib_pap.pap AS pap,
+    bp_pap.is_active AS is_active,
+    bp_pap.is_deleted AS is_deleted
+FROM fmsdb.bp_pap
+JOIN fmsdb.budget_proposals bp ON bp_pap.budget_proposal_id = bp.id
+JOIN fmsdb.library_pap lib_pap ON bp_pap.pap_id = lib_pap.id
+     

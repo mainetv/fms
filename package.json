@@ -1,0 +1,53 @@
+{
+  "private": true,
+  "scripts": {
+    "dev": "npm run development",
+    "development": "mix",
+    "watch": "mix watch",
+    "watch-poll": "mix watch -- --watch-options-poll=1000",
+    "hot": "mix watch --hot",
+    "prod": "npm run production",
+    "production": "mix --production"
+  },
+  "devDependencies": {
+    "@popperjs/core": "^2.11.5",
+    "@tailwindcss/forms": "^0.4.0",
+    "@tailwindcss/typography": "^0.5.0",
+    "alpinejs": "^3.2.6",
+    "axios": "^0.25",
+    "bootstrap": "^5.2.0-beta1",
+    "jquery": "^3.6.0",
+    "laravel-mix": "^6.0.6",
+    "lodash": "^4.17.19",
+    "postcss": "^8.1.14",
+    "postcss-import": "^14.0.1",
+    "resolve-url-loader": "^5.0.0",
+    "sass": "^1.50.1",
+    "sass-loader": "^12.1.0",
+    "sweetalert2": "^11.4.17",
+    "tailwindcss": "^3.0.0",
+    "typescript": "^4.7.2"
+  },
+  "name": "fms",
+  "description": "<p align=\"center\"><a href=\"https://laravel.com\" target=\"_blank\"><img src=\"https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg\" width=\"400\"></a></p>",
+  "version": "1.0.0",
+  "main": "webpack.mix.js",
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/sddmu/fms.git"
+  },
+  "author": "Normaine T. Villar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/sddmu/fms/issues"
+  },
+  "homepage": "https://gitlab.com/sddmu/fms#readme",
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.1.1",
+    "admin-lte": "^3.2.0",
+    "html2pdf.js": "^0.10.1"
+  }
+}

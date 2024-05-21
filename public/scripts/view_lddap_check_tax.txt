@@ -1,0 +1,54 @@
+SELECT
+    payee, 
+    dv_no,
+    tin,
+    lddap_date as date,
+    CONCAT('ADA: ', lddap_no) as ref_no, 
+    SUM( tax_one + tax_two + tax_twob + tax_three + tax_five + tax_six + wtax+other_tax) AS total_tax,    
+    tax_one,
+    tax_two,
+    tax_twob,
+    tax_three,
+    tax_five,
+    tax_six,
+    wtax,
+    liquidated_damages,
+    other_deductions,
+    lddap.fund_id as fund_id,
+    lddap.is_active,
+lddap.is_deleted,
+lddap.created_at,
+lddap.updated_at
+FROM disbursement_vouchers dv
+LEFT JOIN view_dv_rs_net ON dv.id = view_dv_rs_net.dv_id
+LEFT JOIN lddap ON dv.lddap_id = lddap.id
+LEFT JOIN library_payees p ON dv.payee_id=p.id
+group by dv.id
+UNION
+
+SELECT 
+payee, 
+dv_no,
+    tin,
+check_date as date,
+CONCAT('CHK: ',check_no) as ref_no, 
+SUM( tax_one + tax_two + tax_twob + tax_three + tax_five + tax_six + wtax + other_tax) AS total_tax,   
+    tax_one,
+    tax_two,
+    tax_twob,
+    tax_three,
+    tax_five,
+    tax_six,
+    wtax,
+    liquidated_damages,
+    other_deductions,
+checks.fund_id as fund_id,
+checks.is_active,
+checks.is_deleted,
+checks.created_at,
+checks.updated_at
+FROM disbursement_vouchers dv
+LEFT JOIN checks ON dv.id=checks.dv_id
+LEFT JOIN view_dv_rs_net ON dv.id = view_dv_rs_net.dv_id 
+LEFT JOIN library_payees p ON dv.payee_id=p.id
+group by dv.id

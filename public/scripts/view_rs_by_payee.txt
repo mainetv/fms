@@ -1,0 +1,18 @@
+SELECT
+    rs.id AS id,
+    rs.rs_type_id AS rs_type_id,
+    rs.rs_no AS rs_no,
+    (CASE WHEN(rs.rs_date IS NULL) THEN rs.rs_date ELSE rs.rs_date END) as rs_date,
+    (CASE WHEN(rs.rs_date IS NULL) THEN  YEAR(rs.rs_date) ELSE  YEAR(rs.rs_date1) END) as year,
+    rs.division_id AS division_id,
+    rs.fund_id AS fund_id,    
+    rs.payee_id AS payee_id,
+    p.parent_id,
+rs.particulars AS particulars,
+rs.total_rs_activity_amount as total_rs_activity_amount,
+rs.total_rs_pap_amount as total_rs_pap_amount,
+rs.is_active AS is_active,
+rs.is_deleted AS is_deleted
+FROM fmsdb.request_status rs
+LEFT JOIN dv_rs ON rs.id=dv_rs.rs_id
+LEFT JOIN library_payees p ON rs.payee_id=p.id

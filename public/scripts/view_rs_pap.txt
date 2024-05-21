@@ -1,0 +1,50 @@
+SELECT
+    rsp.id AS id,
+    rs.division_id AS rs_division_id,
+    divi.division_acronym AS rs_division_acronym,
+    rsp.rs_id AS rs_id,
+    (CASE WHEN(rsp.notice_adjustment_no IS NULL) THEN rs.rs_no ELSE rs.notice_adjustment_no END) as rs_no,
+    (CASE WHEN(rs.rs_date IS NULL) THEN rs.rs_date ELSE rs.rs_date END) as rs_date,
+    (CASE WHEN(rs.rs_date IS NULL) THEN  YEAR(rs.rs_date) ELSE  YEAR(rs.rs_date1) END) as year,
+    rsp.allotment_id AS allotment_id,    
+    a.division_id AS allotment_division_id,
+    a.division_acronym AS allotment_division_acronym,
+    a.year AS allotment_year,
+    allotment_class_id,
+    allotment_class_number,
+    allotment_class_acronym,
+    pap,
+    pap_code,
+    pap_all,
+    CONCAT(a.activity, ' - ',
+        (CASE WHEN(a.object_specific IS NULL) 
+            THEN a.object_expenditure 
+            ELSE a.object_specific END)) AS allotment_activity,
+    CONCAT(a.activity, ' - ', a.object_code, ': ',
+        (CASE WHEN(a.object_specific IS NULL) 
+        THEN a.object_expenditure 
+        ELSE a.object_specific END)) AS allotment_activity_code,
+    a.activity AS activity,    
+    a.subactivity AS subactivity,  
+    a.expense_account AS expense_account,  
+    a.object_expenditure AS object_expenditure,   
+    a.object_specific AS object_specific,
+    a.activity_code AS activity_code,
+    a.subactivity_code AS subactivity_code,    
+    a.expense_account_code AS expense_account_code,
+    a.object_code AS object_code,
+    a.total_obligation AS total_obligation,    
+    payees.payee AS payee,
+    rs.particulars AS particulars,
+    rsp.amount AS rs_amount,
+    rsp.notice_adjustment_no AS notice_adjustment_no,
+    rsp.notice_adjustment_date AS notice_adjustment_date,
+    rsp.is_active AS is_active,
+    rsp.is_deleted AS is_deleted,
+    rsp.created_at AS created_at,
+    rsp.updated_at AS updated_at
+FROM rs_pap rsp
+LEFT JOIN view_allotment a ON rsp.allotment_id = a.id
+LEFT JOIN request_status rs ON rsp.rs_id = rs.id
+LEFT JOIN commonlibrariesdb.pcaarrd_divisions divi ON rs.division_id = divi.id
+LEFT JOIN library_payees payees ON rs.payee_id = payees.id

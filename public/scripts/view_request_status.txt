@@ -1,0 +1,240 @@
+SELECT
+    rs.id AS id,
+    rs.rs_type_id AS rs_type_id,
+    rs_types.request_status_type AS request_status_type,
+    rs_types.description AS rs_type,
+    rs.rs_no AS rs_no,
+    rs.rs_date1,
+    (CASE WHEN(rs.rs_date1 IS NULL) THEN rs.rs_date ELSE rs.rs_date1 END) as rs_date,
+    (CASE WHEN(rs.rs_date1 IS NULL) THEN MONTH(rs.rs_date) ELSE MONTH(rs.rs_date1) END) as month,
+    (CASE WHEN(rs.rs_date1 IS NULL) THEN YEAR(rs.rs_date) ELSE YEAR(rs.rs_date1) END) as year,
+    rs.division_id AS division_id,
+    divi.division_acronym AS division_acronym,    
+    rs.fund_id AS fund_id,
+    funds.fund,
+    payee_id,
+    payee,
+    rs.particulars AS particulars,
+    rs.total_rs_activity_amount as total_rs_activity_amount,
+    rs.total_rs_pap_amount as total_rs_pap_amount,
+    payees.tin AS tin,
+    payees.address AS address,
+    payees.contact_no AS contact_no,
+    payees.bank AS bank,
+    payees.bank_acronym AS bank_acronym,
+    payees.bank_account_no AS bank_account_no,
+    payees.office_address AS office_address,
+    rs.showall AS showall,
+    rs.signatory1 AS signatory1,
+    rs.signatory1_position AS signatory1_position,
+    rs.signatory1b AS signatory1b,
+    rs.signatory1b_position AS signatory1b_position,
+    rs.signatory2 AS signatory2,
+    rs.signatory2_position AS signatory2_position,
+    rs.signatory3 AS signatory3,
+    rs.signatory3_position AS signatory3_position,
+    rs.signatory4 AS signatory4,
+    rs.signatory4_position AS signatory4_position,
+    rs.signatory5 AS signatory5,
+    rs.signatory5_position AS signatory5_position,
+    rs.is_locked AS is_locked,
+    rs.is_active AS is_active,
+    rs.is_deleted AS is_deleted,
+    rs.locked_at AS locked_at,
+    rs.cancelled_at AS cancelled_at,
+    rs.created_at AS created_at,
+    rs.updated_at AS updated_at
+FROM request_status rs
+LEFT JOIN commonlibrariesdb.request_status_types rs_types ON rs.rs_type_id = rs_types.id
+LEFT JOIN commonlibrariesdb.pcaarrd_divisions divi ON rs.division_id = divi.id
+LEFT JOIN commonlibrariesdb.funds ON rs.fund_id = commonlibrariesdb.funds.id
+LEFT JOIN view_library_payees payees ON rs.payee_id = payees.id
+LEFT JOIN rs_pap on rs.id=rs_pap.rs_id
+LEFT JOIN view_allotment a on rs_pap.allotment_id=a.id
+group by rs.id
+
+
+
+***old
+SELECT
+    `rs`.`id` AS `id`,
+    `rs`.`rs_type_id` AS `rs_type_id`,
+    `rs_types`.`request_status_type` AS `request_status_type`,
+    `rs`.`rs_no` AS `rs_no`,
+    `rs`.`rs_date` AS `rs_date`,
+    YEAR(`rs`.`rs_date`) AS `year`,
+    `rs`.`division_id` AS `division_id`,
+    `divi`.`division_acronym` AS `division_acronym`,
+    `rs`.`fund_id` AS `fund_id`,
+    `commonlibrariesdb`.`funds`.`fund` AS `fund`,
+    `rs`.`payee_id` AS `payee_id`,
+    (
+        CASE WHEN(
+            `fmsdb`.`payees`.`payee_type_id` = 1
+        ) THEN CONCAT(
+            `fmsdb`.`payees`.`first_name`,
+            ' ',
+            `fmsdb`.`payees`.`middle_initial`,
+            ' ',
+            `fmsdb`.`payees`.`last_name`
+        ) WHEN(
+            `fmsdb`.`payees`.`payee_type_id` = 2
+        ) THEN `fmsdb`.`payees`.`organization_name`
+    END
+) AS `payee`,
+`rs`.`particulars` AS `particulars`,
+(
+    SELECT
+        SUM(`fmsdb`.`view_rs_activity`.`amount`)
+    FROM
+        `fmsdb`.`view_rs_activity`
+    WHERE
+        (
+            (
+                `rs`.`id` = `fmsdb`.`view_rs_activity`.`rs_id`
+            ) AND(
+                `fmsdb`.`view_rs_activity`.`is_active` = 1
+            ) AND(
+                `fmsdb`.`view_rs_activity`.`is_deleted` = 0
+            )
+        )
+) AS `total_rs_amount`,
+(
+    SELECT
+        SUM(`fmsdb`.`dv_rs`.`amount`)
+    FROM
+        `fmsdb`.`dv_rs`
+    WHERE
+        (
+            (`rs`.`id` = `fmsdb`.`dv_rs`.`rs_id`) AND(`fmsdb`.`dv_rs`.`is_active` = 1) AND(`fmsdb`.`dv_rs`.`is_deleted` = 0)
+        )
+) AS `total_dv_amount`,
+`fmsdb`.`payees`.`tin` AS `tin`,
+`fmsdb`.`payees`.`address` AS `address`,
+`fmsdb`.`payees`.`contact_no` AS `contact_no`,
+`fmsdb`.`payees`.`bank` AS `bank`,
+`fmsdb`.`payees`.`bank_acronym` AS `bank_acronym`,
+`fmsdb`.`payees`.`bank_account_no` AS `bank_account_no`,
+`fmsdb`.`payees`.`office_address` AS `office_address`,
+(
+    CASE WHEN(
+        (
+            (
+            SELECT
+                SUM(`fmsdb`.`view_rs_activity`.`amount`)
+            FROM
+                `fmsdb`.`view_rs_activity`
+            WHERE
+                (
+                    (
+                        `rs`.`id` = `fmsdb`.`view_rs_activity`.`rs_id`
+                    ) AND(
+                        `fmsdb`.`view_rs_activity`.`is_active` = 1
+                    ) AND(
+                        `fmsdb`.`view_rs_activity`.`is_deleted` = 0
+                    )
+                )
+        ) -(
+        SELECT
+            SUM(`fmsdb`.`dv_rs`.`amount`)
+        FROM
+            `fmsdb`.`dv_rs`
+        WHERE
+            (
+                (`rs`.`id` = `fmsdb`.`dv_rs`.`rs_id`) AND(`fmsdb`.`dv_rs`.`is_active` = 1) AND(`fmsdb`.`dv_rs`.`is_deleted` = 0)
+            )
+    )
+        ) IS NULL
+    ) THEN(
+    SELECT
+        SUM(`fmsdb`.`view_rs_activity`.`amount`)
+    FROM
+        `fmsdb`.`view_rs_activity`
+    WHERE
+        (
+            (
+                `rs`.`id` = `fmsdb`.`view_rs_activity`.`rs_id`
+            ) AND(
+                `fmsdb`.`view_rs_activity`.`is_active` = 1
+            ) AND(
+                `fmsdb`.`view_rs_activity`.`is_deleted` = 0
+            )
+        )
+) ELSE(
+    (
+    SELECT
+        SUM(`fmsdb`.`view_rs_activity`.`amount`)
+    FROM
+        `fmsdb`.`view_rs_activity`
+    WHERE
+        (
+            (
+                `rs`.`id` = `fmsdb`.`view_rs_activity`.`rs_id`
+            ) AND(
+                `fmsdb`.`view_rs_activity`.`is_active` = 1
+            ) AND(
+                `fmsdb`.`view_rs_activity`.`is_deleted` = 0
+            )
+        )
+) -(
+    SELECT
+        SUM(`fmsdb`.`dv_rs`.`amount`)
+    FROM
+        `fmsdb`.`dv_rs`
+    WHERE
+        (
+            (`rs`.`id` = `fmsdb`.`dv_rs`.`rs_id`) AND(`fmsdb`.`dv_rs`.`is_active` = 1) AND(`fmsdb`.`dv_rs`.`is_deleted` = 0)
+        )
+)
+)
+END
+) AS `balance`,
+`rs`.`showall` AS `showall`,
+`rs`.`signatory1` AS `signatory1`,
+`rs`.`signatory1_position` AS `signatory1_position`,
+`rs`.`signatory1b` AS `signatory1b`,
+`rs`.`signatory1b_position` AS `signatory1b_position`,
+`rs`.`signatory2` AS `signatory2`,
+`rs`.`signatory2_position` AS `signatory2_position`,
+`rs`.`signatory3` AS `signatory3`,
+`rs`.`signatory3_position` AS `signatory3_position`,
+`rs`.`signatory4` AS `signatory4`,
+`rs`.`signatory4_position` AS `signatory4_position`,
+`rs`.`signatory5` AS `signatory5`,
+`rs`.`signatory5_position` AS `signatory5_position`,
+`rs`.`is_locked` AS `is_locked`,
+`rs`.`is_active` AS `is_active`,
+`rs`.`is_deleted` AS `is_deleted`,
+`rs`.`locked_at` AS `locked_at`,
+`rs`.`cancelled_at` AS `cancelled_at`,
+`rs`.`created_at` AS `created_at`,
+`rs`.`updated_at` AS `updated_at`
+FROM
+    (
+        (
+            (
+                (
+                    `fmsdb`.`request_status` `rs`
+                LEFT JOIN `commonlibrariesdb`.`request_status_types` `rs_types`
+                ON
+                    ((`rs`.`rs_type_id` = `rs_types`.`id`))
+                )
+            LEFT JOIN `commonlibrariesdb`.`pcaarrd_divisions` `divi`
+            ON
+                ((`rs`.`division_id` = `divi`.`id`))
+            )
+        LEFT JOIN `commonlibrariesdb`.`funds` ON
+            (
+                (
+                    `rs`.`fund_id` = `commonlibrariesdb`.`funds`.`id`
+                )
+            )
+        )
+    LEFT JOIN `fmsdb`.`view_library_payees` `payees`
+    ON
+        (
+            (
+                `rs`.`payee_id` = `fmsdb`.`payees`.`id`
+            )
+        )
+    )

@@ -1,0 +1,76 @@
+from palihan
+
+SELECT *,
+    MAX(v.pap_id),
+    ORDER BY pap_code
+FROM
+    view_bp_items
+WHERE
+    division_acronym LIKE '%FAD%' AND year LIKE '2022' AND
+    ((pap_is_active = 1 AND pap_is_deleted = 0)
+      OR (pap_is_active IS NULL OR pap_is_deleted IS NULL))      
+ORDER BY view_bp_items.pap  DESC
+
+SELECT
+   *,
+   MAX(v.class_group),
+   GROUP_CONCAT(COALESCE(v.pyear, 0) ORDER BY v.pyear) AS pyears,
+   MAX(CASE WHEN v.pyear = 1 THEN unexpended_balance ELSE 0 END) AS UB_Y1,
+   MAX(CASE WHEN v.pyear = 1 THEN additional_funding ELSE 0 END) AS AF_Y1,
+   MAX(CASE WHEN v.pyear = 1 THEN total_wquantity ELSE 0 END) AS Y1,
+   MAX(CASE WHEN v.pyear = 1 THEN realignment1 ELSE 0 END) AS R1_Y1,
+   MAX(CASE WHEN v.pyear = 1 THEN realignment2 ELSE 0 END) AS R2_Y1,
+   MAX(CASE WHEN v.pyear = 1 THEN realignment3 ELSE 0 END) AS R3_Y1,
+   MAX(CASE WHEN v.pyear = 1 THEN realignment4 ELSE 0 END) AS R4_Y1,
+   MAX(CASE WHEN v.pyear = 1 THEN realignment5 ELSE 0 END) AS R5_Y1,
+   MAX(CASE WHEN v.pyear = 2 THEN unexpended_balance ELSE 0 END) AS UB_Y2,
+   MAX(CASE WHEN v.pyear = 2 THEN additional_funding ELSE 0 END) AS AF_Y2,
+   MAX(CASE WHEN v.pyear = 2 THEN total_wquantity ELSE 0 END) AS Y2,
+   MAX(CASE WHEN v.pyear = 2 THEN realignment1 ELSE 0 END) AS R1_Y2,
+   MAX(CASE WHEN v.pyear = 2 THEN realignment2 ELSE 0 END) AS R2_Y2,
+   MAX(CASE WHEN v.pyear = 2 THEN realignment3 ELSE 0 END) AS R3_Y2,
+   MAX(CASE WHEN v.pyear = 2 THEN realignment4 ELSE 0 END) AS R4_Y2,
+   MAX(CASE WHEN v.pyear = 2 THEN realignment5 ELSE 0 END) AS R5_Y2,
+   MAX(CASE WHEN v.pyear = 3 THEN unexpended_balance ELSE 0 END) AS UB_Y3,
+   MAX(CASE WHEN v.pyear = 3 THEN additional_funding ELSE 0 END) AS AF_Y3,
+   MAX(CASE WHEN v.pyear = 3 THEN total_wquantity ELSE 0 END) AS Y3,
+   MAX(CASE WHEN v.pyear = 3 THEN realignment1 ELSE 0 END) AS R1_Y3,
+   MAX(CASE WHEN v.pyear = 3 THEN realignment2 ELSE 0 END) AS R2_Y3,
+   MAX(CASE WHEN v.pyear = 3 THEN realignment3 ELSE 0 END) AS R3_Y3,
+   MAX(CASE WHEN v.pyear = 3 THEN realignment4 ELSE 0 END) AS R4_Y3,
+   MAX(CASE WHEN v.pyear = 3 THEN realignment5 ELSE 0 END) AS R5_Y3,
+   MAX(CASE WHEN v.pyear = 4 THEN unexpended_balance ELSE 0 END) AS UB_Y4,
+   MAX(CASE WHEN v.pyear = 4 THEN additional_funding ELSE 0 END) AS AF_Y4,
+   MAX(CASE WHEN v.pyear = 4 THEN total_wquantity ELSE 0 END) AS Y4,
+   MAX(CASE WHEN v.pyear = 4 THEN realignment1 ELSE 0 END) AS R1_Y4,
+   MAX(CASE WHEN v.pyear = 4 THEN realignment2 ELSE 0 END) AS R2_Y4,
+   MAX(CASE WHEN v.pyear = 4 THEN realignment3 ELSE 0 END) AS R3_Y4,
+   MAX(CASE WHEN v.pyear = 4 THEN realignment4 ELSE 0 END) AS R4_Y4,
+   MAX(CASE WHEN v.pyear = 4 THEN realignment5 ELSE 0 END) AS R5_Y4,
+   SUM(total_wquantity) AS gt_approved
+FROM
+   (SELECT * FROM view_lib_items_all
+      WHERE lib_id = '6424' AND project_id = '3135'
+
+   UNION
+   
+   SELECT * FROM  view_lib_items_all
+      WHERE lib_id = '6424' AND project_id = '3135'
+
+   UNION
+   
+   SELECT * FROM  view_lib_items_all
+      WHERE lib_id = '6424' AND project_id = '3135'
+
+   UNION
+
+   SELECT * FROM view_lib_items_all
+      WHERE lib_id = '6424' AND project_id = '3135'
+   
+   UNION
+
+   SELECT * FROM view_lib_items_all
+    WHERE lib_id = '6424' AND project_id = '3135'
+   ) v
+   GROUP BY item_class_id, item_sub_class_id
+   ORDER BY item_class ASC

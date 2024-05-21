@@ -1,0 +1,47 @@
+SELECT
+    dv_date,
+    (CASE WHEN (object_expenditure_id is null) THEN expense_account ELSE NULL END) as expense_account,
+    (CASE WHEN (object_expenditure_id is null) THEN expense_account_code ELSE NULL END) as expense_account_code,
+    (CASE WHEN (object_expenditure_id is not null) THEN object_expenditure ELSE NULL END) as object_expenditure,
+    (CASE WHEN (object_expenditure_id is not null) THEN object_code ELSE NULL END) as object_code,
+    (SELECT sum(net_amount) FROM dv_rs_net dvnet1
+        LEFT JOIN disbursement_vouchers dv1 ON dvnet1.dv_id = dv1.id
+        LEFT JOIN view_rs_pap_total rsp on dvnet1.rs_id=rsp.rs_id
+        LEFT JOIN allotment a1 on rsp.allotment_id=a.id
+        LEFT JOIN library_object_expenditure lib_obj1 on a1.object_expenditure_id=lib_obj1.id
+        LEFT JOIN library_expense_account lib_accnt1 on a1.expense_account_id=lib_accnt1.id
+        where MONTH(dv1.dv_date) IN (1,2,3) and year(dv1.dv_date)=year(dv.dv_date)
+        and lib_obj1.object_code=lib_obj1.object_code
+        and dvnet1.is_active=1 and dvnet1.is_deleted=0) as q1  
+FROM dv_rs_net dvnet
+LEFT JOIN disbursement_vouchers dv ON dvnet.dv_id = dv.id
+LEFT JOIN rs_pap rsp on dvnet.rs_id=rsp.rs_id
+LEFT JOIN allotment a on rsp.allotment_id=a.id
+LEFT JOIN library_object_expenditure lib_obj on a.object_expenditure_id=lib_obj.id
+LEFT JOIN library_expense_account lib_accnt on a.expense_account_id=lib_accnt.id
+WHERE YEAR(dv.dv_date) = 2023 and (dv_no is not null or dv_no !='')
+GROUP BY object_code,expense_account_code
+
+3,059,879,367
+46,220
+3,047,909,646
+
+SELECT
+    a.allotment,
+    c.accttitle,
+    a.dacct,
+    (SELECT SUM(amount) FROM vouchers_dtl X LEFT JOIN vouchers Y ONX.dvid = Y.dvid
+    WHERE dacct = a.dacct AND MONTH(Y.dvdate) IN(1, 2, 3) AND YEAR(Y.dvdate) = YEAR(b.dvdate)) AS dfirst,
+    (SELECT SUM(amount) FROM vouchers_dtl X LEFT JOIN vouchers Y ON X.dvid = Y.dvid
+    WHEREdacct = a.dacct AND MONTH(Y.dvdate) IN(4, 5, 6) AND YEAR(Y.dvdate) = YEAR(b.dvdate)) AS dsecond,
+    (SELECT SUM(amount) FROM vouchers_dtl X LEFT JOIN vouchers Y ONX.dvid = Y.dvid
+    WHERE dacct = a.dacct AND MONTH(Y.dvdate) IN(7, 8, 9) AND YEAR(Y.dvdate) = YEAR(b.dvdate)) AS dthird,
+    (SELECT SUM(amount) FROM vouchers_dtl X LEFT JOIN vouchers Y ON X.dvid = Y.dvid
+    WHERE dacct = a.dacct AND MONTH(Y.dvdate) IN(10, 11, 12) AND YEAR(Y.dvdate) = YEAR(b.dvdate)) AS dfourth
+FROM vouchers_dtl a
+LEFT JOIN vouchers b ON a.dvid = b.dvid
+LEFT JOIN accounts c ON a.dacct = c.acctcode
+WHEREYEAR(b.dvdate) = '$vyear'
+GROUP BY allotment,dacct
+
+1,079,961

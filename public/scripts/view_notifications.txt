@@ -1,0 +1,26 @@
+SELECT
+    noti.id AS id,
+    noti.message AS message,
+    noti.module_id AS module_id,
+    modules.module AS module,
+    modules.link AS link,
+    noti.division_id_from AS division_id_from,
+    noti.division_id_to AS division_id_to,
+    noti.user_id_from AS user_id_from,
+    view_users.fullname AS user_from,
+    noti.user_role_id_to AS user_role_id_to,
+    noti.is_read AS is_read,
+    divi_from.division_acronym AS division_from,
+    divi_to.division_acronym AS division_to,
+    roles.name AS user_role_to,
+    noti.remarks AS remarks,
+    noti.is_active AS is_active,
+    noti.is_deleted AS is_deleted,
+    noti.created_at AS created_at,
+    noti.updated_at AS updated_at
+FROM notifications noti
+JOIN commonlibrariesdb.pcaarrd_divisions divi_from ON noti.division_id_from = divi_from.id
+JOIN commonlibrariesdb.pcaarrd_divisions divi_to ON noti.division_id_to = divi_to.id
+JOIN user_roles roles ON noti.user_role_id_to = roles.id
+JOIN view_users ON noti.user_id_from = view_users.id
+JOIN modules ON noti.module_id = modules.id

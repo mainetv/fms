@@ -1,0 +1,30 @@
+SELECT
+    ada.id,
+    ada_no,
+    ada_date,
+    check_no,    
+    lddap.id as lddap_id,
+    fmsdb.lddap.lddap_date AS lddap_date,
+    fmsdb.lddap.lddap_no AS lddap_no,
+    fmsdb.dv1.rs_no AS rs_no,
+    fmsdb.dv.dv_no AS dv_no,
+    fmsdb.dv1.dv_id AS dv_id,
+    dv.division_acronym as dv_division_acronym,
+    fmsdb.dv.payee AS payee,
+    dv.particulars,
+    fmsdb.dv.total_dv_net_amount AS total_dv_net_amount,
+    fmsdb.lddap.fund_id AS fund_id, 
+    f.fund,   
+    ada.bank_account_id AS bank_account_id,
+    b.bank_account_no AS bank_account_no,
+    bank_acronym,
+    fmsdb.lddap.is_active AS is_active,
+    fmsdb.lddap.is_deleted AS is_deleted
+FROM fmsdb.ada
+LEFT JOIN lddap ON ada.id=lddap.ada_id
+LEFT JOIN fmsdb.view_dvs dv ON fmsdb.lddap.id = fmsdb.dv.lddap_id
+LEFT JOIN fmsdb.view_dv_rs_net dv1 ON fmsdb.dv.id = fmsdb.dv1.dv_id
+LEFT JOIN commonlibrariesdb.funds f ON fmsdb.lddap.fund_id = f.id
+LEFT JOIN view_library_bank_accounts b ON ada.bank_account_id = b.id
+WHERE fmsdb.lddap.payment_mode_id = 1
+GROUP BY fmsdb.dv.id

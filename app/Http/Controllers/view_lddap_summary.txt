@@ -1,0 +1,41 @@
+
+SELECT
+lddap_date,
+lddap.fund_id,
+fund,
+lddap_no,
+nca_no,
+payee,
+total_dv_gross_amount,
+total_dv_net_amount,
+p.bank_account_name as payee_bank_account_name,
+SUM( tax_one + tax_two + tax_twob + tax_three + tax_five + tax_six + wtax + other_tax)  AS total_tax, 
+SUM(liquidated_damages+other_deductions)  AS other_deductions,
+rs_no,
+object_code,
+lddap.is_active,
+lddap.is_deleted
+FROM disbursement_vouchers dv
+LEFT JOIN dv_rs_net dvnet on dv.id=dvnet.dv_id
+LEFT JOIN library_payees p on dv.payee_id=p.id
+LEFT JOIN lddap ON dv.lddap_id=lddap.id
+LEFT JOIN request_status rs on dvnet.rs_id=rs.id
+LEFT JOIN rs_pap rsp on rs.id=rsp.rs_id
+LEFT JOIN allotment a on rsp.allotment_id=a.id
+LEFT JOIN library_object_expenditure obj on a.object_expenditure_id=obj.id
+LEFT JOIN commonlibrariesdb.funds f on lddap.fund_id=f.id
+group by dv.id
+where lddap_date>='2023-06-01' and lddap_date<='2023-06-31' and fund_id=1 order by lddap_date asc, nca_no, payee
+
+(SELECT SUM( tax_one + tax_two + tax_twob + tax_three + tax_five + tax_six + wtax + other_tax) FROM dv_rs_net WHERE dv_id=dv.id and is_active=1 and is_deleted=0) AS total_tax, 
+(SELECT SUM(liquidated_damages+other_deductions) FROM dv_rs_net WHERE dv_id=dv.id and is_active=1 and is_deleted=0) AS other_deductions,
+
+SELECT b.adadate, b.fund, b.adano, b.ncano, payee, dvamount,  
+(SELECT acctname FROM pcaarrd_disb.payees WHERE payeeid=a.payeeid) AS acctname, 
+(SELECT SUM(ONE+two+twob+three+five+six+wtax) FROM vouchers_dtl b WHERE dvid=a.dvid) AS wtax, 
+(SELECT SUM(cdc+pmpc+hdmf+others) FROM vouchers_dtl WHERE dvid=a.dvid) AS otherded,
+(SELECT obrno FROM pcaarrd_acctng.vouchers_dtl g LEFT JOIN pcaarrd_acctng.vouchers h ON g.dvid=h.dvid WHERE g.dvid=a.dvid LIMIT 1) AS orsno, 
+(SELECT dacct FROM pcaarrd_acctng.vouchers_dtl WHERE dvid=a.dvid LIMIT 1) AS dacct 
+FROM vouchers a 
+LEFT JOIN ada b ON a.adaid=b.adaid 
+WHERE b.adadate >= '$fdate' AND b.adadate <= '$tdate' and b.fund='$xfund' ORDER BY adadate, fund, ncano, payee

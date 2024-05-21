@@ -1,0 +1,20 @@
+SELECT
+    bp.id,
+    bp.division_id,
+    bp.year,
+    commonlibrariesdb.pcaarrd_divisions.division_acronym,
+    lib_status.status,
+    bp_status.budget_proposal_status_id,
+    bp_status.status_by_user_id,
+    bp_status.status_by_user_role_id,
+    bp_status.is_active,
+    bp_status.is_deleted
+FROM
+    budget_proposals bp
+INNER JOIN fiscal_year fy ON bp.year = fy.year
+INNER JOIN bp_status ON bp.id = bp_status.budget_proposal_id
+INNER JOIN library_statuses lib_status ON bp_status.budget_proposal_status_id = lib_status.id
+INNER JOIN commonlibrariesdb.pcaarrd_divisions ON bp.division_id = commonlibrariesdb.pcaarrd_divisions.id
+            
+        
+    

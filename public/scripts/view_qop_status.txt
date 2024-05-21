@@ -1,0 +1,40 @@
+SELECT
+    `fmsdb`.`qop_status`.`id` AS `id`,
+    `fmsdb`.`qop_status`.`division_id` AS `division_id`,
+    `fmsdb`.`qop_status`.`year` AS `year`,
+    `commonlibrariesdb`.`pcaarrd_divisions`.`division_acronym` AS `division_acronym`,
+    `lib_status`.`status` AS `status`,
+    `fmsdb`.`qop_status`.`status_id` AS `status_id`,
+    `fmsdb`.`qop_status`.`status_by_user_id` AS `status_by_user_id`,
+    `fmsdb`.`qop_status`.`status_by_user_role_id` AS `status_by_user_role_id`,
+    `fmsdb`.`qop_status`.`is_active` AS `is_active`,
+    `fmsdb`.`qop_status`.`is_deleted` AS `is_deleted`,
+    `fmsdb`.`qop_status`.`created_at` AS `created_at`
+FROM
+    (
+        (
+            (
+                `fmsdb`.`qop_status`
+            LEFT JOIN `fmsdb`.`fiscal_year` `fy`
+            ON
+                (
+                    (
+                        `fmsdb`.`qop_status`.`year` = `fy`.`year`
+                    )
+                )
+            )
+        JOIN `fmsdb`.`library_statuses` `lib_status`
+        ON
+            (
+                (
+                    `fmsdb`.`qop_status`.`status_id` = `lib_status`.`id`
+                )
+            )
+        )
+    JOIN `commonlibrariesdb`.`pcaarrd_divisions` ON
+        (
+            (
+                `fmsdb`.`qop_status`.`division_id` = `commonlibrariesdb`.`pcaarrd_divisions`.`id`
+            )
+        )
+    )

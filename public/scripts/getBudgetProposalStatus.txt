@@ -1,0 +1,17 @@
+SELECT
+    `budget_proposals`.*,
+    divisions.division_acronym,
+    `fiscal_year1`,
+    `fiscal_year2`,
+    `fiscal_year3`,
+    `status_id`,
+    `status`,
+    `bp_status`.`is_active`
+FROM
+    `budget_proposals`
+INNER JOIN `fiscal_year` ON `budget_proposals`.`year` = `fiscal_year`.`year`
+INNER JOIN `bp_status` ON `budget_proposals`.`id` = `bp_status`.`budget_proposal_id`
+INNER JOIN `library_budget_proposal_status` ON `bp_status`.`status_id` = `library_budget_proposal_status`.`id`
+inner join commonlibrariesdb.pcaarrd_divisions divisions ON budget_proposals.division_id=divisions.id
+WHERE
+    `budget_proposals`.`division_id` = 19 AND `budget_proposals`.`year` = 2022 AND `budget_proposals`.`is_active` = 1 AND `budget_proposals`.`is_deleted` = 0 AND `bp_status`.`is_active` = 1;

@@ -1,0 +1,36 @@
+SELECT
+    c.id AS id,
+    c.check_date AS check_date,
+    c.check_no AS check_no,
+    c.dv_id AS dv_id,
+    dv.dv_no AS dv_no,
+    dv.division_acronym AS dv_division_acronym,
+    rs_no,    
+    p.payee AS payee,
+    dv.particulars,
+    SUM(tax_one + tax_two + tax_twob + tax_three + tax_five + tax_six + wtax + other_tax) AS total_tax,   
+    SUM(liquidated_damages + other_deductions) AS other_deductions,   
+    total_dv_net_amount AS total_dv_net_amount,
+    banks.id AS bank_account_id,
+    banks.bank_account_no AS bank_account_no,
+    f.fund AS fund,
+    c.fund_id,
+    c.date_released AS date_released,
+    c.is_active AS is_active,
+    c.is_deleted AS is_deleted
+FROM checks c
+LEFT JOIN view_dvs dv on c.dv_id=dv.id
+LEFT JOIN view_dv_rs_net dvnet on dv.id=dvnet.dv_id
+LEFT JOIN library_payees p on dv.payee_id=p.id
+LEFT JOIN library_bank_accounts banks ON c.bank_account_id = banks.id
+LEFT JOIN commonlibrariesdb.funds f  ON dv.fund_id = f.id
+where dvnet.is_active=1 and dvnet.is_deleted=0 and c.is_active=1 and c.is_deleted=0
+group by c.id
+
+
+SELECT check_date,c.id as check_id,bank_account_id,b.bank_account_no,dv_id,dv_no, payee, total_dv_net_amount, date_released FROM disbursement_vouchers dv
+LEFT JOIN library_payees p on dv.payee_id=p.id
+LEFT JOIN checks on dv.id=c.dv_id
+LEFT JOIN library_bank_accounts b on bank_account_id=b.id
+where c.is_active=1 and c.is_deleted=0
+

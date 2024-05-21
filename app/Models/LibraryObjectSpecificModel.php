@@ -1,0 +1,21 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Contracts\Auditable;
+
+class LibraryObjectSpecificModel extends Model implements Auditable
+{
+    use HasFactory;
+   use \OwenIt\Auditing\Auditable;
+    public $fillable = [		 
+		'object_specific', 
+		'object_expenditure_id',
+		'tags', 
+		'is_active', 
+		'is_deleted'
+	];
+	protected $table = 'library_object_specific';
+}

@@ -1,0 +1,4 @@
+TRUNCATE TABLE budget_proposals ;
+TRUNCATE TABLE fiscal_year;
+TRUNCATE TABLE bp_status;
+TRUNCATE TABLE notifications;

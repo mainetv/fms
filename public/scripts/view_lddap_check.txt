@@ -1,0 +1,201 @@
+SELECT
+    payee, 
+    rs.rs_type_id,
+    (CASE WHEN(rs.rs_date IS NULL) THEN rs.rs_date ELSE rs.rs_date END) as rs_date,
+    rs_no, 
+    lddap_date as date,
+    CONCAT('ADA: ', lddap_no) as ref_no, 
+    rs.division_id, 
+    divs.division_acronym, 
+    pap_code,
+    object_code,
+    object_expenditure,
+    SUM( tax_one + tax_two + tax_twob + tax_three + tax_five + tax_six + wtax+other_tax) AS total_tax,    
+    liquidated_damages,
+    other_deductions,
+    total_dv_gross_amount,
+    total_dv_net_amount,
+    SUM(rs_pap.amount) AS total_rs_amount,
+    lddap.fund_id as fund_id,
+    lddap.is_active,
+lddap.is_deleted,
+lddap.created_at,
+lddap.updated_at
+FROM disbursement_vouchers dv
+LEFT JOIN dv_rs_net dvnet ON dv.id = dvnet.dv_id
+LEFT JOIN lddap ON dv.lddap_id = lddap.id
+LEFT JOIN request_status rs ON dvnet.rs_id = rs.id
+LEFT JOIN rs_pap ON rs.id = rs_pap.rs_id
+LEFT JOIN commonlibrariesdb.pcaarrd_divisions divs ON rs.division_id = divs.id
+LEFT JOIN allotment allot ON rs_pap.allotment_id = allot.id
+LEFT JOIN library_pap lib_pap ON allot.pap_id = lib_pap.id
+LEFT JOIN library_object_expenditure lib_exp ON allot.object_expenditure_id = lib_exp.id
+LEFT JOIN library_payees p ON dv.payee_id=p.id
+where payment_mode_id=1
+GROUP BY rs.id, pap_code, object_code
+UNION
+
+SELECT 
+payee, 
+rs.rs_type_id,
+(CASE WHEN(rs.rs_date IS NULL) THEN rs.rs_date ELSE rs.rs_date END) as rs_date,
+rs_no, 
+check_date as date,
+CONCAT('CHK: ',check_no) as ref_no, 
+rs.division_id, 
+divs.division_acronym,
+pap_code,
+object_code, 
+object_expenditure,
+SUM( tax_one + tax_two + tax_twob + tax_three + tax_five + tax_six + wtax + other_tax) AS total_tax,   
+    liquidated_damages,
+    other_deductions,
+    total_dv_gross_amount,
+    total_dv_net_amount,
+SUM(rs_pap.amount) AS total_rs_amount,
+checks.fund_id as fund_id,
+checks.is_active,
+checks.is_deleted,
+checks.created_at,
+checks.updated_at
+FROM disbursement_vouchers dv
+LEFT JOIN checks ON dv.id=checks.dv_id
+LEFT JOIN dv_rs_net dvnet ON dv.id = dvnet.dv_id
+LEFT JOIN request_status rs ON dvnet.rs_id = rs.id
+LEFT JOIN rs_pap ON rs.id = rs_pap.rs_id
+LEFT JOIN commonlibrariesdb.pcaarrd_divisions divs ON rs.division_id = divs.id
+LEFT JOIN allotment allot ON rs_pap.allotment_id = allot.id
+LEFT JOIN library_pap lib_pap ON allot.pap_id = lib_pap.id
+LEFT JOIN library_object_expenditure lib_exp ON allot.object_expenditure_id = lib_exp.id
+LEFT JOIN library_payees p ON dv.payee_id=p.id
+GROUP BY rs.id, pap_code, object_code
+
+
+
+SELECT (SELECT acctdesc FROM pcaarrd_disb.chart_acct WHERE acctid=e.acctid) AS acctdesc, c.payee, d.orsdate, b.adadate AS DATE,
+     e.papcode, acctcode, orsno, f.unitcode, (select SUM(one+two+twob+three+five+six+wtax) from vouchers_dtl where dvid=a.dvid) AS wtax, 
+     (select SUM(cdc+pmpc+hdmf+others) from vouchers_dtl where dvid=a.dvid) as others, SUM(e.amount) AS amount, CONCAT('ADA: ',adano) AS refno 
+     FROM pcaarrd_acctng.vouchers a
+      LEFT JOIN pcaarrd_acctng.ada b ON a.adaid=b.adaid 
+     LEFT JOIN pcaarrd_disb.vouchers c ON a.disbdvid=c.dvid 
+     LEFT JOIN pcaarrd_disb.ors_hdr d ON c.orsid=d.orsid 
+     LEFT JOIN pcaarrd_disb.ors_pap e ON d.orsid=e.orsid 
+     LEFT JOIN pcaarrd_acctng.units f ON e.unitid=f.unitid 
+      WHERE b.adadate >= '$fdate' AND b.adadate <= '$tdate' AND b.adadate IS NOT NULL GROUP BY d.orsid, e.papcode, acctcode  
+
+
+
+
+*sample query
+WHERE date >= '2023-06-01' AND date <= '2023-06-01' AND date IS NOT NULL
+ORDER BY date, payee
+
+
+
+SELECT
+    check_date as date,
+    CONCAT('CHK:',check_no) AS refno,
+    payee,
+    total_dv_net_amount,
+    (SELECT  SUM(tax_one + tax_two + tax_twob + tax_three + tax_five + tax_six + wtax + other_tax) FROM dv_rs_net 
+    WHERE        dv_id = dv.id) AS deduction,
+total_rs_pap_amount,
+rs_no,
+c.fund_id as fund_id
+FROM    checks c
+LEFT JOIN view_dvs  dv ON    c.dv_id = dv.id
+LEFT JOIN view_dv_rs_net dv1 ON    dv.id = dv1.dv_id
+
+UNION
+
+SELECT
+    lddap.lddap_date AS date,
+    CONCAT('ADA:', lddap.lddap_no) AS refno,
+    payee,
+    total_dv_net_amount,
+    (SELECT  SUM(tax_one + tax_two + tax_twob + tax_three + tax_five + tax_six + wtax + other_tax) FROM dv_rs_net 
+    WHERE        dv_id = dv.id) AS deduction,
+total_rs_pap_amount,
+rs_no,
+lddap.fund_id as fund_id
+FROM   lddap
+LEFT JOIN view_dvs dv ON     lddap.id = dv.lddap_id
+LEFT JOIN view_dv_rs_net dv1 ON    dv.id = dv1.dv_id
+
+
+WHERE  check_date >= '2023-06-01' AND check_date <= '2023-06-03' AND c.fund_id = '1'
+
+WHERE  lddap.lddap_date >= '2023-06-01' AND lddap.lddap_date <= '2023-06-03' AND lddap.fund_id = '1'
+
+
+SELECT
+    a.date,
+    CONCAT('CHK:', a.checkno) AS refno,
+    a.payee,
+    b.dvamount,
+    c.amount,
+    (SELECT  SUM(ONE + two + twob + three + five + six + wtax + cdc + pmpc + hdmf + others)FROM pcaarrd_acctng.vouchers_dtl
+    WHERE        dvid = b.dvid) AS deduction,
+a.credit AS cashamt,
+c.obrno
+FROM    pcaarrd_cash.checks a
+LEFT JOIN pcaarrd_acctng.vouchers b ON    a.dvid = b.dvid
+LEFT JOIN pcaarrd_acctng.vouchers_dtl c ON    b.dvid = c.dvid
+WHERE    YEAR(b.dvdate) > 2014 AND a.date >= '2023-06-01' AND a.date <= '2023-06-03' AND c.fundcode = '101'
+UNION
+SELECT
+    a.date,
+    CONCAT(        'CAS:',        CONCAT(YEAR(a.date),        '-',        a.recid)    ) AS refno,
+	 a.payee,
+    b.dvamount,
+    c.amount,
+    (    SELECT        SUM(            ONE + two + twob + three + five + six + wtax + cdc + pmpc + hdmf + others        )
+    FROM        pcaarrd_acctng.vouchers_dtl    WHERE        dvid = b.dvid) AS deduction,
+a.credit AS cashamt,
+c.obrno
+FROM   pcaarrd_cash.cash a
+LEFT JOIN pcaarrd_acctng.vouchers b ON    a.dvno = b.dvno
+LEFT JOIN pcaarrd_acctng.vouchers_dtl c ON    b.dvid = c.dvid
+WHERE    YEAR(b.dvdate) > 2014 AND a.date >= '2023-06-01' AND a.date <= '2023-06-03' AND c.fundcode = '101'
+
+UNION
+
+SELECT
+    a.adadate AS DATE,
+    CONCAT('ADA:', a.adano) AS refno,
+    b.payee,
+    b.dvamount,
+    c.amount,
+    (   SELECT        SUM(            ONE + two + twob + three + five + six + wtax + cdc + pmpc + hdmf + others        )   
+	  FROM        pcaarrd_acctng.vouchers_dtl    WHERE        dvid = b.dvid) AS deduction,
+c.amount AS cashamt,
+c.obrno
+FROM    pcaarrd_acctng.ada a
+LEFT JOIN pcaarrd_acctng.vouchers b ON     a.adaid = b.adaid
+LEFT JOIN pcaarrd_acctng.vouchers_dtl c ON    b.dvid = c.dvid
+WHERE    YEAR(b.dvdate) > 2014 AND a.adadate >= '2023-06-01' AND a.adadate <= '2023-06-03' AND c.fundcode = '101'
+
+
+SELECT (SELECT acctdesc FROM pcaarrd_disb.chart_acct WHERE acctid=e.acctid) AS acctdesc, c.payee, d.orsdate, b.adadate AS DATE,
+     e.papcode, acctcode, orsno, f.unitcode, (select SUM(one+two+twob+three+five+six+wtax) from vouchers_dtl where dvid=a.dvid) AS wtax, 
+     (select SUM(cdc+pmpc+hdmf+others) from vouchers_dtl where dvid=a.dvid) as others, SUM(e.amount) AS amount, CONCAT('ADA: ',adano) AS refno 
+     FROM pcaarrd_acctng.vouchers a
+      LEFT JOIN pcaarrd_acctng.ada b ON a.adaid=b.adaid 
+     LEFT JOIN pcaarrd_disb.vouchers c ON a.disbdvid=c.dvid 
+     LEFT JOIN pcaarrd_disb.ors_hdr d ON c.orsid=d.orsid 
+     LEFT JOIN pcaarrd_disb.ors_pap e ON d.orsid=e.orsid 
+     LEFT JOIN pcaarrd_acctng.units f ON e.unitid=f.unitid 
+      WHERE b.adadate >= '$fdate' AND b.adadate <= '$tdate' AND b.adadate IS NOT NULL GROUP BY d.orsid, e.papcode, acctcode  
+      UNION 
+    SELECT (SELECT acctdesc FROM pcaarrd_disb.chart_acct WHERE acctid=e.acctid) AS acctdesc, 
+    c.payee, d.orsdate, b.date, e.papcode, acctcode, orsno, f.unitcode, 
+    (select SUM(one+two+twob+three+five+six+wtax) from vouchers_dtl where dvid=a.dvid) AS wtax, 
+    (select SUM(cdc+pmpc+hdmf+others) from vouchers_dtl where dvid=a.dvid) as others, b.credit AS amount, 
+    CONCAT('CHK: ',b.checkno) AS refno 
+    FROM pcaarrd_acctng.vouchers a 
+    LEFT JOIN pcaarrd_cash.checks b ON a.dvid=b.dvid 
+    LEFT JOIN pcaarrd_disb.vouchers c ON a.disbdvid=c.dvid 
+    EFT JOIN pcaarrd_disb.ors_hdr d ON c.orsid=d.orsid 
+    LEFT JOIN pcaarrd_disb.ors_pap e ON d.orsid=e.orsid 
+    LEFT JOIN pcaarrd_acctng.units f ON e.unitid=f.unitid 
+    WHERE b.date >= '$fdate' AND b.date <= '$tdate' AND b.date IS NOT NULL GROUP BY d.orsid, e.papcode, acctcode ORDER BY DATE, payee

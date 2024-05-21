@@ -1,0 +1,111 @@
+
+
+SELECT
+    dv.id AS id,    
+    dv.dv_no AS dv_no,
+    (CASE WHEN(dv.dv_date1 IS NULL) THEN dv.dv_date ELSE dv.dv_date1 END) as dv_date,
+    dv.division_id AS dv_division_id,
+    divi.division_acronym AS dv_division_acronym,
+    dv.fund_id AS fund_id,
+    fund,
+    rs.id as rs_id,
+    (CASE WHEN(rs.rs_date IS NULL) THEN rs.rs_date ELSE rs.rs_date END) as rs_date,
+    rs_no,
+    rs.division_id AS rs_division_id,
+    divi1.division_acronym AS rs_division_acronym,
+    rs.total_rs_pap_amount,
+    pap_code,
+    activity,
+    subactivity,    
+    expense_account,    
+    object_expenditure,
+    expense_account_code,
+    object_code,    
+    (CASE WHEN(object_expenditure IS NULL) THEN expense_account ELSE object_expenditure END) AS accnt_obj,
+    (CASE WHEN(object_expenditure IS NULL) THEN expense_account_code ELSE object_code END) AS accnt_obj_code,
+    lddap.id as lddap_id,
+    lddap_no as lddap_check_no,
+    lddap_date as  lddap_check_date,
+    ada.id as ada_check_id,
+    ada_no as ada_check_no,
+    ada_date as ada_check_date,
+    date_transferred as date_transferred,
+    dv.payee_id AS payee_id,
+    payees.parent_id as payee_parent_id,
+    payee, 
+    dv.particulars AS particulars,
+    dv.total_dv_gross_amount as total_dv_gross_amount,
+    dv.total_dv_net_amount as total_dv_net_amount,    
+    dv.is_active AS is_active,
+    dv.is_deleted AS is_deleted,
+    dv.created_at AS created_at,
+    dv.updated_at AS updated_at
+FROM disbursement_vouchers dv
+LEFT JOIN dv_rs on dv.id=dv_rs.dv_id
+LEFT JOIN commonlibrariesdb.pcaarrd_divisions divi ON dv.division_id = divi.id
+LEFT JOIN commonlibrariesdb.funds ON  dv.fund_id = commonlibrariesdb.funds.id
+LEFT JOIN view_library_payees payees ON dv.payee_id = payees.id
+LEFT JOIN request_status rs ON dv_rs.rs_id=rs.id
+LEFT JOIN rs_pap rsp on dv_rs.rs_id=rsp.rs_id
+LEFT JOIN commonlibrariesdb.pcaarrd_divisions divi1 ON rs.division_id = divi1.id
+LEFT JOIN view_allotment a on rsp.allotment_id=a.id
+LEFT JOIN lddap ON dv.lddap_id = lddap.id
+LEFT JOIN ada ON lddap.ada_id=ada.id
+WHERE dv.check_id is null
+GROUP BY dv.id
+
+UNION
+
+SELECT
+    dv.id AS id,    
+    dv.dv_no AS dv_no,
+    (CASE WHEN(dv.dv_date1 IS NULL) THEN dv.dv_date ELSE dv.dv_date1 END) as dv_date,
+    dv.division_id AS division_id,
+    divi.division_acronym AS division_acronym,
+    dv.fund_id AS fund_id,
+    fund,
+    rs.id as rs_id,
+    (CASE WHEN(rs.rs_date IS NULL) THEN rs.rs_date ELSE rs.rs_date END) as rs_date,
+    rs_no,
+    rs.division_id AS rs_division_id,
+    divi1.division_acronym AS rs_division_acronym,
+    rs.total_rs_pap_amount,
+    pap_code,
+    activity,
+    subactivity,    
+    expense_account,    
+    object_expenditure,
+    expense_account_code,
+    object_code,
+    (CASE WHEN(object_expenditure IS NULL) THEN expense_account ELSE object_expenditure END) AS accnt_obj,
+    (CASE WHEN(object_expenditure IS NULL) THEN expense_account_code ELSE object_code END) AS accnt_obj_code,
+    c.id as lddap_id,
+    c.check_no as lddap_check_no,
+    c.check_date as lddap_check_date,
+    c.id as ada_check_id,
+    c.check_no as ada_check_no,
+    c.check_date as ada_check_date,
+    c.date_released as date_transferred,
+    dv.payee_id AS payee_id,
+    payees.parent_id as payee_parent_id,
+    payee, 
+    dv.particulars AS particulars,
+    dv.total_dv_gross_amount as total_dv_gross_amount,
+    dv.total_dv_net_amount as total_dv_net_amount,   
+    dv.is_active AS is_active,
+    dv.is_deleted AS is_deleted,
+    dv.created_at AS created_at,
+    dv.updated_at AS updated_at
+FROM disbursement_vouchers dv
+LEFT JOIN dv_rs on dv.id=dv_rs.dv_id
+LEFT JOIN commonlibrariesdb.pcaarrd_divisions divi ON dv.division_id = divi.id
+LEFT JOIN commonlibrariesdb.funds ON  dv.fund_id = commonlibrariesdb.funds.id
+LEFT JOIN view_library_payees payees ON dv.payee_id = payees.id
+LEFT JOIN request_status rs ON dv_rs.rs_id=rs.id
+LEFT JOIN rs_pap rsp on dv_rs.rs_id=rsp.rs_id
+LEFT JOIN commonlibrariesdb.pcaarrd_divisions divi1 ON rs.division_id = divi1.id
+LEFT JOIN view_allotment a on rsp.allotment_id=a.id
+LEFT JOIN checks c ON dv.id=c.dv_id
+WHERE dv.lddap_id is null
+GROUP BY dv.id
+

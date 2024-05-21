@@ -1,0 +1,96 @@
+SELECT
+    dv.id AS dv_id,
+    dv.dv_no AS dv_no,
+    dv.division_acronym as dv_division_acronym,
+    f.fund AS fund,
+    lddap.fund_id,    
+    ada.id AS ada_id,
+    lddap.lddap_date as lddap_check_date,
+    lddap.lddap_no as lddap_check_no,
+    lddap.id AS lddap_id,
+    lddap.payment_mode_id,
+    ada.ada_date as ada_check_date,
+    ada_no as ada_check_no,    
+    dv.payee_id,  
+    dv.payee AS payee,  
+    SUM(tax_one) AS tax_one,
+    SUM(tax_two) AS tax_two,
+    SUM(tax_twob) AS tax_twob,
+    SUM(tax_three) AS tax_three,
+    SUM(tax_four) AS tax_four,
+    SUM(tax_five) AS tax_five,
+    SUM(tax_six) AS tax_six,
+    SUM(wtax) AS wtax,
+    SUM(other_tax) AS other_tax,
+    SUM(liquidated_damages) AS liquidated_damages,
+    SUM(other_deductions) AS other_deductions,
+    SUM(tax_one + tax_two + tax_twob + tax_three + tax_five + tax_six + wtax + other_tax) AS total_tax,   
+    SUM(liquidated_damages + other_deductions) AS total_other_deductions,    
+    SUM(dv.total_dv_gross_amount) AS total_dv_gross_amount,
+    SUM(dv.total_dv_net_amount) AS total_dv_net_amount,
+    dv.is_active AS is_active,
+    dv.is_deleted AS is_deleted
+FROM ada_lddap
+LEFT JOIN ada ON ada_lddap.ada_id=ada.id
+LEFT JOIN lddap_dv ON ada_lddap.lddap_id=lddap_dv.lddap_id
+LEFT JOIN lddap ON lddap_dv.lddap_id = lddap.id
+LEFT JOIN view_dvs dv ON lddap_dv.dv_id = dv.id
+LEFT JOIN dv_rs_net dvnet ON dv.id=dvnet.dv_id
+LEFT JOIN request_status rs ON dvnet.rs_id=rs.id
+LEFT JOIN rs_pap rsp ON rs.id=rsp.rs_id
+LEFT JOIN view_allotment a on rsp.allotment_id=a.id
+LEFT JOIN commonlibrariesdb.pcaarrd_divisions divi ON rs.division_id=divi.id
+LEFT JOIN commonlibrariesdb.funds f ON lddap.fund_id = f.id
+LEFT JOIN view_library_bank_accounts b ON ada.bank_account_id = b.id
+WHERE lddap.payment_mode_id = 1 and lddap_dv.is_active = 1 AND lddap_dv.is_deleted = 0
+and ada_lddap.is_active=1 and ada_lddap.is_deleted=0 and dvnet.is_active=1 and dvnet.is_deleted=0
+group by dv.payee_id
+
+UNION
+
+SELECT
+    c.dv_id AS dv_id,
+    dv.dv_no AS dv_no,    
+    dv.division_acronym AS dv_division_acronym,
+    f.fund AS fund,
+    dv.fund_id,  
+    c.id AS id,
+    c.check_date AS lddap_check_date,
+    c.check_no AS lddap_check_no,
+    NULL AS lddap_id,
+    '2' as payment_mode_id,
+    c.check_date AS ada_check_date,
+    c.check_no AS ada_check_no,     
+    dv.payee_id,      
+    p.payee AS payee,
+    SUM(tax_one) AS tax_one,
+    SUM(tax_two) AS tax_two,
+    SUM(tax_twob) AS tax_twob,
+    SUM(tax_three) AS tax_three,
+    SUM(tax_four) AS tax_four,
+    SUM(tax_five) AS tax_five,
+    SUM(tax_six) AS tax_six,
+    SUM(wtax) AS wtax,
+    SUM(other_tax) AS other_tax,
+    SUM(liquidated_damages) AS liquidated_damages,
+    SUM(dvnet.other_deductions) AS other_deductions,
+    SUM(tax_one + tax_two + tax_twob + tax_three + tax_five + tax_six + wtax + other_tax) AS total_tax,   
+    SUM(dvnet.liquidated_damages + dvnet.other_deductions) AS total_other_deductions,   
+    SUM(dv.total_dv_gross_amount) AS total_dv_gross_amount,
+    SUM(dv.total_dv_net_amount) AS total_dv_net_amount,
+    c.is_active AS is_active,
+    c.is_deleted AS is_deleted
+FROM checks c
+LEFT JOIN view_dvs dv ON c.dv_id = dv.id
+LEFT JOIN dv_rs_net dvnet ON dv.id=dvnet.dv_id
+LEFT JOIN request_status rs ON dvnet.rs_id=rs.id
+LEFT JOIN rs_pap rsp ON rs.id=rsp.rs_id
+LEFT JOIN view_allotment a on rsp.allotment_id=a.id
+LEFT JOIN commonlibrariesdb.pcaarrd_divisions divi ON rs.division_id=divi.id
+LEFT JOIN library_payees p on dv.payee_id=p.id
+LEFT JOIN library_bank_accounts banks ON c.bank_account_id = banks.id
+LEFT JOIN commonlibrariesdb.funds f  ON dv.fund_id = f.id
+where dvnet.is_active=1 and dvnet.is_deleted=0 and c.is_active=1 and c.is_deleted=0
+group by dv.payee_id
+
+and c.check_date>='2023-08-01' and c.check_date<='2023-08-29' and c.check_date is not null

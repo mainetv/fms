@@ -1,0 +1,29 @@
+SELECT
+    lddap_dv.id AS id,
+    dv.id AS dv_id,
+    lddap.id AS lddap_id,
+    dv.dv_no AS dv_no,
+    dv.dv_date1 AS dv_date,
+    dv.payee AS payee,
+    dv.payee_id AS payee_id,
+    payee_parent_id,   
+    dv.payee_bank,
+    dv.payee_bank_acronym,
+    dv.payee_bank_short_name,
+    dv.payee_bank_branch,
+    dv.payee_bank_account_name,
+    dv.payee_bank_account_name1,
+    dv.payee_bank_account_name2,
+    dv.payee_bank_account_no,
+    dv.for_remit AS for_remit,
+    dv.bg_color AS bg_color,
+    dv.total_dv_gross_amount AS total_dv_gross_amount,
+    dv.total_dv_net_amount AS total_dv_net_amount,
+    lddap_dv.is_active AS is_active,
+    lddap_dv.is_deleted AS is_deleted,
+    lddap_dv.created_at AS created_at,
+    lddap_dv.updated_at AS updated_at
+FROM lddap_dv
+LEFT JOIN lddap ON lddap_dv.lddap_id = lddap.id
+LEFT JOIN view_dvs dv ON lddap_dv.dv_id = dv.id
+WHERE lddap.payment_mode_id = 1 

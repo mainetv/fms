@@ -1,0 +1,106 @@
+SELECT
+    a.id AS id,
+    a.division_id AS division_id,
+    divi.division_acronym AS division_acronym,
+    a.year AS year,
+    a.rs_type_id AS rs_type_id,
+    lib_pap.pap AS pap,
+    lib_act.activity AS activity,
+    lib_subact.subactivity AS subactivity,
+    lib_exp_accnt.expense_account AS expense_account,
+    lib_obj_exp.object_expenditure AS object_expenditure,
+    lib_obj_exp.object_code AS object_code,
+    lib_obj_spe.object_specific AS object_specific,
+    CONCAT(lib_pap.pap_code, ' - ', lib_pap.pap) AS pap_all,
+    CONCAT(lib_act.activity,(CASE WHEN(lib_subact.subactivity IS NULL) THEN '' ELSE CONCAT(' - ', lib_subact.subactivity)END)) AS activity_subactivity,
+    CONCAT(a.year,': ',lib_act.activity,(CASE WHEN(lib_subact.subactivity IS NULL) THEN '' ELSE CONCAT(' - ', lib_subact.subactivity) END)) AS year_activity_subactivity,
+    CONCAT(lib_pap.pap_code,' - ',lib_act.activity) AS pap_activity,
+    CONCAT(lib_obj_exp.object_code,': ',(CASE WHEN(lib_obj_spe.object_specific IS NULL) THEN lib_obj_exp.object_expenditure ELSE lib_obj_spe.object_specific END)) AS code_expenditure_specific,
+    CONCAT(lib_act.activity,
+        (CASE WHEN(lib_subact.subactivity IS NULL) THEN '' ELSE CONCAT(' - ', lib_subact.subactivity) END),(
+        CASE WHEN(lib_obj_spe.object_specific IS NULL) THEN '' ELSE CONCAT(' - ',lib_obj_spe.object_specific) END)) AS activity_subactivity_specific,
+    CONCAT(divi.division_acronym,': ',lib_act.activity,
+        (CASE WHEN(lib_subact.subactivity IS NULL) THEN '' ELSE CONCAT(' - ', lib_subact.subactivity) END),
+        (CASE WHEN(lib_obj_spe.object_specific IS NULL) THEN '' ELSE CONCAT(' - ',lib_obj_spe.object_specific) END)) AS division_activity_subactivity_specific,
+    CONCAT(lib_act.activity,' - ',
+        (CASE WHEN(lib_subact.subactivity IS NULL) THEN '' ELSE CONCAT(lib_subact.subactivity, ' - ') END),
+        (CASE WHEN(lib_obj_spe.object_specific IS NULL) THEN lib_obj_exp.object_expenditure ELSE lib_obj_spe.object_specific END)) AS activity_subactivity_expenditure_specific,
+    CONCAT((CASE WHEN(lib_subact.subactivity IS NULL) THEN '' ELSE CONCAT(lib_subact.subactivity, ' - ') END),lib_obj_exp.object_code,': ',
+        (CASE WHEN(lib_obj_spe.object_specific IS NULL) THEN lib_obj_exp.object_expenditure ELSE lib_obj_spe.object_specific END)) AS subactivity_code_expenditure_specific,
+    divi.parent_id AS parent_division_id,
+    divi.cluster_id AS cluster_id,
+    a.allotment_fund_id AS allotment_fund_id,
+    afund.fund_code AS fund_code,
+    a.pap_id AS pap_id,
+    a.activity_id AS activity_id,
+    a.subactivity_id AS subactivity_id,
+    lib_aclass.id AS allotment_class_id,
+    a.expense_account_id AS expense_account_id,
+    a.object_expenditure_id AS object_expenditure_id,
+    a.object_specific_id AS object_specific_id,
+    divi_pooled.id AS pooled_at_division_id,
+    divi_pooled.parent_id AS parent_pooled_at_division_id,
+    divi_pooled.cluster_id AS cluster_id_pooled_at_division_id,
+    rs_types.request_status_type AS rs_type,
+    lib_pap.pap_code AS pap_code,
+    lib_aclass.allotment_class AS allotment_class,
+    lib_aclass.allotment_class_number AS allotment_class_number,
+    lib_aclass.allotment_class_acronym AS allotment_class_acronym,
+    lib_exp_accnt.expense_account_code AS expense_account_code,
+    divi_pooled.division_acronym AS pooled_at_division_acronym,
+    a.q1_allotment AS q1_allotment,
+    a.q2_allotment AS q2_allotment,
+    a.q3_allotment AS q3_allotment,
+    a.q4_allotment AS q4_allotment,
+    (SELECT sum(view_adjustment.q1_adjustment) FROM view_adjustment WHERE view_adjustment.allotment_id=a.id
+        and view_adjustment.is_active=1 and view_adjustment.is_deleted=0) as q1_adjustment,
+    (SELECT sum(view_adjustment.q2_adjustment) FROM view_adjustment WHERE view_adjustment.allotment_id=a.id
+        and view_adjustment.is_active=1 and view_adjustment.is_deleted=0) as q2_adjustment,
+    (SELECT sum(view_adjustment.q3_adjustment) FROM view_adjustment WHERE view_adjustment.allotment_id=a.id
+        and view_adjustment.is_active=1 and view_adjustment.is_deleted=0) as q3_adjustment,
+    (SELECT sum(view_adjustment.q4_adjustment) FROM view_adjustment WHERE view_adjustment.allotment_id=a.id
+        and view_adjustment.is_active=1 and view_adjustment.is_deleted=0) as q4_adjustment,
+    (SELECT sum(amount) FROM rs_pap LEFT JOIN request_status rs ON rs_pap.rs_id=rs.id 
+        WHERE ((MONTH(rs_date) IN(1, 2, 3) and notice_adjustment_date is null) or (MONTH(notice_adjustment_date) IN(1, 2, 3)))
+         and YEAR(rs_date)=a.year and rs_pap.allotment_id=a.id and rs.rs_type_id=a.rs_type_id
+        and rs_pap.is_active=1 and rs_pap.is_deleted=0) as q1_obligation,
+    (SELECT sum(amount) FROM rs_pap LEFT JOIN request_status rs ON rs_pap.rs_id=rs.id 
+        WHERE ((MONTH(rs_date) IN(4, 5, 6) and notice_adjustment_date is null) or (MONTH(notice_adjustment_date) IN(4, 5, 6)))
+         and YEAR(rs_date)=a.year and rs_pap.allotment_id=a.id and rs.rs_type_id=a.rs_type_id
+        and rs_pap.is_active=1 and rs_pap.is_deleted=0) as q2_obligation,
+    (SELECT sum(amount) FROM rs_pap LEFT JOIN request_status rs ON rs_pap.rs_id=rs.id 
+        WHERE ((MONTH(rs_date) IN(7, 8, 9) and notice_adjustment_date is null) or (MONTH(notice_adjustment_date) IN(7, 8, 9)))
+         and YEAR(rs_date)=a.year and rs_pap.allotment_id=a.id and rs.rs_type_id=a.rs_type_id
+        and rs_pap.is_active=1 and rs_pap.is_deleted=0) as q3_obligation,
+    (SELECT sum(amount) FROM rs_pap LEFT JOIN request_status rs ON rs_pap.rs_id=rs.id 
+        WHERE ((MONTH(rs_date) IN(10, 11, 12) and notice_adjustment_date is null) or (MONTH(notice_adjustment_date) IN(10, 11, 12)))
+         and YEAR(rs_date)=a.year and rs_pap.allotment_id=a.id and rs.rs_type_id=a.rs_type_id
+        and rs_pap.is_active=1 and rs_pap.is_deleted=0) as q4_obligation,
+    (SELECT sum(amount) FROM rs_pap LEFT JOIN request_status rs ON rs_pap.rs_id=rs.id 
+        WHERE rs_pap.allotment_id=a.id and rs.rs_type_id=a.rs_type_id
+        and rs_pap.is_active=1 and rs_pap.is_deleted=0) as total_obligation,  
+        (SELECT sum(amount) FROM rs_pap LEFT JOIN request_status rs ON rs_pap.rs_id=rs.id 
+        WHERE ((MONTH(rs_date) IN(1, 2, 3, 4, 5, 6, 7) and notice_adjustment_date is null) or (MONTH(notice_adjustment_date) IN(1, 2, 3, 4, 5, 6, 7)))
+         and YEAR(rs_date)=a.year and rs_pap.allotment_id=a.id and rs.rs_type_id=a.rs_type_id
+        and rs_pap.is_active=1 and rs_pap.is_deleted=0) as july_obligation,      
+    a.q1_nca AS q1_nca,
+    a.q2_nca AS q2_nca,
+    a.q3_nca AS q3_nca,
+    a.q4_nca AS q4_nca,
+    a.is_active AS is_active,
+    a.is_deleted AS is_deleted,
+    a.created_at AS created_at,
+    a.updated_at AS updated_at
+FROM allotment a
+LEFT JOIN commonlibrariesdb.request_status_types rs_types ON a.rs_type_id = rs_types.id
+LEFT JOIN commonlibrariesdb.allotment_fund afund ON a.allotment_fund_id = afund.id
+LEFT JOIN commonlibrariesdb.pcaarrd_divisions divi ON a.division_id = divi.id
+LEFT JOIN commonlibrariesdb.pcaarrd_divisions divi_pooled ON a.pooled_at_division_id = divi_pooled.id
+LEFT JOIN fiscal_year fy ON a.year = fy.year
+LEFT JOIN library_pap lib_pap ON a.pap_id = lib_pap.id
+LEFT JOIN library_activity lib_act ON a.activity_id = lib_act.id
+LEFT JOIN library_subactivity lib_subact ON a.subactivity_id = lib_subact.id
+LEFT JOIN library_expense_account lib_exp_accnt ON a.expense_account_id = lib_exp_accnt.id
+LEFT JOIN library_object_expenditure lib_obj_exp ON a.object_expenditure_id = lib_obj_exp.id
+LEFT JOIN library_allotment_class lib_aclass ON lib_obj_exp.allotment_class_id = lib_aclass.id
+LEFT JOIN library_object_specific lib_obj_spe ON a.object_specific_id = lib_obj_spe.id

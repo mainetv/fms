@@ -1,0 +1,35 @@
+SELECT
+    division_acronym,
+    cluster_id,    
+    pap,
+    activity,
+    subactivity,
+    expense_account,
+    object_expenditure,
+    object_specific,
+    fy1_amount,
+    fy2_amount,
+    fy3_amount,
+    pooled_at_division_id,
+    cluster_id_pooled_at_division_id,
+    comment,
+    comment_by,
+    comment_is_active,
+    comment_is_deleted
+FROM
+    `view_budget_proposals`
+WHERE
+    YEAR = 2023 AND is_active AND is_deleted = 0 AND
+    (
+        (parent_division_id = 5 AND parent_pooled_at_division_id IS NULL) 
+        OR (parent_division_id != 5 AND parent_pooled_at_division_id = 5 )
+    )
+group by
+  `id`
+order by
+  `pap_code` asc,
+  `allotment_class_id` asc,
+  `activity` asc,
+  `expense_account_code` asc,
+  `object_code` asc,
+  `object_specific` asc;

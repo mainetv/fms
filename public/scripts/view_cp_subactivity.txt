@@ -1,0 +1,51 @@
+SELECT
+        cp.division_id,
+        divi.division_acronym,
+        year,        
+        cp.id AS cp_id,
+        cp_pap.id AS cp_pap_id,  
+        lib_pap.id AS pap_id,    
+        lib_pap.pap,
+        lib_pap.pap_code,
+
+        cp_act.id AS cp_activity_id,   
+        lib_act.id AS activity_id,
+        lib_act.activity AS activity,            
+
+        cp_subact.id AS cp_subactivity_id,
+        lib_subact.id AS subactivity_id,
+        lib_subact.subactivity AS subactivity,  
+        
+        NULL AS allotment_class_id,
+        NULL AS allotment_class,
+        NULL AS cp_expense_account_id,  
+        NULL AS expense_account_id,   
+        NULL AS expense_account,
+
+        NULL AS cp_object_expenditure_id,
+        NULL AS object_expenditure_id,
+        NULL AS object_expenditure,
+
+        cp_pap.is_active AS pap_is_active,
+        cp_pap.is_deleted AS pap_is_deleted, 
+
+        cp_act.is_active AS activity_is_active,
+        cp_act.is_deleted AS activity_is_deleted, 
+
+        cp_subact.is_active AS subactivity_is_active,
+        cp_subact.is_deleted AS subactivity_is_deleted,   
+
+        NULL AS expense_account_is_active,
+        NULL AS expense_account_is_deleted, 
+
+        NULL AS expenditure_is_active,
+        NULL AS expenditure_is_deleted
+    FROM cp_subactivity cp_subact
+    INNER JOIN cp_activity cp_act ON cp_subact.cp_activity_id=cp_act.id    
+    INNER JOIN cp_pap ON cp_act.cp_pap_id=cp_pap.id    
+    INNER JOIN cash_programs cp ON cp_pap.cash_program_id=cp.id 
+
+    INNER JOIN library_activity lib_act ON cp_act.activity_id=lib_act.id
+    INNER JOIN library_subactivity lib_subact ON cp_subact.subactivity_id=lib_subact.id
+    INNER JOIN fmsdb.library_pap lib_pap ON cp_pap.pap_id = lib_pap.id    
+    LEFT JOIN commonlibrariesdb.pcaarrd_divisions divi ON cp.division_id=divi.id 

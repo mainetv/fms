@@ -1,0 +1,24 @@
+SELECT
+    fmsdb.dv_rs.id AS id,
+    fmsdb.dv_rs.dv_id AS dv_id,
+    fmsdb.dv_rs.rs_id AS rs_id,
+    (CASE WHEN(rs.rs_date IS NULL) THEN rs.rs_date ELSE rs.rs_date END) as rs_date,
+    fmsdb.rs.rs_type_id AS rs_type_id,    
+    rs.fund_id AS fund_id,
+    fmsdb.rs.rs_no AS rs_no,
+    rs.payee_id AS payee_id,
+    rs.particulars AS particulars,
+    fmsdb.rs.total_rs_activity_amount AS total_rs_activity_amount,
+    fmsdb.rs.total_rs_pap_amount AS total_rs_pap_amount,
+    fmsdb.dv_rs.amount AS dv_amount,
+    (rs.total_rs_activity_amount - dv_rs.amount) as balance,
+    fmsdb.dv_rs.is_active AS is_active,
+    fmsdb.dv_rs.is_deleted AS is_deleted,
+    fmsdb.dv_rs.created_at AS created_at,
+    fmsdb.dv_rs.updated_at AS updated_at
+FROM fmsdb.dv_rs
+LEFT JOIN fmsdb.disbursement_vouchers dv ON fmsdb.dv_rs.dv_id = dv.id
+LEFT JOIN fmsdb.request_status rs ON fmsdb.dv_rs.rs_id = fmsdb.rs.id
+LEFT JOIN rs_pap rsp ON rs.id=rsp.rs_id
+LEFT JOIN allotment a ON rsp.allotment_id=a.id
+LEFT JOIN library_object_expenditure

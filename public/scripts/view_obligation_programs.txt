@@ -1,0 +1,46 @@
+SELECT
+   fmsdb.op.id AS id,
+   op.reference_cp_id,
+   fmsdb.op.year AS year,    
+   divi.division_acronym AS division_acronym,
+   lib_pap.pap AS pap,
+   lib_pap.pap_code AS pap_code,
+   lib_act.activity AS activity,
+   lib_subact.subactivity AS subactivity,
+   lib_aclass.allotment_class AS allotment_class,
+   lib_exp_accnt.expense_account AS expense_account,
+   lib_exp_accnt.expense_account_code AS expense_account_code,
+   lib_obj_exp.object_expenditure AS object_expenditure,
+   lib_obj_exp.object_code AS object_code,
+   lib_obj_spe.object_specific AS object_specific, 
+   divi_pooled.division_acronym AS pooled_at_division_acronym,  
+   fmsdb.op.division_id AS division_id,
+   fmsdb.op.pap_id AS pap_id,
+   fmsdb.op.activity_id AS activity_id,
+   fmsdb.op.subactivity_id AS subactivity_id,
+   lib_exp_accnt.allotment_class_id AS allotment_class_id,    
+   fmsdb.op.expense_account_id AS expense_account_id,
+   fmsdb.op.object_expenditure_id AS object_expenditure_id,
+   fmsdb.op.object_specific_id AS object_specific_id,
+   fmsdb.op.pooled_at_division_id AS pooled_at_division_id,
+   lib_aclass.allotment_class_acronym AS allotment_class_acronym,
+   q1_amount,
+   q2_amount,
+   q3_amount,
+   q4_amount,
+   op.is_active,
+   op.is_deleted
+FROM fmsdb.quarterly_obligation_programs op
+LEFT JOIN fmsdb.fiscal_year fy ON fmsdb.op.year = fy.year
+LEFT JOIN fmsdb.library_pap lib_pap ON fmsdb.op.pap_id = lib_pap.id
+LEFT JOIN fmsdb.library_activity lib_act ON fmsdb.op.activity_id = lib_act.id
+LEFT JOIN fmsdb.library_subactivity lib_subact ON fmsdb.op.subactivity_id = lib_subact.id
+LEFT JOIN fmsdb.library_expense_account lib_exp_accnt ON fmsdb.op.expense_account_id = lib_exp_accnt.id
+LEFT JOIN fmsdb.library_object_expenditure lib_obj_exp ON fmsdb.op.object_expenditure_id = lib_obj_exp.id
+LEFT JOIN fmsdb.library_allotment_class lib_aclass ON lib_obj_exp.allotment_class_id = lib_aclass.id
+LEFT JOIN fmsdb.library_object_specific lib_obj_spe ON fmsdb.op.object_specific_id = lib_obj_spe.id
+LEFT JOIN commonlibrariesdb.pcaarrd_divisions divi ON fmsdb.op.division_id = divi.id
+LEFT JOIN commonlibrariesdb.pcaarrd_divisions divi_pooled ON fmsdb.op.pooled_at_division_id = divi_pooled.id
+            
+        
+    

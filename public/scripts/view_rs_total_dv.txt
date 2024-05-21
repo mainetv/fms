@@ -1,0 +1,38 @@
+SELECT
+    rs.id AS id,
+    rs.rs_type_id AS rs_type_id,
+    rs_types.request_status_type AS request_status_type,
+    rs.rs_no AS rs_no,
+    (CASE WHEN(rs.rs_date IS NULL) THEN rs.rs_date ELSE rs.rs_date END) as rs_date,
+    (CASE WHEN(rs.rs_date IS NULL) THEN  YEAR(rs.rs_date) ELSE  YEAR(rs.rs_date1) END) as year,
+    rs.division_id AS division_id,
+    divi.division_acronym AS division_acronym,
+    rs.fund_id AS fund_id,
+    funds.fund AS fund,
+    rs.payee_id AS payee_id,
+    payee,
+    rs.particulars AS particulars,
+    rs.total_rs_activity_amount as total_rs_activity_amount,
+    rs.total_rs_pap_amount as total_rs_pap_amount,
+    (SELECT (CASE WHEN net_amount is NULL THEN 0 ELSE sum(gross_amount) END) FROM dv_rs_net dv WHERE dv.rs_id=rs.id and is_active=1 and is_deleted=0) as total_dv_gross_amount,
+    (rs.total_rs_pap_amount - (SELECT (CASE WHEN gross_amount is NULL THEN 0 ELSE sum(gross_amount) END) FROM dv_rs_net dv WHERE dv.rs_id=rs.id and is_active=1 and is_deleted=0)) as balance,
+    rs.is_locked AS is_locked,
+    rs.is_active AS is_active,
+    rs.is_deleted AS is_deleted,
+    rs.locked_at AS locked_at,
+    rs.cancelled_at AS cancelled_at,
+    rs.created_at AS created_at,
+    rs.updated_at AS updated_at
+FROM request_status rs
+LEFT JOIN commonlibrariesdb.request_status_types rs_types ON rs.rs_type_id = rs_types.id
+LEFT JOIN commonlibrariesdb.pcaarrd_divisions divi ON rs.division_id = divi.id
+LEFT JOIN commonlibrariesdb.funds ON rs.fund_id = commonlibrariesdb.funds.id
+LEFT JOIN library_payees p ON rs.payee_id=p.id
+
+where id=39857
+
+
+where rs.id=36465
+
+(SELECT (CASE WHEN net_amount is NULL THEN 0 ELSE sum(net_amount) END) FROM dv_rs_net dv WHERE dv.rs_id=rs.id)) as balance,
+(SELECT SUM(net_amount) FROM dv_rs_net dv WHERE dv.rs_id=rs.id)) as balance,
