@@ -248,3 +248,44 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+
+
+CREATE TABLE `retirement_laws` (
+  `id` bigint UNSIGNED NOT NULL,
+  `ra_no` varchar(30) DEFAULT NULL,
+  `description` varchar(250) DEFAULT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
+  `created_at` timestamp NOT NULL,
+  `updated_at` timestamp NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+--
+-- Dumping data for table `retirement_laws`
+--
+
+INSERT INTO `retirement_laws` (`id`, `ra_no`, `description`, `is_active`, `is_deleted`, `created_at`, `updated_at`) VALUES
+(1, 'RA No. 1616', NULL, 1, 0, '2023-02-16 06:04:42', '2023-02-16 06:04:42'),
+(2, 'RA 8291', NULL, 1, 0, '2023-02-16 06:05:17', '2023-02-16 06:05:17');
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `retirement_laws`
+--
+ALTER TABLE `retirement_laws`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `retirement_laws`
+--
+ALTER TABLE `retirement_laws`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+COMMIT;
