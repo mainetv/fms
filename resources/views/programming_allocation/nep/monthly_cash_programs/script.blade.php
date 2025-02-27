@@ -4,7 +4,7 @@
     $('#cp_modal').on('hide.bs.modal', function(){
       init_view_cp();
       clear_attributes();
-      clear_fields();      
+      clearFields      
     }); 
     
     $('#cp_modal').on('shown.bs.modal', function () {
@@ -294,7 +294,7 @@
       var msg = "";
       var notif_msg = "";
       clear_attributes();
-      clear_fields();      
+      clearFields      
     }); 
 
     $('.btn_forward').on('click', function(){      
@@ -405,7 +405,9 @@ else if(user_role_id == 7 && division_acronym=='COA'){
       var user_parent_division_id = $(this).data('parent-division-id')      
       $(".modal-body #receive_division_id").val(division_id);
       $(".modal-body #receive_division_acronym").val(division_acronym);
-      $(".modal-body #receive_year").val(year);             
+      $(".modal-body #receive_year").val(year);         
+      {{-- alert(user_role_id)    
+      alert(active_status_id)     --}}
       if(user_role_id == 7){
         if(active_status_id == 4){     
           if(user_parent_division_id!=0){        

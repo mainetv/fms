@@ -26,7 +26,7 @@ class LibraryObjectExpenditureController extends Controller
    public function table(Request $request)
    {
       if ($request->ajax()) { 
-         $data = LibraryObjectExpenditureModel::where('is_deleted', 0)->latest();
+        $data = DB::table('view_library_object_expenditure')->where('is_deleted', 0)->latest();
          return DataTables::of($data)
             ->addIndexColumn()
             ->setRowAttr([
@@ -183,7 +183,7 @@ class LibraryObjectExpenditureController extends Controller
             }     
         return Response::json(['errors' => $validator->errors()]);
       }
-   }
+    }
 
     /**
      * Remove the specified resource from storage.

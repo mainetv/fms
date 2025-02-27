@@ -10,13 +10,16 @@ use App\Models\EmployeesModel;
 use App\Models\FiscalYearsModel;
 use App\Models\LibraryActivityModel;
 use App\Models\LibraryBankAccountsModel;
+use App\Models\LibraryExpenseAccountModel;
 use App\Models\LibraryObjectExpenditureModel;
 use App\Models\LibraryObjectSpecificModel;
 use App\Models\LibraryPAPModel;
+use App\Models\LibraryPayeesModel;
 use App\Models\LibrarySubactivityModel;
 use App\Models\NotificationsModel;
 use App\Models\RSModel;
 use App\Models\UserRolesModel;
+use App\Models\ViewAudit;
 use App\Models\ViewEmployeePositionModel;
 use App\Models\ViewLibraryBankAccountsModel;
 use App\Models\ViewLibraryPayeesBankAccountsModel;
@@ -34,6 +37,137 @@ use Response;
 use DataTables;
 class GlobalController extends Controller
 {
+   public function listPayees(Request $request) {
+      if ($request->ajax()) {
+         $data = LibraryPayeesModel::with([
+            'payeeType',
+            'bank',
+         ])
+         ->get()
+         ->map(function ($payee) {
+            $payee->payeeWasUsed = $payee->rsRecords()->exists() || $payee->dvRecords()->exists();
+            return $payee;
+         });
+      } else {
+            $data = collect(); // Return an empty collection if no match is found
+      }
+
+      return DataTables::of($data)
+            ->setRowAttr([
+               'data-id' => function($row) {
+                  return $row->id;
+               }
+            ])
+            ->make(true);      
+   }
+
+   public function searchPayeeFirstName(Request $request) {
+      $searchTerm = trim($request->input('term'));
+
+      $matches = LibraryPayeesModel::where('payee', 'LIKE', $searchTerm . '%')
+         ->where('is_verified', 1)->where('is_deleted', 0)
+         ->selectRaw('payee, MIN(parent_id) as parent_id')
+         ->groupBy('payee')
+         ->distinct()
+         ->limit(10) // Limit results to 10
+         ->get();
+      $response = $matches->map(function ($payee) {
+         return [
+               'label' => $payee->payee, 
+               'value' => $payee->payee,
+               'parent_id' => $payee->parent_id
+         ];
+      });
+
+      return response()->json($response);      
+   }
+
+   public function listPayeesByBankAccountNo(Request $request) {
+      $bank_account_number = preg_replace('/[^0-9]/', '', $request->bank_account_number);
+      if ($request->ajax() && isset($bank_account_number)) {
+         // Find the record with the matching bank account number
+         $matchedRecord = LibraryPayeesModel::whereRaw("REPLACE(bank_account_no, '-', '') = ?", [$bank_account_number])->first();
+ 
+         if ($matchedRecord) {
+            // Get all records that share the same parent_id as the matched record
+            $data = LibraryPayeesModel::with([
+               'payeeType',
+               'bank',
+            ])
+            ->where('parent_id', $matchedRecord->parent_id)
+            ->orWhereRaw("REPLACE(bank_account_no, '-', '') = ?", [$bank_account_number])
+            ->get()
+            ->map(function ($payee) {
+               // Check if the payee was used in RSModel or DVModel
+               $payee->payeeWasUsed = $payee->rsRecords()->exists() || $payee->dvRecords()->exists();
+               return $payee;
+            });
+         } else {
+             $data = collect(); // Return an empty collection if no match is found
+         }
+ 
+         return DataTables::of($data)
+             ->setRowAttr([
+                 'data-id' => function($row) {
+                     return $row->id;
+                 }
+             ])
+             ->make(true);
+      }         
+   }
+   
+   public function audit_trail(Request $request){
+      $user_id = auth()->user()->id; 
+      $user_role_id = $request->user_role_id; 
+      $title = 'audit_trail'; 
+      return view('audit_trail')
+			->with(compact('user_role_id'))
+			->with(compact('user_id'))
+			->with(compact('title'));
+   }
+
+   public function show_audits_by_filter(Request $request){    
+      $query = ViewAudit::whereBetween('created_at', [$request->start_date, $request->end_date]);
+      if ($request->type !== 'All') {
+         $query->where('auditable_type', $request->type);
+      }
+      
+      $data = $query->get();
+         return DataTables::of($data)
+            ->setRowAttr([
+               'data-id' => function($audit) {
+               return $audit->id;
+               }
+            ])
+            ->make(true); 
+   }
+
+   public function timeline(Request $request){
+      $user_id = auth()->user()->id; 
+      $user_role_id = $request->user_role_id; 
+      $title = 'timeline'; 
+      return view('timeline')
+			->with(compact('user_role_id'))
+			->with(compact('user_id'))
+			->with(compact('title'));
+   }
+
+   public function show_timeline_by_filter(Request $request){    
+      $query = ViewAudit::whereBetween('created_at', [$request->start_date, $request->end_date]);
+      if ($request->type !== 'All') {
+         $query->where('auditable_type', $request->type);
+      }
+      
+      $data = $query->get();
+         return DataTables::of($data)
+            ->setRowAttr([
+               'data-id' => function($audit) {
+               return $audit->id;
+               }
+            ])
+            ->make(true); 
+   }
+
    public function show_sidemenu_by_user_role(Request $request){
       $user_id = auth()->user()->id; 
       $user_role_id = $request->user_role_id; 
@@ -62,6 +196,7 @@ class GlobalController extends Controller
    }  
 
    public function administration(Request $request){
+      // dd('administration');
       $title = "Administration";
       $username = auth()->user()->username;
       $user_id = auth()->user()->id;  
@@ -115,7 +250,9 @@ class GlobalController extends Controller
       $library_paps = LibraryPAPModel::where('is_deleted', 0)->get();
       $library_activities = LibraryActivityModel::where('is_deleted', 0)->get();
       $library_subactivities = LibrarySubactivityModel::where('is_deleted', 0)->get();
+      $library_expense_accounts = LibraryExpenseAccountModel::where('is_deleted', 0)->get();
       $library_expenditures = LibraryObjectExpenditureModel::where('is_deleted', 0)->get();
+      $library_specifics = LibraryObjectSpecificModel::where('is_deleted', 0)->get();
       // $view_users = ViewUsersModel::where('is_active', '1')->where('is_deleted', '0')->get();
       // dd($view_users);
       return view('libraries.index')
@@ -130,7 +267,9 @@ class GlobalController extends Controller
          ->with(compact('library_paps'), $library_paps)      
          ->with(compact('library_activities'), $library_activities)      
          ->with(compact('library_subactivities'), $library_subactivities)      
-         ->with(compact('library_expenditures'), $library_expenditures);       
+         ->with(compact('library_expense_accounts'), $library_expense_accounts)      
+         ->with(compact('library_expenditures'), $library_expenditures)      
+         ->with(compact('library_specifics'), $library_specifics);       
    }
 
    public function budget_maintenance(Request $request){
@@ -198,6 +337,10 @@ class GlobalController extends Controller
          ->where('year','=',$year_selected)->where('.is_active','=',1)->where('is_deleted','=',0)
          ->union($fy1)->union($fy2)->orderBy('fiscal_year', 'ASC')->get();  
       // dd($data);
+      if($user_id==149 || $user_id==117){
+         $user_division_id=3;
+         $division_acronym='COA';
+      }
       if(isset(request()->url)){
          return redirect(request()->url);         
       }

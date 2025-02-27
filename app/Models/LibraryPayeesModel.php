@@ -4,12 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Notifications\Notifiable;
 use OwenIt\Auditing\Contracts\Auditable;
+use Spatie\Permission\Traits\HasRoles;
+
 
 class LibraryPayeesModel extends Model implements Auditable
 {
    use HasFactory;
-   use \OwenIt\Auditing\Auditable;
+   use HasRoles;
+   use Notifiable;
+   use SoftDeletes;     
    use \OwenIt\Auditing\Auditable;
 
    public $fillable = [		 
@@ -41,4 +49,29 @@ class LibraryPayeesModel extends Model implements Auditable
       'is_deleted'
 	];
 	protected $table = 'library_payees';
+
+   public function payeeType() : BelongsTo
+	{
+		return $this->belongsTo(LibraryPayeeTypeModel::class, 'payee_type_id');
+	}  
+
+   public function bank() : BelongsTo
+	{
+		return $this->belongsTo(LibraryBanksModel::class, 'bank_id');
+	}  
+
+   public function rsRecords(): HasMany
+   {
+      return $this->hasMany(RSModel::class, 'payee_id'); // Ensure correct foreign key
+   }
+
+   public function dvRecords(): HasMany
+   {
+      return $this->hasMany(DVModel::class, 'payee_id'); // Ensure correct foreign key
+   }
+
+   public function getPayeeWasUsedAttribute(): bool
+   {
+      return $this->rsRecords()->exists() || $this->dvRecords()->exists();
+   } 
 }

@@ -104,9 +104,11 @@
         $ada_dvs_data = DB::table('view_ada_dvs')->where('ada_date', $ada_date)->where('fund_id', $fund_id)
           ->where('bank_account_id', $bank_account_id)->where('is_active',1)->where('is_deleted',0)->orderBy('lddap_no')->get();
         $first_lddap_no = DB::table('view_ada_dvs')->where('ada_date', $ada_date)->where('fund_id', $fund_id)
-          ->where('bank_account_id', $bank_account_id)->where('is_active',1)->where('is_deleted',0)->pluck('lddap_no')->first();
+          ->where('bank_account_id', $bank_account_id)->where('is_active',1)->where('is_deleted',0)->orderBy('lddap_no', 'ASC')->pluck('lddap_no')->first();
         $last_lddap_no = DB::table('view_ada_dvs')->where('ada_date', $ada_date)->where('fund_id', $fund_id)
-          ->where('bank_account_id', $bank_account_id)->where('is_active',1)->where('is_deleted',0)->pluck('lddap_no')->last();
+          ->where('bank_account_id', $bank_account_id)->where('is_active',1)->where('is_deleted',0)->orderBy('lddap_no', 'ASC')->pluck('lddap_no')->last();
+        // echo "ada date: $ada_date, fund id: $fund_id, bank account id: $bank_account_id ";
+        // echo "$first_lddap_no - $last_lddap_no";
         foreach($ada_dvs_data as $row){
           $total_net_amount += $row->total_dv_net_amount;  ?>
           <tr class="text-center" valign="top">

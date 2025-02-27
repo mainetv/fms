@@ -34,6 +34,10 @@ class DashboardController extends Controller
         $user_id = auth()->user()->id;  
         $user_division_id = ViewUsersModel::where('id', $user_id)->pluck('division_id')->first();
         $title = "Dashboard";
+        if($user_id==149 || $user_id==117){
+            $user_division_id=3;
+            $division_acronym='COA';
+         }
         return view('dashboard')
             ->with(compact('title'))
             ->with(compact('user_id'))

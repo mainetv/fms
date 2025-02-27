@@ -100,30 +100,46 @@
 		<div class="display_screen">
 			<table width="100%" cellspacing="0" cellpadding="0">
 				<tr>
-				<td colspan="3">
-						<table width="100%" class="table-borderless text-center" cellspacing="0" cellpadding="0">
+					<td colspan="3">
+						<table width="100%" class="text-center"  cellspacing="0" cellpadding="0">
 							<tr>
-								<td>
+								<td rowspan="2">
 									<p>Republic of the Philippines<br />
 									DEPARTMENT OF SCIENCE AND TECHNOLOGY<br />
 									<strong>PHILIPPINE COUNCIL FOR AGRICULTURE, AQUATIC AND NATURAL RESOURCES RESEARCH AND DEVELOPMENT</strong><br />
 									<span>LOS BANOS, LAGUNA</span></p>
 									<p class="title-font"><strong>DISBURSEMENT VOUCHER</strong></p>
 								</td>
-								<td>
+								
+								<td class="text-left">
+									Fund Cluster:
+								</td>
+								{{-- <td>
 									{!! QrCode::size(95)->generate('{{ $qr_code }}') !!}<br />
 									{{ $qr_code }}
+								</td> --}}
+							</tr>
+							<tr>
+								<td class="text-left">
+									Date: <br>
+									DV No:
 								</td>
 							</tr>
 						</table>
 					</td>
 				</tr>
 				<tr>
-				<td colspan="3">
+					<td colspan="3">
 						<table width="100%">
 							<tr>
-								<td valign="top">&nbsp;Mode of Payment</td>
-								<td colspan="2" valign="top">&emsp;&emsp;[&emsp;] Check&emsp;&emsp;&emsp;&emsp;[&emsp;] Cash&emsp;&emsp;&emsp;&emsp;[&emsp;] Others</td>
+								<td valign="top">&nbsp;Mode of <br>&nbsp;Payment</td>
+								<td colspan="2">&emsp;
+									<input type="checkbox">MDS Check
+									<input type="checkbox">Commercial Check
+									<input type="checkbox">ADA
+									<input type="checkbox">Others (Please specify)
+								</td>
+								{{-- <td colspan="2" valign="top">&emsp;&emsp;[&emsp;] Check&emsp;&emsp;&emsp;&emsp;[&emsp;] Cash&emsp;&emsp;&emsp;&emsp;[&emsp;] Others</td> --}}
 								<td valign="top">&nbsp;DV No.</td>
 							</tr>
 							<tr>
@@ -137,47 +153,165 @@
 									@endforeach</strong></td>
 							</tr>
 							<tr>
-								<td rowspan="2" valign="top">&nbsp;Address</td>
-								<td rowspan="2" valign="top">&nbsp;<strong>{{ $address }}</strong></td>
-								<td colspan="2" class="text-center" valign="top">Responsibility Center</td>
+								<td valign="top">&nbsp;Address</td>
+								<td colspan="3" valign="top">&nbsp;<strong>{{ $address }}</strong></td>
+								{{-- <td colspan="2" class="text-center" valign="top">Responsibility Center</td> --}}
 							</tr>
-							<tr>
+							{{-- <tr>
 								<td height="42" valign="top">&nbsp;Office/Unit/Project<strong><br />&nbsp;{{ $division_acronym }}</strong></td>
 								<td valign="top">&nbsp;Code</td>
 							</tr>
 							<tr>
 								<td height="26" colspan="2" valign="top">&nbsp;Bank : &emsp;{{ $payee_bank_short_name }}&emsp;&emsp;&emsp;&emsp;Bank Acct. No.&emsp;{{ $payee_bank_account_no }}</td>
 								<td height="26" colspan="2" valign="top">&nbsp;Contact Number: &emsp;{{ $contact_no }}</td>
-							</tr>
+							</tr> --}}
 						</table>
 					</td>
 				</tr>
 				<tr>
-				<td colspan="3" class="text-center">
+					<td colspan="3" class="text-center">
 						<table width="100%" cellspacing="0" cellpadding="5">
 							<tr>
-								<td width="74%" height="25"><strong>EXPLANATION</strong></td>
-								<td width="26%"><strong>AMOUNT</strong></td>
+								<td width="62%" height="25"><strong>Particulars</strong></td>
+								<td width="10%">Responsibility Center</td>
+								<td width="6%" nowrap>MFO/PAP</td>
+								<td width="22%" nowrap><strong>AMOUNT</strong></td>
 							</tr>
 							<tr>
-								<td height="109" valign="top" class="text-left"><strong><?php echo nl2br($particulars); ?></strong></td>
-								<td class="text-right" valign="top"><strong>{{ $total_dv_gross_amount }}&emsp;</strong></td>
+								<td height="109" valign="top" class="text-left"><strong><?php echo nl2br($particulars); ?></strong>
+								</td>								
+								<td rowspan="2" valign="top"><strong>{{ $division_acronym }}</strong></td>
+								<td rowspan="2"></td>
+								<td class="text-right" valign="top" nowrap></td>
+							</tr>
+							<tr class="no-border">
+								<td class="no-border"  style="border:0; border-spacing: 0;">										
+									<strong>Amount Due</strong>
+								</td>
+								<td class="text-right" nowrap><strong>{{ $total_dv_gross_amount }}&emsp;</strong></td>
 							</tr>
 						</table>
 					</td>
 				</tr>
 				<tr>
-				<td colspan="3">
-						<table width="100%" border="1" cellspacing="0" cellpadding="5">
+					<td colspan="3">
+						<table width="100%" cellspacing="0" cellpadding="1">
 							<tr>
-								<td height="54" colspan="3" valign="top"><p><strong>A. CERTIFIED</strong><br />          
-								&nbsp;&nbsp;&nbsp;[&nbsp;&nbsp;&nbsp;] <span>Cash available</span><br />          
-								&nbsp;&nbsp;&nbsp;[&nbsp;&nbsp;&nbsp;] <span>Subject to Authority to Debit Account (where applicable)<br />
-								&nbsp;&nbsp;&nbsp;[&nbsp;&nbsp;&nbsp;] Supporting documents complete        </span></p></td>
-								<td colspan="3" valign="top"><p><strong>B. APPROVED FOR PAYMENT</strong><br />          
-								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
-								<p>{{ strtoupper(convert_number_to_words($dv_amount)) }}{{ $cents }}</p></td>
+								<td width="1%" class="font-weight-bold">A.</td>
+								<td valign="top">Certified: Expenses/Cash Advance necessary,  lawful and  incurred under my direct supervision.						        
+									{{-- &nbsp;&nbsp;&nbsp;[&nbsp;&nbsp;&nbsp;] <span>Cash available</span><br />          
+									&nbsp;&nbsp;&nbsp;[&nbsp;&nbsp;&nbsp;] <span>Subject to Authority to Debit Account (where applicable)<br />
+									&nbsp;&nbsp;&nbsp;[&nbsp;&nbsp;&nbsp;] Supporting documents complete        </span></p></td> --}}
+									{{-- <td colspan="3" valign="top"><p><strong>B. APPROVED FOR PAYMENT</strong><br />          
+									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+									<p>{{ strtoupper(convert_number_to_words($dv_amount)) }}{{ $cents }}</p></td> --}}
+								</td>							
 							</tr>
+							<tr>
+								<td colspan="2" height="80" valign="bottom">
+									<center>_____________________________________________________
+									<br>Printed Name, Designation and Signature of Supervisor</center>
+								</td>
+							</tr>
+						</table>
+						<table width="100%" cellspacing="0" cellpadding="1">
+							<tr>
+								<td width="1%" class="font-weight-bold" >B.</td>
+								<td colspan="5" valign="top">Accounting Entry:</td>
+							</tr>
+							<tr class="text-center">
+								<td colspan="2">Account Title</td>
+								<td>UACS Code</td>
+								<td>Debit</td>
+								<td>Credit</td>
+							</tr>
+							<tr>
+								<td colspan="2"></td>
+								<td height="50"></td>
+								<td height="50"></td>
+								<td height="50"></td>
+							</tr>
+						</table>
+						<div class="table-container">
+							<table class="half-table" cellspacing="0" cellpadding="1">
+								<tr>
+								<td width="1px" class="font-weight-bold">C.</td>
+								<td colspan="3" valign="top">Certified:</td>
+								</tr>
+								<tr>
+								<td colspan="4">
+									&emsp;<input type="checkbox">Cash available <br>
+									&emsp;<input type="checkbox">Subject to Authority to Debit Account (when applicable)<br>
+									&emsp;<input type="checkbox">Supporting documents complete and amount claimed
+								</td>
+								</tr>
+								<tr>
+								<td colspan="2" height="40">Signature</td>
+								<td colspan="2" width="85%"></td>
+								</tr>
+								<tr>
+								<td colspan="2">Printed Name</td>
+								<td colspan="2" width="85%" class="text-center">{{ $signatory1 }}</td>
+								</tr>
+								<tr>
+								<td colspan="2">Position</td>
+								<td colspan="2" width="85%" class="text-center">Head, Accounting Unit/Authorized Representative</td>
+								</tr>
+								<tr>
+								<td colspan="2">Date</td>
+								<td colspan="2" width="85%"></td>
+								</tr>
+							</table>					  
+							<table class="half-table" cellspacing="0" cellpadding="1">
+								<tr>
+								<td width="1px" class="font-weight-bold">D.</td>
+								<td colspan="3" valign="top">Approved for Payment:</td>
+								</tr>
+								<tr>
+								<td colspan="4" height="49"></td>
+								</tr>
+								<tr>
+								<td colspan="2">Signature</td>
+								<td colspan="2" width="85%" height="40"></td>
+								</tr>
+								<tr>
+								<td colspan="2">Printed Name</td>
+								<td colspan="2" width="85%" class="text-center">{{ $signatory2 }}</td>
+								</tr>
+								<tr>
+								<td colspan="2">Position</td>
+								<td colspan="2" width="85%" class="text-center">Agency Head/Authorized Representative</td>
+								</tr>
+								<tr>
+								<td colspan="2">Date</td>
+								<td colspan="2" width="85%"></td>
+								</tr>
+							</table>
+						</div>
+						<table width="100%" cellspacing="0" cellpadding="1">
+							<tr>
+								<td width="1px" class="font-weight-bold">E.</td>
+								<td colspan="4" valign="top">Receipt of Payment </td>
+								<td rowspan="2" valign="top">JEV  No.</td>
+							</tr>
+							<tr>
+								<td colspan="2">Check/ADA No.:</td>
+								<td width="25%"></td>
+								<td width="15%">Date:</td>
+								<td>Bank Name & Account Number:</td>							
+							</tr>
+							<tr>
+								<td colspan="2">Signature:</td>
+								<td width="25%"></td>
+								<td width="15%">Date:</td>
+								<td>Printed Name:</td>
+								<td rowspan="2" valign="top">Date</td>
+							</tr>
+							<tr>
+								<td colspan="5">Official Receipt No. & Date/Other Documents</td>
+							</tr>
+						</table>					
+						{{-- <table>
 							<tr>
 								<td width="14%" height="24" valign="top">Signature</td>
 								<td width="25%" valign="top">&nbsp;</td>
@@ -226,7 +360,7 @@
 								<td height="40" colspan="2" class="text-left" valign="top">Date</td>
 								<td height="40" colspan="2" class="text-left" valign="top">Date</td>
 							</tr>
-						</table>
+						</table> --}}
 					</td>
 				</tr>
 			</table>

@@ -34,6 +34,14 @@ class BpForm205Controller extends Controller
 					"user_role_id" => $row->role_id,  
 				];
 		}
+		if($user_id==149 || $user_id==117){
+         $user_division_id=3;
+         $division_acronym='COA';
+      }
+      if($user_id=='20' || $user_id=='14'){
+			$user_division_id = '9';
+			$division_acronym = 'FAD-DO';
+		}
 		$years = FiscalYearsModel::orderBy('year', 'ASC')->get();
 		$data = [
 				"year_selected" => $year_selected,

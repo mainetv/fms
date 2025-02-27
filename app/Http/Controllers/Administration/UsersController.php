@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Administration;
 
+use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\ViewUsersModel;
 use Illuminate\Http\Request;
@@ -61,24 +62,24 @@ class UsersController extends Controller
 			$message = array(    
 				'emp_code.required' => 'Please select employee.',      
 				'user_role_id.required' => 'Please select user role.',      
-				'username.required' => 'Username field is required.', 
-				'password.required' => 'Password field is required.', 
+				// 'username.required' => 'Username field is required.', 
+				// 'password.required' => 'Password field is required.', 
 			);
 			$validator =  Validator::make($request->all(), [
 				'emp_code' => 'required', 'unique',
 				'user_role_id' => 'required',
-				'username' => 'required',
-				'password' => 'required',
+				// 'username' => 'required',
+				// 'password' => 'required',
 			], $message);
 
 			$input = $request->all();
 			if ($validator->passes()) {
 				// $data = new User([
-					$input = $request->all();
-					$input['password'] = Hash::make($input['password']);
+					$input = $request->all();			
 					// 'emp_code' => $request->get('emp_code'),
 					// 'user_role_id' => $request->get('user_role_id'),
-					// 'username' => $request->get('username'),
+					$input['username'] = $input['emp_code'];
+					$input['password'] = Hash::make($input['emp_code']);
 					// 'password' => Hash::make($request->get('password')),
 					// 'is_active' => $request->get('is_active'),
 				// ]);

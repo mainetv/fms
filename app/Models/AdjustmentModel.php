@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use OwenIt\Auditing\Contracts\Auditable;
 
 class AdjustmentModel extends Model implements Auditable
@@ -24,4 +25,9 @@ class AdjustmentModel extends Model implements Auditable
 		'is_deleted'
 	];
     protected $table = 'adjustment';
+
+	 public function allotment() : BelongsTo
+	{
+		return $this->belongsTo(AllotmentModel::class, 'allotment_id');
+	} 
 }

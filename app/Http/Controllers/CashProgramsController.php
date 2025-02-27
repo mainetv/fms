@@ -44,6 +44,7 @@ class CashProgramsController extends Controller
                ->with(compact('title'))
                ->with(compact('user_id'))
                ->with(compact('user_division_id'))
+               ->with(compact('user_role_id'))
                ->with(compact('year_selected'));
          }
       }
@@ -122,12 +123,8 @@ class CashProgramsController extends Controller
             $division_id = '9';
             $division_code = 'D4';
             $user_division_id = '9';
-         }
-         if($user_id=='111'){
-            $division_id = '3';
-            $division_code = 'Q';
-            $user_division_id = '3';
-         }         if($request->add_cash_program == 1) { //adding cash program item
+         }   
+         if($request->add_cash_program == 1) { //adding cash program item
             $message = array(    
                'pap_id.required' => 'Please select PAP.',
                'activity_id.required' => 'Please select activity.',
@@ -392,7 +389,6 @@ class CashProgramsController extends Controller
             // dd(isset($comment_by_bpac));
             if(isset($comment_by_division_director)){
                $count = count($comment_by_division_director); 
-               dd($count);
                for ($i=0; $i < $count; $i++) {
                   $data = [
                      'comment_by_division_director' => $comment_by_division_director[$i],

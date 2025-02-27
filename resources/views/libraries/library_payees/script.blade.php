@@ -44,7 +44,7 @@
   {{-- modal start --}}
     $('#library_payees_modal').on('hide.bs.modal', function(){       
       clear_attributes();
-      clear_fields();
+      clearFields
       $('.payee_type')
         .removeClass('d-inline')
         .addClass('d-none')

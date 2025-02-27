@@ -4,31 +4,31 @@
     $('#pap_modal').on('hide.bs.modal', function(){       
       init_view_pap();
       clear_attributes();
-      clear_fields();
+      clearFields
     }); 
 
     $('#activity_modal').on('hide.bs.modal', function(){       
       init_view_activity();
       clear_attributes();
-      clear_fields();
+      clearFields
     });    
 
     $('#subactivity_modal').on('hide.bs.modal', function(){       
       init_view_subactivity();
       clear_attributes();
-      clear_fields();
+      clearFields
     });
 
     $('#expenditure_modal_activity').on('hide.bs.modal', function(){       
       init_view_expenditure_activity();
       clear_attributes();
-      clear_fields();
+      clearFields
     });
 
     $('#expenditure_modal_subactivity').on('hide.bs.modal', function(){       
       init_view_expenditure_subactivity();
       clear_attributes();
-      clear_fields();
+      clearFields
     });
 
     $('#pap_modal').on('shown.bs.modal', function () {

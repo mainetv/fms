@@ -13,16 +13,16 @@
 			<div class="row mb-2">
 				<div class="col-sm-6">
 				<h1 class="m-0">Report of Advice to Debit Account Issued (RADAI)</h1>
-				</div><!-- /.col -->
+				</div>
 				<div class="col-sm-6">
 				<ol class="breadcrumb float-sm-right">
 						<li class="breadcrumb-item"><a href="/fms/public">Home</a></li>
 						<li class="breadcrumb-item active">Funds Utilization</li>
 						<li class="breadcrumb-item active">Report of Advice to Debit Account Issued (RADAI)</li>
 				</ol>
-				</div><!-- /.col -->
-			</div><!-- /.row -->
-		</div><!-- /.container-fluid -->
+				</div>
+			</div>
+		</div>
 	</div>
 	
 	<section class="content">  
@@ -152,11 +152,11 @@
 				var current_filter = getCurrenURL();
 				var search_filter = '';	
 				// server
-				var month_selected = `${current_filter[5]}`; 
-				var year_selected = `${current_filter[6]}`; 
+				// var month_selected = `${current_filter[5]}`; 
+				// var year_selected = `${current_filter[6]}`; 
 				// local
-				// var month_selected = `${current_filter[6]}`; 
-				// var year_selected = `${current_filter[7]}`; 
+				var month_selected = `${current_filter[6]}`; 
+				var year_selected = `${current_filter[7]}`; 
 							
 			}	
 			var radai_table = $('#radai_table').DataTable({

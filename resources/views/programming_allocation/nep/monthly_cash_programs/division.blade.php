@@ -6,7 +6,7 @@
 			<div class="row mb-2">
 				<div class="col-sm-6">
 				<h1 class="m-0">Monthly Cash Program</h1>
-				</div><!-- /.col -->
+				</div>
 				<div class="col-sm-6">
 				<ol class="breadcrumb float-sm-right">
 						<li class="breadcrumb-item"><a href="/fms/public">Home</a></li>
@@ -14,9 +14,9 @@
 						<li class="breadcrumb-item active">NEP</li>
 						<li class="breadcrumb-item active">Monthly Cash Program</li>
 				</ol>
-				</div><!-- /.col -->
-			</div><!-- /.row -->
-		</div><!-- /.container-fluid -->
+				</div>
+			</div>
+		</div>
 	</div>
 	@php
 		$getUserDetails = getUserDetails($user_id);						
@@ -27,7 +27,7 @@
 			$division_id = $value->division_id;
 			$division_acronym = $value->division_acronym;
 			$cluster_id = $value->cluster_id;
-			$user_role_id = $value->user_role_id;
+			// $user_role_id = $value->user_role_id;
 		}
 		$getYears=getYears();
 		$getLibraryPAP=getLibraryPAP();
@@ -38,19 +38,14 @@
 		$active_status_id = 0;
 		$fiscal_year1 = '';
 		$fiscal_year2 = '';
-		$fiscal_year3 = '';						
-		if($user_id=='20' || $user_id=='14'){
+		$fiscal_year3 = '';	
+		if($user_id==149 || $user_id==117){
+         $division_id=3;
+         $division_acronym='COA';
+      }
+      if($user_id=='20' || $user_id=='14'){
 			$division_id = '9';
 			$division_acronym = 'FAD-DO';
-		}
-		if($user_id=='3'){
-			$division_id = '22';
-			$division_acronym = 'OED';
-			$parent_division_id = '0';
-		}
-		if($user_id=='111'){
-			$division_id = '3';
-			$division_acronym = 'COA';
 		}
 	@endphp
 	<section class="content">  
@@ -79,7 +74,7 @@
 			@php
 				$sqlCP = getMonthlyCashProgram($division_id, $year_selected);			
 				$sqlCpCommentsbyDirector = getCpCommentsbyDirector($division_id, $year_selected);
-				$dir_comment_count = getCpCommentsbyDirectorCount($division_id, $year_selected) ?? NULL;
+				$dir_comment_count = getCpCommentsbyDirectorCount($division_id, $year_selected) ?? null;
 				$sqlCpCommentsbyFADBudget = getBpCommentsbyFADBudget($division_id, $year_selected);
 				$budget_comment_count = getCpCommentsbyFADBudgetCount($division_id, $year_selected);
 				$sqlCpStatus = getCashProgramStatus($division_id, $year_selected);
@@ -121,7 +116,7 @@
 								@else class="btn-xs d-none" @endif>
 								@if($active_status_id==17 || $active_status_id==5 || $active_status_id==9 || $active_status_id==13) 		
 									@if($parent_division_id==0) Forward Monthly Cash Program to Division Director	
-@elseif($division_id==3) Forward Monthly Cash Program to FAD-Budget
+									@elseif($division_id==3) Forward Monthly Cash Program to FAD-Budget
 									@else Forward Monthly Cash Program to Section Head
 									@endif				
 								@elseif($active_status_id==4) 
@@ -150,7 +145,7 @@
 					</div>	  
 				</div>			
 				<div class="row py-3">
-					<div class="col table-responsive">						
+					<div class="col table-responsive" style="max-height: 700px; overflow-y: scroll;">
 						<table id="monthly_cash_program_table" class="table-bordered table-hover" style="width: 100%;">
 							<thead class="text-center">
 								<th>P/A/P / Object of Expenditures</th> 

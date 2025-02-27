@@ -35,7 +35,7 @@
 		$fiscal_year1 = $row->fiscal_year1;
 		$fiscal_year2 = $row->fiscal_year2;
 		$fiscal_year3 = $row->fiscal_year3;
-	}	
+	}
 ?>
 <div class="content">
   <div class="row">
@@ -65,18 +65,18 @@
 		@role('Budget Officer')
 			<button type="button" data-division-id="{{ $division_id }}" data-year="{{ $year_selected }}"
 				data-division-acronym="{{ $division_acronym }}" data-active-status-id="{{ $status_id }}" data-toggle="modal" 								
-				@if($status_id==6 || $status_id==15) class="btn btn-primary float-right btn_receive" data-target="#receive_modal"					
+				@if($status_id==6 || $status_id==14) class="btn btn-primary float-right btn_receive" data-target="#receive_modal"					
 				@elseif($status_id==7 && $budget_comment_count <> 0) class="btn btn-primary float-right btn_forward_comment" 
 					data-target="#forward_comment_modal"
-				@elseif(($status_id==7 && $budget_comment_count == 0) || ($division_id==3 && $status_id==1)) 
+				@elseif(($status_id==7 && $budget_comment_count == 0) || ($division_id==3 && $status_id==1) || $status_id==15) 
 					class="btn btn-primary float-right btn_forward" data-target="#forward_modal"	
 				@elseif($status_id==10) class="btn btn-primary float-right btn_reverse" data-target="#reverse_modal"	
 				@else class="btn-xs d-none" @endif>
-				@if($status_id==6 || $status_id==15) Receive Budget Proposal
+				@if($status_id==6 || $status_id==14) Receive Budget Proposal
 				@elseif(($status_id==7) && ($budget_comment_count <> 0)) Forward Comment/s to Division Budget Controller
 				@elseif(($status_id==7) && ($budget_comment_count == 0) || ($division_id==3 && $status_id==1)) Forward Budget Proposal to BPAC
 				{{-- @elseif($status_id==14) Forward to 'Set Approve Budget' --}}
-				@elseif($status_id==15) Uploaded to DBM System 
+				@elseif($status_id==15) Set Allotment Status
 				@elseif($status_id==10) Reverse Forwading to BPAC
 				@endif								
 			</button>

@@ -108,7 +108,7 @@
 					},				
 					{data: 'rs_no', title: 'ORS/BURS No.', width: '16%', className: 'dt-center'},
 					{data: 'fund', title: 'Fund', width: '5%', className: 'dt-center'},
-					{data: 'accnt_obj_code', title: 'Object Code', width: '8%', className: 'dt-center'},
+					{data: 'expense_account_object_code', title: 'Object Code', width: '8%', className: 'dt-center'},
 					{data: 'tax_one', title: '1%', width: '3%', className: 'dt-head-center dt-body-right',
 						render: $.fn.dataTable.render.number(',', '.', 2, '')
 					},

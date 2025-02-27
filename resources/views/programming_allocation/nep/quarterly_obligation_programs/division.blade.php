@@ -6,7 +6,7 @@
 			<div class="row mb-2">
 				<div class="col-sm-6">
 				<h1 class="m-0">Quarterly Obligations Program</h1>
-				</div><!-- /.col -->
+				</div>
 				<div class="col-sm-6">
 				<ol class="breadcrumb float-sm-right">
 						<li class="breadcrumb-item"><a href="/fms/public">Home</a></li>
@@ -14,9 +14,9 @@
 						<li class="breadcrumb-item active">NEP</li>
 						<li class="breadcrumb-item active">Quarterly Obligation Program</li>
 				</ol>
-				</div><!-- /.col -->
-			</div><!-- /.row -->
-		</div><!-- /.container-fluid -->
+				</div>
+			</div>
+		</div>
 	</div>
 	@php
 		$getUserDetails = getUserDetails($user_id);						
@@ -27,7 +27,7 @@
 			$division_id = $value->division_id;
 			$division_acronym = $value->division_acronym;
 			$cluster_id = $value->cluster_id;
-			$user_role_id = $value->user_role_id;
+			// $user_role_id = $value->user_role_id;
 		}
 		$getYears=getYears();
 		$getLibraryPAP=getLibraryPAP();
@@ -39,18 +39,13 @@
 		$fiscal_year1 = '';
 		$fiscal_year2 = '';
 		$fiscal_year3 = '';						
-		if($user_id=='20' || $user_id=='14'){
+		if($user_id==149 || $user_id==117){
+         $division_id=3;
+         $division_acronym='COA';
+      }
+      if($user_id=='20' || $user_id=='14'){
 			$division_id = '9';
 			$division_acronym = 'FAD-DO';
-		}
-		if($user_id=='3'){
-			$division_id = '22';
-			$division_acronym = 'OED';
-			$parent_division_id = '0';
-		}
-		if($user_id=='111'){
-			$division_id = '3';
-			$division_acronym = 'COA';
 		}
 	@endphp
 	<section class="content">  
@@ -72,7 +67,7 @@
 					@php
 						$sqlQOP = getQuarterlyObligationProgram($division_id, $year_selected);			
 						$sqlQopCommentsbyDirector = getQopCommentsbyDirector($division_id, $year_selected);
-						$dir_comment_count = getQopCommentsbyDirectorCount($division_id, $year_selected) ?? NULL;
+						$dir_comment_count = getQopCommentsbyDirectorCount($division_id, $year_selected) ?? null;
 						$sqlQopCommentsbyFADBudget = getBpCommentsbyFADBudget($division_id, $year_selected);
 						$budget_comment_count = getQopCommentsbyFADBudgetCount($division_id, $year_selected);
 						$sqlQopStatus = getQuarterlyObligationProgramStatus($division_id, $year_selected);

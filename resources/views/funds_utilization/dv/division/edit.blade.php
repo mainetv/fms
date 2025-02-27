@@ -174,7 +174,7 @@
                     ?>
                     <tr class="text-right font-weight-bold">
                       <td colspan="4">Total DV Amount</td>
-                      <td>Php {{ number_format($total_dv_gross_amount, 2) }}
+                      <td>₱ {{ number_format($total_dv_gross_amount, 2) }}
                     </tr>
                   </tbody>          
                 </table>
@@ -267,7 +267,7 @@
                 </div>        
               </div> 
               <br>    
-              @role('Accounting Officer|Division Budget Controller')     
+              @role('Accounting Officer|Division Budget Controller|Division Director')     
               <div class="row text-left">  
                 <div class="col-5"> 
                   <a style="font-color:white;" href="{{ url('funds_utilization/dv/division/'.$dv_month.'/'.$dv_year) }}">
@@ -278,9 +278,8 @@
                   @role('Division Budget Controller')
                     <button type="button" class="btn btn-primary @if($total_dv_gross_amount!=0) print_dv @else disabled @endif">
                       <i class="fa-lg fa-solid fa-print"></i> Print</button>                  
+                    <button type="button" class="btn btn-primary save-buttons @if($is_locked==0) edit_dv @elseif($is_locked==1) d-none @endif">Save Changes</button>  
                   @endrole
-                  <button type="button" class="btn btn-primary save-buttons 
-                  @if($is_locked==0) edit_dv @elseif($is_locked==1) d-none @endif">Save Changes</button>  
                 </div>       
               </div>
               @endrole

@@ -181,7 +181,7 @@
                     ?>
                     <tr class="text-right font-weight-bold">
                       <td>Total</td>
-                      <td>Php {{ number_format($total_rs_activity_amount, 2) }}</td>
+                      <td>₱ {{ number_format($total_rs_activity_amount, 2) }}</td>
                     </tr>
                   </tbody>          
                 </table>

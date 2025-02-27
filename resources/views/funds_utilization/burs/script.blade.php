@@ -5,6 +5,7 @@
       id = $(this).data('id')
       delete_rs(id);
     })
+
     function delete_rs(id){
       Swal.fire({
         title: 'Are you sure you want to delete?',
@@ -14,25 +15,25 @@
       })
       .then((result) => {
         if (result.value) {
-        $.ajax({
-            method: "PATCH",
-            url: "{{ route('rs.delete') }}",
-            data: {
-              '_token': '{{ csrf_token() }}',
-              'id' : id,
-              'delete_rs' : 1,
-            },
-            success: function(data) {      
-              Swal.fire({
-              position: 'top-end',
-              icon: 'success',
-              title: 'BURS has been successfully deleted.',
-              showConfirmButton: false,
-              timer: 1500
-              }) 
-              $('#rs_table').DataTable().ajax.reload();    
-            }             
-        })    
+          $.ajax({
+              method: "PATCH",
+              url: "{{ route('rs.delete') }}",
+              data: {
+                '_token': '{{ csrf_token() }}',
+                'id' : id,
+                'delete_rs' : 1,
+              },
+              success: function(data) {      
+                Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: 'BURS has been successfully deleted.',
+                showConfirmButton: false,
+                timer: 1500
+                }) 
+                $('#rs_table').DataTable().ajax.reload();    
+              }             
+          })    
         }       
       })
     }

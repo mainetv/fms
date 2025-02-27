@@ -223,11 +223,11 @@
 		}
 		var current_filter = getCurrenURL();
 		//server
-		var start_date = `${current_filter[5]}`; 
-		var end_date = `${current_filter[6]}`; 
+		// var start_date = `${current_filter[5]}`; 
+		// var end_date = `${current_filter[6]}`; 
 		//local
-		// var start_date = `${current_filter[6]}`; 
-		// var end_date = `${current_filter[7]}`; 
+		var start_date = `${current_filter[4]}`; 
+		var end_date = `${current_filter[5]}`; 
 
 		$('#date_range').daterangepicker(
 			{

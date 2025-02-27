@@ -22,7 +22,7 @@
                   <div class="form-group row">
                     <label for="activity_id" class="col-sm-3 col-form-label">Check Date</label>
                     <div class="col"> 
-                      <input type="text" id="check_date" name="check_date" value="{{ $check_date }}" class="datepicker form-control check-field">
+                      <input type="text" id="check_date" name="check_date" value="{{ $check_date }}" class="form-control check-field" readonly>
                     </div> 
                   </div> 
                 </div>

@@ -12,10 +12,6 @@
 		$division_id=$getUserDivisionID;
 	}
 	$emp_code = DB::table('view_users')->where('id', $user_id)->pluck('emp_code')->first();     
-	if($emp_code=='PS1908'){
-		$getUserDivisionID=3;
-		$division_id=3;
-	}
    foreach($getAllotmentActiveStatus as $row){	
       $status=$row->status;
       $status_id=$row->status_id;
@@ -29,16 +25,16 @@
          <div class="row mb-2">
             <div class="col-sm-6">
             <h1 class="m-0">{{ $title }}</h1>
-            </div><!-- /.col -->
+            </div>
             <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
                   <li class="breadcrumb-item"><a href="/fms/public">Home</a></li>
                   <li class="breadcrumb-item active">Programming & Allocation</li>
                   <li class="breadcrumb-item active">{{ $title }}</li>
             </ol>
-            </div><!-- /.col -->
-         </div><!-- /.row -->
-      </div><!-- /.container-fluid -->
+            </div>
+         </div>
+      </div>
    </div>
 
    <section class="content">  
@@ -79,7 +75,7 @@
                   </h3>
                </div> 
                <div class="float-right col-4">  
-                  @if($status_id==55) 
+                  @if($status_id==22) 
                      <button type="button" data-year="{{ $year_selected }}"  data-toggle="modal" 									
                         class="btn btn-primary float-right btn_forward" data-target="#forward_modal">
                         Forward {{ $year_selected }} activities/object to NEP Preparation FY {{ $year_selected+1 }}</button>

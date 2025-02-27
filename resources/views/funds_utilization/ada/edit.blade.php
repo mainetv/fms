@@ -160,7 +160,7 @@
                           ?>
                           <tr class="text-right font-weight-bold">
                             <td colspan="7">Total ADA Amount&nbsp;</td>
-                            <td nowrap>Php {{ number_format($total_ada_amount, 2) }}
+                            <td nowrap>₱ {{ number_format($total_ada_amount, 2) }}
                               <input type="text" name="total_ada_amount" value="{{ $total_ada_amount }}" hidden>
                           </tr>
                       </tbody>          

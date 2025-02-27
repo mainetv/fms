@@ -4,7 +4,7 @@
     $('#bp_modal').on('hide.bs.modal', function(){
       init_view_bp();
       clear_attributes();
-      clear_fields();      
+      clearFields      
     });    
 
     $('#bp_modal').on('shown.bs.modal', function () {
@@ -484,7 +484,7 @@
       var msg = "";
       var notif_msg = "";
       clear_attributes();
-      clear_fields();      
+      clearFields      
     }); 
 
     function init_forward(division_id, year){

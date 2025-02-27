@@ -93,7 +93,7 @@ SELECT
     a.updated_at AS updated_at
 FROM allotment a
 LEFT JOIN commonlibrariesdb.request_status_types rs_types ON a.rs_type_id = rs_types.id
-LEFT JOIN commonlibrariesdb.allotment_fund afund ON a.allotment_fund_id = afund.id
+LEFT JOIN allotment_funds afund ON a.allotment_fund_id = afund.id
 LEFT JOIN commonlibrariesdb.pcaarrd_divisions divi ON a.division_id = divi.id
 LEFT JOIN commonlibrariesdb.pcaarrd_divisions divi_pooled ON a.pooled_at_division_id = divi_pooled.id
 LEFT JOIN fiscal_year fy ON a.year = fy.year

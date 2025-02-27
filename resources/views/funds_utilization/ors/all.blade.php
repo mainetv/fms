@@ -6,16 +6,16 @@
 			<div class="row mb-2">
 				<div class="col-sm-6">
 				<h1 class="m-0">Obligation Request and Status (ORS)</h1>
-				</div><!-- /.col -->
+				</div>
 				<div class="col-sm-6">
 				<ol class="breadcrumb float-sm-right">
 						<li class="breadcrumb-item"><a href="/fms/public">Home</a></li>
 						<li class="breadcrumb-item active">Funds Utilization</li>
 						<li class="breadcrumb-item active">Obligation Request and Status (ORS)</li>
 				</ol>
-				</div><!-- /.col -->
-			</div><!-- /.row -->
-		</div><!-- /.container-fluid -->
+				</div>
+			</div>
+		</div>
 	</div>
 	
 	<section class="content">  
@@ -60,7 +60,7 @@
 						<input type="text" id="user_role_id" name="user_role_id" value="{{ $user_role_id }}" hidden>
 						<input type="text" id="division_id" name="division_id" value="{{ $division_id }}" hidden>
 					</div>	
-<div class="col-sm-1">	
+					<div class="col-sm-1">	
 						<button id="btn_search_all" class="btn btn-primary">Search</button>		
 					</div>												    
 				</div>
@@ -109,7 +109,7 @@
 
 		function loadRecords(){	
 			if($('#search_all').val()!=""){
-var current_filter = getCurrenURL();
+				var current_filter = getCurrenURL();
 				var search_filter = $('#search_all').val();
 				var month_selected = '';
 				// var year_selected = '';
@@ -119,15 +119,15 @@ var current_filter = getCurrenURL();
 				var current_filter = getCurrenURL();
 				var search_filter = '';
 				// server
-				var month_selected = `${current_filter[6]}`; 
-				var year_selected = `${current_filter[7]}`; 
+				// var month_selected = `${current_filter[6]}`; 
+				// var year_selected = `${current_filter[7]}`; 
 				// local
-				// var month_selected = `${current_filter[7]}`; 
-				// var year_selected = `${current_filter[8]}`; 				
+				var month_selected = `${current_filter[7]}`; 
+				var year_selected = `${current_filter[8]}`; 				
 			}
 			var rs_table = $('#rs_table').DataTable({
 				destroy: true,
-deferRender: true,
+				deferRender: true,
 				info: true,
 				iDisplayLength: 100,
 				scrollY: 550,
@@ -136,7 +136,7 @@ deferRender: true,
 				fixedColumns: true,
 				processing: true,
 				responsive: true,
-serverSide: true,
+				serverSide: true,
 				ajax: {
 					url: "{{ route('show_rs_by_month_year') }}",
 					method: "GET",

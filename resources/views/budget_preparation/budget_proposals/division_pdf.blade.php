@@ -59,10 +59,19 @@
 			if($user_parent_division_id == 5){
 				$user_division_director = App\Models\ViewUsersHasRolesModel::where('parent_division_id', $user_parent_division_id)
 					->where('role_id', 6)->where('is_active', 1)->where('is_deleted', 0)->pluck('fullname_last')->first(); 
+				$user_division_director_position = "Division Director";
+				$isOIC = App\Models\ViewUsersHasRolesModel::where('parent_division_id', $user_parent_division_id)
+				->where('role_id', 6)->where('is_active', 1)->where('is_deleted', 0)->pluck('oic')->first();
 			}
 			else{
 				$user_division_director = App\Models\ViewUsersHasRolesModel::where('division_id', $user_division_id)
 					->where('role_id', 6)->where('is_active', 1)->where('is_deleted', 0)->pluck('fullname_last')->first(); 
+				$user_division_director_position = "Division Director";
+				$isOIC = App\Models\ViewUsersHasRolesModel::where('division_id', $user_division_id)
+					->where('role_id', 6)->where('is_active', 1)->where('is_deleted', 0)->pluck('oic')->first(); 
+			}
+			if($isOIC==1){
+				$user_division_director_position = "Division Director/OIC";
 			}
 			$sqlBP = getBudgetProposal($division_id, $year);	
 			foreach($sqlBP as $row){
@@ -361,12 +370,22 @@
 				<td>__________________________________</td>
 			</tr>
 			<tr class="text-center">
-				<td>{{ strtoupper($user_fullname) }}</td>
-				<td>{{ strtoupper($user_division_director) }}</td>
+				@if($division_id==3)
+				   <td>{{ strtoupper($user_fullname) }}</td>
+				   <td>ROSETE, EDLYNE A.</td>
+            @else
+               <td>{{ strtoupper($user_fullname) }}</td>
+               <td>{{ strtoupper($user_division_director) }}</td>
+            @endif
 			</tr>
 			<tr class="text-center">
-				<td style="font-size:11px;">{{ $user_role }}</td>
-				<td style="font-size:11px;">Division Director</td>
+				@if($division_id==3)
+					<td style="font-size:11px;">{{ $user_role }}</td>
+					<td style="font-size:11px;">Audit Team Leader</td>
+				@else
+					<td style="font-size:11px;">{{ $user_role }}</td>
+					<td style="font-size:11px;">{{ $user_division_director_position }}</td>
+				@endif
 			</tr>	
 		</table>
 		<br> 

@@ -4,6 +4,7 @@ SELECT
     dvnet.rs_id AS rs_id,
     rsp.allotment_class_id AS allotment_class_id,
     rsp.allotment_class_acronym AS allotment_class_acronym,
+    rsp.allotment_class AS allotment_class,
     (CASE WHEN(rs.rs_date IS NULL) THEN rs.rs_date ELSE rs.rs_date END) as rs_date,
     rs.rs_type_id AS rs_type_id,
     rs.fund_id AS fund_id,

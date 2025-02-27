@@ -47,13 +47,13 @@ class DVController extends Controller
          "month_selected" => $month_selected,
          "year_selected" => $year_selected,
       ]; 
+      if($user_id==149 || $user_id==117){
+         $user_division_id=3;
+         $user_division_acronym='COA';
+      }
       if($user_id=='20' || $user_id=='14'){
          $user_division_id = '9';
          $user_division_acronym='FAD-DO';
-      }
-      if($user_id=='111'){
-         $division_id = '3';
-         $user_division_acronym='COA';
       }
       if(isset(request()->url)){
          return redirect(request()->url);         
@@ -167,7 +167,7 @@ class DVController extends Controller
          })
          ->pluck('role_id')->first(); 
       $dv_id=$request->id;    
-      $getPayees = ViewLibraryPayeesModel::where("is_active", 1)->where("is_deleted", 0)->orderBy('payee')->get();             
+      $getPayees = ViewLibraryPayeesModel::where('is_verified', 1)->where("is_active", 1)->where("is_deleted", 0)->orderBy('payee')->get();             
       $getDvDetails =  ViewDVModel::where('id', $dv_id)->where('is_active', 1)->where('is_deleted', 0)->get();
       $dv_payee_id =  ViewDVModel::where('id', $dv_id)->where('is_active', 1)->where('is_deleted', 0)->pluck('payee_id')->first();       
       $title = "dv";
@@ -198,6 +198,10 @@ class DVController extends Controller
       $user_division_acronym = ViewUsersModel::where('id', $user_id)->pluck('division_acronym')->first();    
       $emp_code = ViewUsersModel::where('id', $user_id)->pluck('emp_code')->first();         
       $title = "dv";
+      if($user_id==149 || $user_id==117){
+         $user_division_id=3;
+         $user_division_acronym='COA';
+      }
       return view('funds_utilization.dv.add')
          ->with(compact('user_id'))
          ->with(compact('user_role_id'))
@@ -673,9 +677,15 @@ class DVController extends Controller
          $module_id = $request->module_id;  
          $division_id = $request->division_id;          
          $now = Carbon::now()->timezone('Asia/Manila')->format('Y-m-d H:i:s');	
-         $today = Carbon::now()->timezone('Asia/Manila')->format('Y-m-d');	
+         $today = Carbon::now()->timezone('Asia/Manila')->format('Y-m-d');	         
+         $year_now = Carbon::now()->year;                     
          $dv_id=$request->dv_id; 
          $year=$request->year; 
+         $lastDay = Carbon::createFromDate($year, 12, 31);    
+         if ($lastDay->isWeekend()) {
+            // If it's a weekend, adjust to the nearest previous weekday
+            $lastDay = $lastDay->previousWeekday();            
+         } 
          $next_year=$year+1;
          $last_dv_id = DVModel::where(function ($query) use($year,$next_year) {
             $query->where(function ($query) use($year,$next_year){
@@ -688,15 +698,26 @@ class DVController extends Controller
                });
             })
             ->where('is_active', 1)->where('is_deleted', 0)
-            ->orderByRaw('CAST(dv_no AS UNSIGNED) desc, dv_no desc')->limit(1)->pluck('dv_no')->first();        
+            ->orderByRaw('CAST(dv_no AS UNSIGNED) desc, dv_no desc')->limit(1)->pluck('dv_no')->first();               
          $dv_no = $last_dv_id + 1;
-         DVModel::find($dv_id)
+         if($year_now == $year){
+            DVModel::find($dv_id)
             ->update([ 
                'dv_date1'=>$today,
                'dv_no'=>$dv_no,
                'is_locked'=> 1, 
                'locked_at'=> $now, 
             ]); 
+         }
+         else{
+            DVModel::find($dv_id)
+            ->update([ 
+               'dv_date1'=>$lastDay->format('Y-m-d'),
+               'dv_no'=>$dv_no,
+               'is_locked'=> 1, 
+               'locked_at'=> $now, 
+            ]); 
+         }          
          $message = $user_division_acronym.' updated the DV [ID: '.$dv_id.']';          
          $get_link = ModulesModel::where('id', $module_id)
             ->where('is_active', 1)->where('is_deleted', 0)->pluck('link')->first();
@@ -996,10 +1017,9 @@ class DVController extends Controller
       $month_selected=$request->month_selected;
       $year_selected=$request->year_selected;
       $search=$request->search;
-      $user_id = auth()->user()->id;     
-      if($user_id=='111'){
-         $division_id=3;
-      }
+      $user_id = auth()->user()->id; 
+      // dd($user_id);    
+      // dd($request->all());    
       if ($request->ajax() && ($search == null || $search == '')) {        
          $data = ViewDVModel::where('division_id', $division_id)->whereMonth('dv_date', $month_selected)->whereYear('dv_date', $year_selected)
             ->where('is_active', 1)->where('is_deleted', 0)->orderBy('dv_no', 'ASC')->get();
@@ -1015,6 +1035,7 @@ class DVController extends Controller
             })
             ->where('division_id', $division_id)->where('is_active', 1)->where('is_deleted', 0)->orderBy('dv_no', 'ASC')->get();
       }
+      // dd($data);
       return DataTables::of($data)
          ->setRowAttr([
             'data-id' => function($dv) {
@@ -1099,12 +1120,15 @@ class DVController extends Controller
          }
       }
       elseif($request->attach_dv_check==1){                 
-         $data = ViewDVModel::whereYear('dv_date1', $request->year)
+         $data = ViewDVModel::where(function ($query) use ($request) {
+            $query->whereYear('dv_date1', $request->year)
+                  ->orWhereYear('dv_date1', $request->year - 1); // Include previous year
+            })
             ->whereNull('lddap_id')->whereNull('ada_check_no')
             ->where(function ($query) {
                   $query->whereNotNull('dv_no')
                      ->orWhere('dv_no','!=',' ');
-            })
+            })            
             ->where('is_active', 1)->where('is_deleted', 0)
             ->orderByRaw('CAST(dv_no AS UNSIGNED) asc, dv_no asc')->get();  
          if($request->add_check==1){

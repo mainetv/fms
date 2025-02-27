@@ -147,7 +147,7 @@
                 <div class="col-4"> 
                   <select id="signatory3" name="signatory3" class="form-control dv-field select2bs4">   
                     <option value="" selected hidden>Select Signatory</option>
-                    @foreach ($getLDDAPSignatories as $row)
+                    @foreach ($getLDDAP2Signatories as $row)
                       <option value="{{ $row->fullname_first }}"
                         @if(($signatory3==strtoupper($row->fullname_first)) || ($signatory3==$row->fullname_first) ){{ "selected" }} @endif>
                         {{ strtoupper($row->fullname_first) }}</option>
@@ -256,7 +256,7 @@
                       ?>
                       <tr class="text-right font-weight-bold">
                         <td colspan="8">Total LDDAP Amount&nbsp;</td>
-                        <td nowrap>Php {{ number_format($total_lddap_amount, 2) }}
+                        <td nowrap>₱ {{ number_format($total_lddap_amount, 2) }}
                           <input type="text" name="total_lddap_amount" value="{{ $total_lddap_amount }}" hidden>
                       </tr>
                   </tbody>          

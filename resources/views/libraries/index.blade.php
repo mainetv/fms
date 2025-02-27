@@ -6,16 +6,16 @@
       <div class="container-fluid">
          <div class="row mb-2">
             <div class="col-sm-6">
-            <h1 class="m-0">{{ $title }}</h1>
-            </div><!-- /.col -->
+            <h1 class="m-0">Utilities</h1>
+            </div>
             <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
                   <li class="breadcrumb-item"><a href="/fms/public">Home</a></li>
-                  <li class="breadcrumb-item active">{{ $title }}</li>
+                  <li class="breadcrumb-item active">Utilities</li>
             </ol>
-            </div><!-- /.col -->
-         </div><!-- /.row -->
-      </div><!-- /.container-fluid -->
+            </div>
+         </div>
+      </div>
    </div>
 
    <section class="content">  
@@ -38,8 +38,14 @@
                   <a href="#library_subactivity" class="nav-link" id="library_subactivity_tab" data-toggle="tab" role="tab" aria-controls="library_subactivity" aria-selected="true">Subactivities</a>
                </li>  
                <li class="nav-item">
-                  <a href="#library_object_expenditure" class="nav-link" id="library_expenditure_tab" data-toggle="tab" role="tab" aria-controls="library_object_expenditure" aria-selected="true">Expenditures</a>
+                  <a href="#library_expense_account" class="nav-link" id="library_expense_account_tab" data-toggle="tab" role="tab" aria-controls="library_expense_account" aria-selected="true">Expense Accounts</a>
+               </li> 
+               <li class="nav-item">
+                  <a href="#library_object_expenditure" class="nav-link" id="library_object_expenditure_tab" data-toggle="tab" role="tab" aria-controls="library_object_expenditure" aria-selected="true">Object Expenditures</a>
                </li>  
+               <li class="nav-item">
+                  <a href="#library_object_specific" class="nav-link" id="library_object_specific_tab" data-toggle="tab" role="tab" aria-controls="library_object_specific" aria-selected="true">Object Specifics</a>
+               </li>
                @endunlessrole
             </ul>
          </div>         
@@ -57,8 +63,14 @@
                <div class="tab-pane fade show" id="library_subactivity" role="tabpanel" aria-labelledby="library_subactivity_tab">
                   @include('libraries.library_subactivity.index')   
                </div> 
-               <div class="tab-pane fade show" id="library_object_expenditure" role="tabpanel" aria-labelledby="library_expenditure_tab">
+               <div class="tab-pane fade show" id="library_expense_account" role="tabpanel" aria-labelledby="library_expense_account_tab">
+                  @include('libraries.library_expense_account.index')   
+               </div> 
+               <div class="tab-pane fade show" id="library_object_expenditure" role="tabpanel" aria-labelledby="library_object_expenditure_tab">
                   @include('libraries.library_object_expenditure.index')   
+               </div> 
+               <div class="tab-pane fade show" id="library_object_specific" role="tabpanel" aria-labelledby="library_object_specific_tab">
+                  @include('libraries.library_object_specific.index')   
                </div> 
            </div>
          </div>
@@ -126,6 +138,12 @@
    </section>
 
    @include('libraries.library_payees.modal')
+   @include('libraries.library_pap.modal')
+   @include('libraries.library_activity.modal')
+   @include('libraries.library_subactivity.modal')
+   @include('libraries.library_expense_account.modal')
+   @include('libraries.library_object_expenditure.modal')
+   @include('libraries.library_object_specific.modal')
 
 @endsection
  
@@ -133,6 +151,12 @@
    <script type="text/javascript">
       $(document).ready(function(){  
          @include('libraries.library_payees.script')                     
+         @include('libraries.library_pap.script')                     
+         @include('libraries.library_activity.script')                     
+         @include('libraries.library_subactivity.script')                     
+         @include('libraries.library_expense_account.script')                     
+         @include('libraries.library_object_expenditure.script')                      
+         @include('libraries.library_object_specific.script')                      
          @include('scripts.common_script')          
       })
    </script>  

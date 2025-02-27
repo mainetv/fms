@@ -528,7 +528,7 @@
 			<tr class="text-center">
             @if($division_id==3)
 				   <td>{{ strtoupper($user_fullname) }}</td>
-				   <td>{{ strtoupper($user_fullname) }}</td>
+				   <td>ROSETE, EDLYNE A.</td>
             @else
                <td>{{ strtoupper($user_fullname) }}</td>
                <td>{{ strtoupper($user_division_director) }}</td>
@@ -536,8 +536,8 @@
 			</tr>
 			<tr class="text-center">
             @if($division_id==3)
-               <td style="font-size:11px;">Auditor</td>
-               <td style="font-size:11px;">Auditor</td>
+               <td style="font-size:11px;">{{ $user_role }}</td>
+               <td style="font-size:11px;">Audit Team Leader</td>
             @else
                <td style="font-size:11px;">{{ $user_role }}</td>
                <td style="font-size:11px;">

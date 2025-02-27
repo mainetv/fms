@@ -13,6 +13,7 @@ SELECT
     allotment_class_id,
     allotment_class_number,
     allotment_class_acronym,
+    allotment_class,
     pap,
     pap_code,
     pap_all,

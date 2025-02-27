@@ -3,7 +3,7 @@
         <x-slot name="logo">
             <x-jet-authentication-card-logo />
         </x-slot>
-
+        
         <div class="login-card-body">
 
             <x-jet-validation-errors class="mb-3 rounded-0" />
@@ -14,6 +14,9 @@
                 </div>
             @endif
 
+            {{-- <center>
+                <img src="{{ asset('/images/maintenance.png') }}" alt="" class="float-left" width="700px" style="opacity: .8">
+            </center> --}}
             <form method="POST" action="{{ route('login') }}">
                 @csrf
                 <div class="input-group mb-3">

@@ -11,7 +11,7 @@
 		<div class="card text-left">
 			<div class="card-header">
 				<h5 class="font-weight-bold">
-					ORS/BURS per Responsibility Center
+					ORS/BURS by Responsibility Center
 				</h5>            
 			</div>   
 			<div class="card-body">

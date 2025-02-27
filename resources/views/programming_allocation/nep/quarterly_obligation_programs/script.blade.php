@@ -4,7 +4,7 @@
     $('#qop_modal').on('hide.bs.modal', function(){
       init_view_qop();
       clear_attributes();
-      clear_fields();      
+      clearFields      
     }); 
     
     $('#qop_modal').on('shown.bs.modal', function () {
@@ -270,7 +270,7 @@
       var msg = "";
       var notif_msg = "";
       clear_attributes();
-      clear_fields();      
+      clearFields      
     }); 
 
     $('.btn_forward').on('click', function(){      
@@ -295,7 +295,7 @@
         }
         $(".modal-body #forward_status_id").val('2');
       }
-else if(user_role_id == 7 && division_acronym=='COA'){        
+      else if(user_role_id == 7 && division_acronym=='COA'){        
         alert_msg = "Are you sure you want to forward the quarterly obligation program to FAD-Budget?";
         notif_msg = "COA budget controller forwarded the quarterly obligation program for your approval or comment/s";
         $(".modal-body #forward_status_id").val('6');
@@ -386,7 +386,7 @@ else if(user_role_id == 7 && division_acronym=='COA'){
       var user_parent_division_id = $(this).data('parent-division-id')      
       $(".modal-body #receive_division_id").val(division_id);
       $(".modal-body #receive_division_acronym").val(division_acronym);
-      $(".modal-body #receive_year").val(year);                 
+      $(".modal-body #receive_year").val(year);  
       if(user_role_id == 7){
         if(active_status_id == 4){     
           if(user_parent_division_id!=0){        

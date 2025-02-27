@@ -149,7 +149,7 @@
                         <td colspan="3">Total DV Amount</td>
                         <td>
                           <input type="text" id="total_dv_gross_amount" name="total_dv_gross_amount" value="{{ $total_dv_gross_amount }}" hidden>
-                          Php {{ number_format($total_dv_gross_amount, 2) }}
+                          ₱ {{ number_format($total_dv_gross_amount, 2) }}
                       </tr>
                   </tbody>          
                 </table>
@@ -260,7 +260,7 @@
                     ?>
                     <tr class="text-right font-weight-bold">
                       <td colspan="14">Total DV Net Amount</td>
-                      <td>Php {{ number_format($total_dv_net_amount, 2) }}
+                      <td>₱ {{ number_format($total_dv_net_amount, 2) }}
                     </tr>
                   </tbody>          
                 </table>

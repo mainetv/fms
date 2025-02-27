@@ -8,7 +8,7 @@
     stateSave: true,
     dom: 'Bfrtip',
     ajax: {
-      url: "{{ route('user_roles.table') }}",
+      url: "{{ route('administration.user_roles.table') }}",
       method: "GET",
       data : {
       '_token': '{{ csrf_token() }}'

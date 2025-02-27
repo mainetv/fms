@@ -1,5 +1,5 @@
 <!-- Main Modal -->
-  <div class="modal fade" id="cp_modal" tabindex="-1" role="dialog" aria-labelledby="pap_label" aria-hidden="true">
+  <div class="modal fade" id="cp_modal" role="dialog" aria-labelledby="pap_label" aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">

@@ -72,7 +72,7 @@
 	$('#bp_form9_modal').on('hide.bs.modal', function(){  
 		init_view_bp_form9();   
 		clear_attributes();
-		clear_fields();
+		clearFields
 	});  
 	$('#bp_form9_modal').on('shown.bs.modal', function () {
 		$('#bp_form9_description').focus();

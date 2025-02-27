@@ -4,6 +4,7 @@
     </IfModule>
 
     RewriteEngine On
+    RewriteRule ^fms$ public/index.php [L]
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .

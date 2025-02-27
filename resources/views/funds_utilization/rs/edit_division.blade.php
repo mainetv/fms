@@ -187,7 +187,7 @@
                     ?>
                     <tr class="text-right font-weight-bold">
                       <td>Total</td>
-                      <td>Php {{ number_format($total_rs_activity_amount, 2) }}</td>
+                      <td>₱ {{ number_format($total_rs_activity_amount, 2) }}</td>
                     </tr>
                   </tbody>          
                 </table>
@@ -275,11 +275,13 @@
                   </button></a>
                 </div> 
                 <div class="col">
-                  <button type="button" class="btn btn-primary 
-                    @if($user_role_id!=3) @if($total_rs_amount!=0) print_p1 @else disabled @endif  @endif">
-                    Print</button>
-                  <button type="button" class="btn btn-primary save-buttons 
-                  @if($user_role_id!=3 && $is_locked==0) edit_rs @elseif($user_role_id!=3 && $is_locked==1) d-none @else update_rs @endif">Save Changes</button>  
+                  @role('Division Budget Controller')
+                    <button type="button" class="btn btn-primary                  
+                      @if($user_role_id!=3) @if($total_rs_amount!=0) print_p1 @else disabled @endif  @endif">
+                        Print</button>
+                    <button type="button" class="btn btn-primary save-buttons 
+                    @if($user_role_id!=3 && $is_locked==0) edit_rs @elseif($user_role_id!=3 && $is_locked==1) d-none @else update_rs @endif">Save Changes</button> 
+                  @endrole 
                 </div>       
               </div>
             </form> 

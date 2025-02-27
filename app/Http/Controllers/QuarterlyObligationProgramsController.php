@@ -47,6 +47,7 @@ class QuarterlyObligationProgramsController extends Controller
                ->with(compact('title'))
                ->with(compact('user_id'))
                ->with(compact('year_selected'))
+               ->with(compact('user_role_id'))
                ->with(compact('user_division_id'));
          }
       }

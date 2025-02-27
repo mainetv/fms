@@ -6,16 +6,16 @@
 			<div class="row mb-2">
 				<div class="col-sm-6">
 				<h1 class="m-0">{{ $title }}</h1>
-				</div><!-- /.col -->
+				</div>
 				<div class="col-sm-6">
 				<ol class="breadcrumb float-sm-right">
 						<li class="breadcrumb-item"><a href="/fms/public">Home</a></li>
 						<li class="breadcrumb-item active">Funds Utilization</li>
 						<li class="breadcrumb-item active">List of Due and Demandable Accounts Payable (LDDAP)</li>
 				</ol>
-				</div><!-- /.col -->
-			</div><!-- /.row -->
-		</div><!-- /.container-fluid -->
+				</div>
+			</div>
+		</div>
 	</div>
 	
 	<section class="content">  
@@ -107,19 +107,31 @@
 								$oct_total=0;
 								$nov_total=0;
 								$dec_total=0;
+								$jan=0;
+								$feb=0;
+								$mar=0;
+								$apr=0;
+								$may=0;
+								$jun=0;
+								$jul=0;
+								$aug=0;
+								$sep=0;
+								$oct=0;
+								$nov=0;
+								$dec=0;
 								foreach ($getNCA as $row) {
-									$jan=$row->jan_nca;
-									$feb=$row->feb_nca;
-									$mar=$row->mar_nca;
-									$apr=$row->apr_nca;
-									$may=$row->may_nca;
-									$jun=$row->jun_nca;
-									$jul=$row->jul_nca;
-									$aug=$row->aug_nca;
-									$sep=$row->sep_nca;
-									$oct=$row->oct_nca;
-									$nov=$row->nov_nca;
-									$dec=$row->dec_nca;																
+									$jan=$row->jan_nca ?? 0;
+									$feb=$row->feb_nca ?? 0;
+									$mar=$row->mar_nca ?? 0;
+									$apr=$row->apr_nca ?? 0;
+									$may=$row->may_nca ?? 0;
+									$jun=$row->jun_nca ?? 0;
+									$jul=$row->jul_nca ?? 0;
+									$aug=$row->aug_nca ?? 0;
+									$sep=$row->sep_nca ?? 0;
+									$oct=$row->oct_nca ?? 0;
+									$nov=$row->nov_nca ?? 0;
+									$dec=$row->dec_nca ?? 0;																
 									$jan_total+=$row->jan_nca;
 									$feb_total+=$row->feb_nca;
 									$mar_total+=$row->mar_nca;
@@ -170,7 +182,7 @@
 										$month_beginning_balance=$quarter_annual_beginning_balance-$previous_months_total;  
 									}
 								}								
-								elseif ($fund_selected=='2' || $fund_selected=='3'){
+								elseif ($fund_selected=='2' || $fund_selected=='3' || $fund_selected=='4' || $fund_selected=='7'){
 									$quarter="Annual"; $quarter_annual_beginning_balance=$annual_total ?? 0; 
 									if($month_selected==1) $month_beginning_balance=$jan; 
 									if($month_selected==2) $month_beginning_balance=$feb; 
@@ -188,20 +200,20 @@
 								}
 								?>
 								<tr class="text-right font-weight-bold">
-									<td colspan="4">NCA Beginning Balance ({{ $quarter }})</td>
-									<td>{{ number_format($quarter_annual_beginning_balance, 2) }}</td>
+									<td colspan="4">NCA Beginning Balance ({{ $quarter ?? ''}})</td>
+									<td>{{ number_format($quarter_annual_beginning_balance ?? 0, 2) }}</td>
 									<td colspan="3"></td>
 								</tr>
 								<tr class="text-right font-weight-bold">
 									<td colspan="4">NCA Beginning Balance ({{ numtomonth($month_selected) }})</td>
-									<td>{{ number_format($month_beginning_balance, 2) }}</td>
+									<td>{{ number_format($month_beginning_balance ?? 0, 2) }}</td>
 									<td colspan="3"></td>
 								</tr>
 								<?php
 								$month_total_lddap_net_amount=0;			
 								$quarter_annual_ending_balance=0;
 								$quarter_annual_total=0;
-								$year_total_lddap_amount = DB::table('lddap')->select(DB::raw("SUM(total_lddap_net_amount) AS total_lddap_net_amount"))
+								$year_total_lddap_amount = DB::table('view_lddap')->select(DB::raw("SUM(total_lddap_net_amount) AS total_lddap_net_amount"))
 									->whereYear('lddap_date', $year_selected)
 									->where('fund_id', $fund_selected)->where('is_active', 1)->where('is_deleted', 0)->pluck('total_lddap_net_amount')->first();
 								$getLDDAPbyFundMonthYear=getLDDAPbyFundMonthYear($fund_selected, $month_selected, $year_selected);
@@ -263,8 +275,10 @@
 										$quarter_annual_ending_balance=$month_beginning_balance-$month_total_lddap_net_amount; 
 										$quarter_annual_total=$previous_month_total+$month_total_lddap_net_amount;  
 									}   
+
+
 								}
-								elseif ($fund_selected=='2' || $fund_selected=='3'){ 
+								else{ 
 									// $quarter_annual_ending_balance=$annual_total-$month_total_lddap_net_amount;
 									$quarter_annual_ending_balance=$annual_total-$year_total_lddap_amount;
 								}
@@ -280,12 +294,12 @@
 									<td colspan="3"></td>
 								</tr>
 								<tr class="text-right font-weight-bold">
-									<td colspan="4">Total ({{ $quarter }})</td>
+									<td colspan="4">Total ({{ $quarter ?? '' }})</td>
 									<td>{{ number_format($quarter_annual_total, 2) }}</td>
 									<td colspan="3"></td>
 								</tr>
 								<tr class="text-right font-weight-bold">
-									<td colspan="4">NCA Ending Balance ({{ $quarter }})</td>
+									<td colspan="4">NCA Ending Balance ({{ $quarter ?? '' }})</td>
 									<td>{{ number_format($quarter_annual_ending_balance, 2) }}</td>
 									<td colspan="3"></td>
 								</tr>

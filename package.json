@@ -1,26 +1,23 @@
 {
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "npm run development",
-    "development": "mix",
-    "watch": "mix watch",
-    "watch-poll": "mix watch -- --watch-options-poll=1000",
-    "hot": "mix watch --hot",
-    "prod": "npm run production",
-    "production": "mix --production"
+    "dev": "vite",
+    "build": "vite build"
   },
   "devDependencies": {
     "@popperjs/core": "^2.11.5",
     "@tailwindcss/forms": "^0.4.0",
     "@tailwindcss/typography": "^0.5.0",
     "alpinejs": "^3.2.6",
-    "axios": "^0.25",
+    "axios": "^1.7.9",
     "bootstrap": "^5.2.0-beta1",
     "jquery": "^3.6.0",
-    "laravel-mix": "^6.0.6",
     "lodash": "^4.17.19",
     "postcss": "^8.1.14",
     "postcss-import": "^14.0.1",
+    "prettier": "^3.5.2",
+    "prettier-plugin-blade": "^2.1.21",
     "resolve-url-loader": "^5.0.0",
     "sass": "^1.50.1",
     "sass-loader": "^12.1.0",
@@ -37,7 +34,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@gitlab.com/sddmu/fms.git"
+    "url": "git+ssh://git@github.com/mainetv/fms.git"
   },
   "author": "Normaine T. Villar",
   "license": "ISC",
@@ -47,7 +44,9 @@
   "homepage": "https://gitlab.com/sddmu/fms#readme",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.1.1",
-    "admin-lte": "^3.2.0",
-    "html2pdf.js": "^0.10.1"
+    "admin-lte": "^4.0.0-beta3",
+    "html2pdf.js": "^0.10.1",
+    "laravel-vite-plugin": "^1.1.1",
+    "vite": "^6.0.7"
   }
 }

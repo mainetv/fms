@@ -14,55 +14,55 @@ use OwenIt\Auditing\Contracts\Auditable;
 // class User extends Authenticatable
 class User extends Authenticatable implements Auditable
 {
-    use HasApiTokens;
-    use HasFactory;
-    use \OwenIt\Auditing\Auditable;
-    use HasProfilePhoto;
-    use Notifiable;
-    use TwoFactorAuthenticatable;
-    use HasRoles;
+   use HasApiTokens;
+   use HasFactory;
+   use \OwenIt\Auditing\Auditable;
+   use HasProfilePhoto;
+   use Notifiable;
+   use TwoFactorAuthenticatable;
+   use HasRoles;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var string[]
-     */
-    protected $fillable = [
-        'emp_code',
-        'user_role_id',
-        'username',
-        // 'email',
-        'password',
-        'is_active'
-    ];
+   /**
+    * The attributes that are mass assignable.
+    *
+    * @var string[]
+    */
+   protected $fillable = [
+      'emp_code',
+      'user_role_id',
+      'username',
+      // 'email',
+      'password',
+      'is_active'
+   ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-        'two_factor_recovery_codes',
-        'two_factor_secret',
-    ];
+   /**
+    * The attributes that should be hidden for serialization.
+    *
+    * @var array
+    */
+   protected $hidden = [
+      'password',
+      'remember_token',
+      'two_factor_recovery_codes',
+      'two_factor_secret',
+   ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+   /**
+    * The attributes that should be cast.
+    *
+    * @var array
+    */
+   protected $casts = [
+      'email_verified_at' => 'datetime',
+   ];
 
-    /**
-     * The accessors to append to the model's array form.
-     *
-     * @var array
-     */
-    protected $appends = [
-        'profile_photo_url',
-    ];
+   /**
+    * The accessors to append to the model's array form.
+    *
+    * @var array
+    */
+   protected $appends = [
+      'profile_photo_url',
+   ];
 }

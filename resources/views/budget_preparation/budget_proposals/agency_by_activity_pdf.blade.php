@@ -28,19 +28,17 @@
 				title='PRINT'><i class="fa-2xl fa-solid fa-print"></i></button><?php
 			$sqlBP = getAgencyBudgetProposal($year);	
 			foreach($sqlBP as $row){
-				$fiscal_year1 = $row->fiscal_year1;
-				$fiscal_year2 = $row->fiscal_year2;
-				$fiscal_year3 = $row->fiscal_year3;
+				$fiscal_year1 = $row->fiscal_year1 ?? '';
+				$fiscal_year2 = $row->fiscal_year2 ?? '';
+				$fiscal_year3 = $row->fiscal_year3 ?? '';
 			}
-			$fiscal_year1 = '';
-			$fiscal_year2 = '';
-			$fiscal_year3 = '';
 			$user_id = auth()->user()->id; 
 			$user_fullname = App\Models\ViewUsersModel::where('id', $user_id)->pluck('fullname_last')->first();  
 			$user_role = App\Models\ViewUsersModel::where('id', $user_id)->pluck('user_role')->first();  ?>	
-			<h4>PCAARRD BUDGET PROPOSAL</h4>
-			FY {{ $fiscal_year1 }}-{{ $fiscal_year3 }} BUDGET PROPOSAL <br>		
-			<br>
+			<center><h4>DOST-Philippine Council for Agriculture, Aquatic and Natural Resources Research and Development (DOST-PCAARRD)</h4>
+				<h5> FY {{ $fiscal_year1 }} - {{ $fiscal_year3 }} Budget Proposal</h5>
+				(In Thousand Pesos)			
+			</center><br>	
 			<table id="budget_proposal_table" class="table-bordered table-hover" style="width: 100%;">
 				<thead class="text-center">
 					<th>ACTIVITY / Object of Expenditures</th>
@@ -172,34 +170,24 @@
 				</tbody>
 			</table>
 			<br>
-			<table class="table-borderless" style="width: 100%;">
+			<table class="table-borderless text-left" style="width: 100%;">
 				<tr>
 					<td>Prepared By:</td>
-					{{-- <td>Approved By:</td> --}}
+				</tr>	
+				<tr>
+					<td>&nbsp;</td>
 				</tr>
 				<tr>
-					<td></td>
+					<td>&nbsp;</td>
+				</tr>			
+				<tr>
+					<td>__________________________________</td>
 				</tr>
 				<tr>
-					<td></td>
-				</tr>
-				<tr>
-					<td></td>
-				</tr>
-				<tr>
-					<td></td>
-				</tr>
-				<tr class="text-center">
-					<td>______________________________</td>
-					{{-- <td>______________________________</td> --}}
-				</tr>
-				<tr class="text-center">
 					<td>{{ strtoupper($user_fullname) }}</td>
-					{{-- <td>{{ strtoupper($user_division_director) }}</td> --}}
 				</tr>
-				<tr class="text-center">
+				<tr class="text-left">
 					<td style="font-size:14px;">{{ $user_role }}</td>
-					{{-- <td style="font-size:11px;">Division Director</td> --}}
 				</tr>	
 			</table>
 			<br>

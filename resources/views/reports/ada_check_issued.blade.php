@@ -133,7 +133,7 @@
 					{data: 'rs_no', title: 'ORS/BURS No.', width: '10%', className: 'dt-center'},					
 					{data: 'payee', title: 'Payee', width: '20%', className: 'dt-center'},
 					{data: 'dv_division_acronym', title: 'Division', width: '6%', className: 'dt-center'},
-					{data: 'accnt_obj_code', title: 'Object Code', width: '6%', className: 'dt-center'},
+					{data: 'expense_account_object_code', title: 'Object Code', width: '6%', className: 'dt-center'},
 					{data: 'total_dv_gross_amount', title: 'Gross Amount', width: '7%', className: 'dt-head-center dt-body-right',
 						render: $.fn.dataTable.render.number(',', '.', 2, '')
 					},

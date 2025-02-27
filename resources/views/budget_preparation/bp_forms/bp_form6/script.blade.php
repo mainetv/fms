@@ -1,7 +1,7 @@
 {{-- modal start --}}
 	$('#bp_form6_modal').on('hide.bs.modal', function(){     
 		clear_attributes();
-		clear_fields();
+		clearFields
  	});  
 {{-- modal end --}}
 

@@ -30,7 +30,7 @@
           '_token': '{{ csrf_token() }}',      
           'month' : month,
           'year' : year,
-          'radai_date' : radai_date ?? NULL,
+          'radai_date' : radai_date ?? null,
           'bank_account_id' : bank_account_id,
         },
         success:function(data) {

@@ -129,7 +129,7 @@
 				columns: [
 					{data: 'payee', title: 'Payee', width: '20%', className: 'dt-head-center'},  
 					{data: 'pap_code', title: 'PAP Code', width: '6%', className: 'dt-center'},
-					{data: 'accnt_obj_code', title: 'Object Code', width: '6%', className: 'dt-center'},
+					{data: 'expense_account_object_code', title: 'Object Code', width: '6%', className: 'dt-center'},
 					{data: 'accnt_obj', title: 'Object', width: '18%', className: 'dt-head-center'},
 					{data: 'rs_no', title: 'ORS/BURS No.', width: '10%', className: 'dt-center'},
 					{data: 'dv_date', title: 'DV Date', width: '8%', className: 'dt-center'},

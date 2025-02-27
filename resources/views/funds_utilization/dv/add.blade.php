@@ -9,10 +9,6 @@
   $getTaxTypes=getTaxTypes();
   $getFunds=getFunds();
   $getDvTransactionTypes=getDvTransactionTypes();
-  if($user_id=='111'){
-    $user_division_id=3;
-    $user_division_acronym='COA';
-  }
   if($user_id=='20' || $user_id=='14'){
     $user_division_id = '9';
     $user_division_acronym='FAD-DO';

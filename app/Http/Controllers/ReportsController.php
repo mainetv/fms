@@ -10,6 +10,7 @@ use App\Models\ViewDVAllDataModel;
 use App\Models\ViewDVDataModel;
 use App\Models\ViewDVModel;
 use App\Models\ViewDVSummaryModel;
+use App\Models\ViewFinancialSummary;
 use App\Models\ViewLDDAPIssuedModel;
 use App\Models\ViewLDDAPSummaryModel;
 use App\Models\ViewRSBalanceModel;
@@ -17,15 +18,40 @@ use App\Models\viewRSwithTotalDVModel;
 use App\Models\ViewUsersModel;
 use Illuminate\Http\Request;
 use DataTables;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class ReportsController extends Controller
 {
-	public function rs_per_division(Request $request) {
+	public function financial_summary(Request $request) {
 		$user_id = auth()->user()->id; 
 		$user_role_id = auth()->user()->user_role_id;
-		$title = 'rsperdivision'; 
-		return view('reports.rs_per_division')
+		$user_division_id = ViewUsersModel::where('id', $user_id)->pluck('division_id')->first();
+		$title = 'financialsummary'; 
+		return view('reports.financial_summary')
+			->with(compact('user_division_id'))
+			->with(compact('user_role_id'))
+			->with(compact('user_id'))
+			->with(compact('title'));
+ 	}
+
+	 public function dv_rs_particulars(Request $request) {
+		$user_id = auth()->user()->id; 
+		$user_role_id = auth()->user()->user_role_id;
+		$user_division_id = ViewUsersModel::where('id', $user_id)->pluck('division_id')->first();
+		$title = 'dvrsparticulars'; 
+		return view('reports.dv_rs_particulars')
+			->with(compact('user_division_id'))
+			->with(compact('user_role_id'))
+			->with(compact('user_id'))
+			->with(compact('title'));
+ 	}
+
+	public function rs_by_division(Request $request) {
+		$user_id = auth()->user()->id; 
+		$user_role_id = auth()->user()->user_role_id;
+		$title = 'rsbydivision'; 
+		return view('reports.rs_by_division')
 			->with(compact('user_role_id'))
 			->with(compact('user_id'))
 			->with(compact('title'));
@@ -81,9 +107,6 @@ class ReportsController extends Controller
 		$user_role_id = auth()->user()->user_role_id;
 		$user_division_id = ViewUsersModel::where('id', $user_id)->pluck('division_id')->first();	
 		$title = 'rsbalancedivision';
-		if($user_id=='111'){
-         $user_division_id=3;
-      }
 		return view('reports.rs_balance_by_division')
 			->with(compact('user_role_id'))
 			->with(compact('user_id'))
@@ -96,8 +119,9 @@ class ReportsController extends Controller
 		$user_role_id = auth()->user()->user_role_id;		
 		$user_division_id = ViewUsersModel::where('id', $user_id)->pluck('division_id')->first();			
 		$title = 'dvbydivision'; 
-		if($user_id=='111'){
+		if($user_id==149 || $user_id==117){
          $user_division_id=3;
+         $user_division_acronym='COA';
       }
 		return view('reports.dv_by_division')
 			->with(compact('user_role_id'))
@@ -237,6 +261,14 @@ class ReportsController extends Controller
 		else{
 			$title = 'saobdivision';			
 		} 
+		if($user_id==149 || $user_id==117){
+         $user_division_id=3;
+         $user_division_acronym='COA';
+      }
+		if($user_id=='20' || $user_id=='14'){
+			$user_division_id = '9';
+			$user_division_acronym='FAD-DO';
+		}
 		return view('reports.saob.saob')
 			->with('rstype_id_selected', $rstype_id_selected)
 			->with('division_id', $division_id)
@@ -248,15 +280,26 @@ class ReportsController extends Controller
 			->with(compact('title'));
  	}
 
-	public function allotment_summary(Request $request, $rstype_id_selected, $year_selected) {
+	 public function saob_summary(Request $request, $rstype_id_selected, $year_selected) {
+		$user_id = auth()->user()->id; 
+		$user_role_id = auth()->user()->user_role_id;	
+		$title = 'saobsummary';	
+		return view('reports.saob_summary')
+			->with('rstype_id_selected', $rstype_id_selected)
+			->with('year_selected', $year_selected)
+			->with(compact('user_id'))
+			->with(compact('title'));
+ 	}
+
+	public function allotment_summary_per_division_per_object_code(Request $request, $rstype_id_selected, $year_selected) {
 		$user_id = auth()->user()->id; 
 		$user_role_id = auth()->user()->user_role_id;
 		$data = ViewAllotmentModel::where('year', $year_selected)->where('rs_type_id', $rstype_id_selected)
 			->where('is_active', 1)->where('is_deleted', 0)
 			->orderBy('pap_code', 'ASC')->orderBy('division_acronym','ASC')->orderBy('activity','ASC')
 			->orderBy('object_code','ASC')->get();
-		$title = 'allotmentsummary'; 
-		return view('reports.allotment_summary')
+		$title = 'allotmentsummaryperdivperobj'; 
+		return view('reports.allotment_summary_per_division_per_object_code')
 			->with('rstype_id_selected', $rstype_id_selected)
 			->with('year_selected', $year_selected)
 			->with(compact('user_role_id'))
@@ -264,7 +307,7 @@ class ReportsController extends Controller
 			->with(compact('data'))
 			->with(compact('title'));
  	}
-	
+
 	public function dv_summary(Request $request, $fund_id_selected, $year_selected) {
 		$user_id = auth()->user()->id; 
 		$user_role_id = auth()->user()->user_role_id;
@@ -427,11 +470,15 @@ class ReportsController extends Controller
 	
 	public function show_rs_balance_by_division(Request $request) {
 		// dd($request->all());
+		$user_id = Auth::user()->id; 
 		$rstype_id_selected=$request->rstype_id_selected;
 		$division_id=$request->division_id;
       $filter=$request->filter;
       $start_date=$request->start_date;
       $end_date=$request->end_date;
+		if($user_id==149 || $user_id==117){
+         $division_id=3;
+      }
 		if($rstype_id_selected=='All'){
 			if($filter=='All'){
 				$data = ViewRSBalanceModel::where('rs_date','>=',$start_date)->where('rs_date','<=', $end_date)
@@ -546,6 +593,135 @@ class ReportsController extends Controller
          ->make(true);      
    }
 
+	public function show_financial_summary(Request $request) {
+		$fund_id_selected=$request->fund_id_selected;
+      $start_date=$request->start_date;
+      $end_date=$request->end_date;		
+      $filter=$request->view_filter;		
+      $date_range_filter=$request->date_range_filter;	
+		$date_column = ($date_range_filter == 'rs') ? 'rs_date' : 'lddap_date';	
+		$query = ViewFinancialSummary::where($date_column, '>=', $start_date)->where($date_column, '<=', $end_date);
+		if ($fund_id_selected !== 'All') {
+			$query->where('rs_type_id', $fund_id_selected);
+	  	}
+		switch ($filter) {
+			case 'NoDV':
+				$query->whereNull('dv_no');
+				break;
+		
+			case 'wDVwLDDAP':
+				$query->where(function ($q) {
+					$q->whereNotNull('dv_no')
+					->where('dv_no', '!=', '')
+					->where('dv_no', '!=', ' '); // Ensure it's not blank
+			
+					$q->whereNotNull('lddap_no')
+					->where('lddap_no', '!=', '')
+					->where('lddap_no', '!=', ' '); // Ensure it's not blank
+			});
+				break;
+		
+			case 'wDVNoLDDAP':
+				$query->where(function ($q) {
+					$q->whereNotNull('dv_no')->where('dv_no', '!=', '');
+				})
+				->where(function ($q) {
+					$q->whereNull('lddap_no')->orWhere('lddap_no', '');
+				});
+				break;
+		}
+	  
+	  // Finalize query with grouping and ordering
+	  $data = $query->groupBy('rs_id')
+						 ->orderBy('rs_id', 'ASC')
+						 ->orderBy('objcode', 'ASC')
+						 ->orderBy('payee', 'ASC')
+						 ->get();
+		// if($fund_id_selected=='All'){
+		// 	if($filter=='All'){	
+		// 		$data = ViewFinancialSummary::where($date_column, '>=', $start_date)->where($date_column, '<=', $end_date)
+		// 			->groupBy('rs_id')->orderBy($date_column, 'ASC')->orderBy('objcode', 'ASC')->orderBy('payee', 'ASC')>get();	
+		// 	}
+		// 	else if($filter=='NoDV'){
+		// 		$data = ViewFinancialSummary::where($date_column, '>=', $start_date)->where($date_column, '<=', $end_date)->whereNull('dv_no')
+		// 			->groupBy('rs_id')->orderBy($date_column, 'ASC')->orderBy('objcode', 'ASC')->orderBy('payee', 'ASC')>get();			
+		// 	}
+		// 	else if($filter=='wDV'){	
+		// 		$data = ViewFinancialSummary::where($date_column, '>=', $start_date)->where($date_column, '<=', $end_date)
+		// 			->where(function($query) {
+		// 				$query->where(function($q) {
+		// 					$q->whereNotNull('dv_no')
+		// 					->where('dv_no', '!=', '');
+		// 				})
+		// 				->orWhere(function($q) {
+		// 					$q->whereNotNull('lddap_no')
+		// 					->where('lddap_no', '!=', '');
+		// 				});
+		// 			})
+		// 			->groupBy('rs_id')->orderBy($date_column, 'ASC')
+		// 			->orderBy('objcode', 'ASC')->orderBy('payee', 'ASC')->get();
+		// 	}
+		// 	else if($filter=='NoPayment'){
+		// 		$data = ViewFinancialSummary::where($date_column, '>=', $start_date)->where($date_column, '<=', $end_date)
+					// ->where(function($query) {
+					// 	$query->whereNotNull('dv_no')
+					// 			->where('dv_no', '!=', '');
+					// })
+					// ->where(function($query) {
+					// 		$query->whereNull('lddap_no')
+					// 				->orWhere('lddap_no', '=', '');
+					// })
+		// 			->groupBy('rs_id')->orderBy('rs_date', 'ASC')->orderBy('objcode', 'ASC')->orderBy('payee', 'ASC')->get();		
+		// 	}			
+		// }
+		// elseif($fund_id_selected!='All'){
+		// 	if($filter=='All'){
+		// 		$data = ViewFinancialSummary::where($date_column, '>=', $start_date)->where($date_column, '<=', $end_date)
+		// 			->where('rs_type_id', $fund_id_selected)
+		// 			->groupBy('rs_id')->orderBy('rs_date', 'ASC')->orderBy('objcode', 'ASC')->orderBy('payee', 'ASC')->get();	
+		// 	}
+		// 	else if($filter=='NoDV'){
+		// 		$data = ViewFinancialSummary::where($date_column, '>=', $start_date)->where($date_column, '<=', $end_date)
+		// 			->where('rs_type_id', $fund_id_selected)->whereNull('dv_no')
+		// 			->groupBy('rs_id')->orderBy('rs_date', 'ASC')->orderBy('objcode', 'ASC')->orderBy('payee', 'ASC')->get();			
+		// 	}
+		// 	else if($filter=='wDV'){
+		// 		$data = ViewFinancialSummary::where($date_column, '>=', $start_date)->where($date_column, '<=', $end_date)
+		// 			->where('rs_type_id', $fund_id_selected)
+		// 			->where(function($query) {
+		// 				$query->whereNotNull('dv_no')
+		// 						->where('dv_no', '!=', '');
+		// 		  })
+		// 		  ->where(function($query) {
+		// 				$query->whereNotNull('lddap_no')
+		// 						->where('lddap_no', '!=', '');
+		// 		  })
+		// 			->groupBy('rs_id')->orderBy('rs_date', 'ASC')->orderBy('objcode', 'ASC')->orderBy('payee', 'ASC')->get();		
+		// 	}
+		// 	else if($filter=='NoPayment'){
+		// 		$data = ViewFinancialSummary::where($date_column, '>=', $start_date)->where($date_column, '<=', $end_date)
+		// 			->where('rs_type_id', $fund_id_selected)
+		// 			->where(function($query) {
+		// 				$query->whereNotNull('dv_no')
+		// 						->where('dv_no', '!=', '');
+		// 			})
+		// 			->where(function($query) {
+		// 					$query->whereNull('lddap_no')
+		// 							->orWhere('lddap_no', '=', '');
+		// 			})
+		// 			->groupBy('rs_id')->orderBy('rs_date', 'ASC')->orderBy('objcode', 'ASC')->orderBy('payee', 'ASC')->get();		
+		// 	}				
+		// }		
+      return DataTables::of($data)
+         ->setRowAttr([
+            'data-id' => function($rs) {
+            return $rs->id;
+            }
+         ])
+         ->make(true);
+      
+   }
+
 	public function show_ada_check(Request $request) {
 		$payment_mode_selected=$request->payment_mode_selected;
 		$fund_id_selected=$request->fund_id_selected;
@@ -554,25 +730,25 @@ class ReportsController extends Controller
 		if($fund_id_selected=='All' && $payment_mode_selected=='All'){
 			$data = ViewAdaCheckIssuedModel::where('lddap_check_date','>=',$start_date)->where('lddap_check_date','<=', $end_date)
 				->whereNotNull('lddap_check_date')->where('is_active', 1)->where('is_deleted', 0)
-				->orderBy('lddap_check_date', 'ASC')->orderBy('accnt_obj_code', 'ASC')->orderBy('payee', 'ASC')->get();	
+				->orderBy('lddap_check_date', 'ASC')->orderBy('expense_account_object_code', 'ASC')->orderBy('payee', 'ASC')->get();	
 		}
 		elseif($fund_id_selected!='All' && $payment_mode_selected=='All'){
 			$data = ViewAdaCheckIssuedModel::where('lddap_check_date','>=',$start_date)->where('lddap_check_date','<=', $end_date)
 				->where('fund_id', $fund_id_selected)
 				->whereNotNull('lddap_check_date')->where('is_active', 1)->where('is_deleted', 0)
-				->orderBy('lddap_check_date', 'ASC')->orderBy('accnt_obj_code', 'ASC')->orderBy('payee', 'ASC')->get();	
+				->orderBy('lddap_check_date', 'ASC')->orderBy('expense_account_object_code', 'ASC')->orderBy('payee', 'ASC')->get();	
 		}
 		elseif($fund_id_selected=='All' && $payment_mode_selected!='All'){
 			$data = ViewAdaCheckIssuedModel::where('lddap_check_date','>=',$start_date)->where('lddap_check_date','<=', $end_date)
 				->where('payment_mode_id', $payment_mode_selected)
 				->whereNotNull('lddap_check_date')->where('is_active', 1)->where('is_deleted', 0)
-				->orderBy('lddap_check_date', 'ASC')->orderBy('accnt_obj_code', 'ASC')->orderBy('payee', 'ASC')->get();	
+				->orderBy('lddap_check_date', 'ASC')->orderBy('expense_account_object_code', 'ASC')->orderBy('payee', 'ASC')->get();	
 		}
 		elseif($fund_id_selected!='All' && $payment_mode_selected!='All'){
 			$data = ViewAdaCheckIssuedModel::where('lddap_check_date','>=',$start_date)->where('lddap_check_date','<=', $end_date)
 				->where('fund_id', $fund_id_selected)->where('payment_mode_id', $payment_mode_selected)
 				->whereNotNull('lddap_check_date')->where('is_active', 1)->where('is_deleted', 0)
-				->orderBy('lddap_check_date', 'ASC')->orderBy('accnt_obj_code', 'ASC')->orderBy('payee', 'ASC')->get();	
+				->orderBy('lddap_check_date', 'ASC')->orderBy('expense_account_object_code', 'ASC')->orderBy('payee', 'ASC')->get();	
 		}		
       return DataTables::of($data)
          ->setRowAttr([

@@ -14,8 +14,8 @@
 						<li class="breadcrumb-item active">{{ $title }}</li>
 				</ol>
 				</div><!-- /.col -->
-			</div><!-- /.row -->
-		</div><!-- /.container-fluid -->
+			</div>
+		</div>
 	</div>
 	
 	<section class="content">  
@@ -58,25 +58,20 @@
 							$user_division_acronym = 'FAD-DO';
 							$division_acronym = 'FAD-DO';
 						}
-						// if($user_id=='3'){
-						// 	$division_id = '22';
-						// 	$user_division_acronym = 'OED';
-						// 	$division_acronym = 'OED';
-						// }
-						if($user_id=='111'){
+						if($user_id=='149'){
 							$division_id = '3';
 							$user_division_acronym = 'COA';
 							$division_acronym = 'COA';
 						}
 						$sqlBP = getBudgetProposal($division_id, $year);			
 						$sqlBpCommentsbyDirector = getBpCommentsbyDirector($division_id, $year);
-						$dir_comment_count = getBpCommentsbyDirectorCount($division_id, $year) ?? NULL;
+						$dir_comment_count = getBpCommentsbyDirectorCount($division_id, $year) ?? null;
 						$sqlBpCommentsbyFADBudget = getBpCommentsbyFADBudget($division_id, $year);
-						$budget_comment_count = getBpCommentsbyFADBudgetCount($division_id, $year);
+						$budget_comment_count = getBpCommentsbyFADBudgetCount($division_id, $year) ?? null;
 						$sqlBpStatus = getBudgetProposalStatus($division_id, $year);
 						foreach($sqlBpCommentsbyDirector as $row){
 							$director_comments=$row->comment;
-							$budget_proposal_id=$row->budget_proposal_id;
+							$budget_proposal_id=$row->budget_proposal_id;							
 						}
 						foreach($sqlBpCommentsbyFADBudget as $row){
 							$fad_budget_comments=$row->comment;
@@ -257,7 +252,7 @@
 															<td>{{ number_format($item5->fy2_amount, 2) }}</td>													
 															<td>{{ number_format($item5->fy3_amount, 2) }}</td>														
 															<td class="text-center">
-																<button type="button" data-id="{{ $item5->id }}" data-year="{{ $year_selected }}"
+																{{-- <button type="button" data-id="{{ $item5->id }}" data-year="{{ $year_selected }}"
 																	data-division-id="{{ $division_id }}" data-active-status-id="{{ $active_status_id }}"																						
 																	data-parent-division-id="{{ $parent_division_id }}" data-toggle="modal" 
 																	data-target="#comment_modal" data-toggle="tooltip" data-placement='auto'
@@ -267,7 +262,23 @@
 																	|| ($item5->comment_by<>'' && $item5->comment_is_deleted==1)) class="d-none"
 																	@else class="btn-xs btn_comment" @endif>
 																	<i class="fa-solid fa-eye"></i>																				
+																</button> --}}
+																<button type="button" data-id="{{ $item5->id }}" data-division-id="{{ $division_id }}" 
+																	data-year="{{ $year_selected }}" data-active-status-id="{{ $status_id }}"
+																	data-parent-division-id="{{ $parent_division_id }}" data-toggle="modal" 
+																	data-target="#comment_modal" data-toggle="tooltip" data-placement='auto'
+																	@if($status_id==3) title='Add/Edit Comment' class="btn-xs btn_comment" 
+																	@else title='View Comment'
+																		@if(($item5->comment_by==NULL && $item5->comment_is_deleted==NULL && $item5->comment_is_deleted==NULL)
+																			|| ($item5->comment_by<>'' && $item5->comment_is_deleted==1)) class="d-none"
+																		@else class="btn-xs btn_comment"@endif
+																	@endif>
+																	<i 
+																	@if($status_id==3) class="fa-solid fa-comment blue fa-lg"
+																	@else class="fa-solid fa-comment fa-lg"
+																	@endif></i>																		
 																</button>
+																
 																@role('Division Budget Controller')																
 																@if($active_status_id==1 || $active_status_id==5 || $active_status_id==9 || $active_status_id==13)								
 																	<button type="button" class="btn-xs btn_edit btn btn-outline-success" data-id="{{ $item5->id }}"

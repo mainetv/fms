@@ -15,8 +15,8 @@
                   <li class="breadcrumb-item active">{{ $title }}</li>
             </ol>
             </div><!-- /.col -->
-         </div><!-- /.row -->
-      </div><!-- /.container-fluid -->
+         </div>
+      </div>
    </div>
 
    <section class="content">  

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use OwenIt\Auditing\Contracts\Auditable;
 
 class LibraryObjectExpenditureModel extends Model implements Auditable
@@ -23,5 +25,20 @@ class LibraryObjectExpenditureModel extends Model implements Auditable
 		'is_active', 
 		'is_deleted'
 	];
-    protected $table = 'library_object_expenditure';
+   protected $table = 'library_object_expenditure';
+
+	public function expenseAccount() : BelongsTo
+	{
+		return $this->belongsTo(LibraryExpenseAccountModel::class, 'expense_account_id');
+	} 
+
+	public function allotmentClass() : BelongsTo
+	{
+		return $this->belongsTo(AllotmentClass::class, 'allotment_class_id');
+	} 
+	
+	public function rsType() : BelongsTo
+	{
+		return $this->belongsTo(RsTypesModel::class, 'request_status_type_id');
+	} 
 }

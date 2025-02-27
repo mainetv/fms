@@ -13,16 +13,16 @@
 			<div class="row mb-2">
 				<div class="col-sm-6">
 				<h1 class="m-0">Disbursement Voucher (DV)</h1>
-				</div><!-- /.col -->
+				</div>
 				<div class="col-sm-6">
 				<ol class="breadcrumb float-sm-right">
 						<li class="breadcrumb-item"><a href="/fms/public">Home</a></li>
 						<li class="breadcrumb-item active">Funds Utilization</li>
 						<li class="breadcrumb-item active">Disbursement Voucher (DV)</li>
 				</ol>
-				</div><!-- /.col -->
-			</div><!-- /.row -->
-		</div><!-- /.container-fluid -->
+				</div>
+			</div>
+		</div>
 	</div>
 	
 	<section class="content">  		
@@ -69,9 +69,7 @@
 					<div class="col table-responsive">
 						<table id="dv_table" class="table-bordered table-hover" style="width: 100%;">
 							<thead class="text-center">
-								@role('Division Budget Controller')
-									<th style="min-width: 6%; max-width: 6%"></th>
-								@endrole
+								<th style="min-width: 6%; max-width: 6%"></th>
 								<th style="min-width: 6%; max-width: 6%">DV Date</th>
 								<th style="min-width: 20%; max-width: 20%">Payee</th>
 								<th style="min-width: 30%; max-width: 30%">Particulars</th>
@@ -106,8 +104,7 @@
    <script type="text/javascript">   
       $(document).ready(function(){ 
          @include('funds_utilization.dv.script')   
-         @include('scripts.common_script')   
-   
+         @include('scripts.common_script')      
       }) 
 
 		function changeFilter(){         
@@ -127,6 +124,7 @@
 		function loadRecords(){	
 			var user_role_id = $('#user_role_id').val();
 			var division_id = $('#division_id').val();
+			
 			if($('#search_all').val()!=""){
 				var search_filter = $('#search_all').val();
 				var month_selected = '';
@@ -136,58 +134,68 @@
 				var current_filter = getCurrenURL();
 				var search_filter = '';	
 				// server
-				// var month_selected = `${current_filter[5]}`; 
-				// var year_selected = `${current_filter[6]}`; 
+				var month_selected = `${current_filter[5]}`; 
+				var year_selected = `${current_filter[6]}`; 
 				// local
-				var month_selected = `${current_filter[6]}`; 
-				var year_selected = `${current_filter[7]}`; 							
-			}				
-							
-				var dv_table = $('#dv_table').DataTable({
-					destroy: true,
-					info: true,
-					iDisplayLength: 50,
-					scrollY: 530,
-					scrollX: true,
-					scrollCollapse: true,
-					fixedColumns: true,
-					processing: true,
-					responsive: true,
-					ajax: {
-						url: "{{ route('show_dv_by_division_month_year') }}",
-						method: "GET",
-						data : {
-							'_token': '{{ csrf_token() }}',
-							'division_id' : division_id,
-							'month_selected' : month_selected,
-							'year_selected' : year_selected,
-							'search' : search_filter,
-						}      
-					},
-					columns: [  
-						{data: 'id', name: 'id', visible: false}, 
-						{data: 'dv_date', name: 'DV Date', className: 'dt-center'}, 
-						{data: 'payee', name: 'Payee',  className: 'dt-head-center'},
-						{data: 'particulars', name: 'Particulars', className: 'dt-head-center'},
-						{data: 'total_dv_gross_amount', name: 'Amount', className: 'dt-head-center dt-body-right',
-							render: $.fn.dataTable.render.number(',', '.', 2, '')
-						},
-						{data: 'dv_no', name: 'DV No.',  className: 'dt-center td_red'},
-						{data: 'lddap_date', name: 'LDDAP Date.',  className: 'dt-center'},
-						{data: 'lddap_no', name: 'LDDAP No.', className: 'dt-center'},
-						{data: 'date_transferred', name: 'Date Transferred', className: 'dt-center'},
-						{data: null,className: 'dt-center', orderable: false,
-							render: function ( data, type, full, meta ) {
-								if (full.dv_no==null) {
-									return '<button class="btn-xs btn_delete btn btn-outline-danger" type="button" data-id="' + full.id + '" data-toggle="tooltip" data-placement="left" title="Delete DV"><i class="fa-solid fa-trash-can fa-lg"></i> </button>';
-								} else {
-									return '<button class="btn-xs btn btn-outline-danger disabled"><i class="fa-solid fa-trash-can fa-lg gray"></i></button>';
-								}
-							}				
-						},
-					],
+				// var month_selected = `${current_filter[6]}`; 
+				// var year_selected = `${current_filter[7]}`; 							
+			}	
+
+			var userRole = @json(auth()->user()->getRoleNames());
+
+			var dv_table_columns = [
+				{data: 'id', name: 'id', visible: false}, 
+				{data: 'dv_date', name: 'DV Date', className: 'dt-center'}, 
+				{data: 'payee', name: 'Payee',  className: 'dt-head-center'},
+				{data: 'particulars', name: 'Particulars', className: 'dt-head-center'},
+				{data: 'total_dv_gross_amount', name: 'Amount', className: 'dt-head-center dt-body-right',
+					render: $.fn.dataTable.render.number(',', '.', 2, '')
+				},
+				{data: 'dv_no', name: 'DV No.',  className: 'dt-center td_red'},
+				{data: 'lddap_date', name: 'LDDAP Date.',  className: 'dt-center'},
+				{data: 'lddap_no', name: 'LDDAP No.', className: 'dt-center'},
+				{data: 'date_transferred', name: 'Date Transferred', className: 'dt-center'},
+			];
+
+			if (userRole.includes('Division Budget Controller')) {
+				dv_table_columns.push({
+					data: null,
+					className: 'dt-center',
+					orderable: false,
+					render: function (data, type, full, meta) {
+						if (full.dv_no==null) {
+							return '<button class="btn-xs btn_delete btn btn-outline-danger" type="button" data-id="' + full.id + '" data-toggle="tooltip" data-placement="left" title="Delete DV"><i class="fa-solid fa-trash-can fa-lg"></i> </button>';
+						} else {
+							return '<button class="btn-xs btn btn-outline-danger disabled"><i class="fa-solid fa-trash-can fa-lg gray"></i></button>';
+						}
+					}				
 				});
-								}
+			}
+
+			var dv_table = $('#dv_table').DataTable({
+				destroy: true,
+				info: true,
+				iDisplayLength: 50,
+				scrollY: 530,
+				scrollX: true,
+				scrollCollapse: true,
+				fixedColumns: true,
+				processing: true,
+				responsive: true,
+				ajax: {
+					url: "{{ route('show_dv_by_division_month_year') }}",
+					method: "GET",
+					data : {
+						'_token': '{{ csrf_token() }}',
+						'division_id' : division_id,
+						'month_selected' : month_selected,
+						'year_selected' : year_selected,
+						'search' : search_filter,
+					}      
+				},
+				columns: dv_table_columns,
+			});
+		}
 
 		loadRecords();
    </script>  

@@ -6,16 +6,16 @@
 			<div class="row mb-2">
 				<div class="col-sm-6">
 				<h1 class="m-0">Obligation Request and Status (ORS)</h1>
-				</div><!-- /.col -->
+				</div>
 				<div class="col-sm-6">
 				<ol class="breadcrumb float-sm-right">
 						<li class="breadcrumb-item"><a href="/fms/public">Home</a></li>
 						<li class="breadcrumb-item active">Funds Utilization</li>
 						<li class="breadcrumb-item active">Obligation Request and Status (ORS)</li>
 				</ol>
-				</div><!-- /.col -->
-			</div><!-- /.row -->
-		</div><!-- /.container-fluid -->
+				</div>
+			</div>
+		</div>
 	</div>
 	
 	<section class="content">  
@@ -136,6 +136,34 @@
 				//  var month_selected = `${current_filter[7]}`; 
 				//  var year_selected = `${current_filter[8]}`; 				
 			}
+			var userRole = @json(auth()->user()->getRoleNames());
+
+			var rs_table_columns = [
+				{data: 'id', name: 'id', visible: false}, 
+				{data: 'rs_date', name: 'ORS Date', className: 'dt-center'}, 
+				{data: 'rs_no', name: 'ORS No.', className: 'dt-center'},
+				{data: 'payee', name: 'name',className: 'dt-head-center'},
+				{data: 'particulars', name: 'Particulars', className: 'dt-head-center'},
+				{data: 'total_rs_activity_amount', name: 'Amount', className: 'dt-head-center dt-body-right',
+					render: $.fn.dataTable.render.number(',', '.', 2, '')
+				},	
+			];
+
+			if (userRole.includes('Division Budget Controller')) {
+				rs_table_columns.push({
+					data: null,
+					className: 'dt-center',
+					orderable: false,
+					render: function (data, type, full, meta) {
+						if (full.rs_no==null) {
+							return '<button class="btn-xs btn_delete btn btn-outline-danger" data-id="' + full.id + '" type="button" data-toggle="tooltip" data-placement="left" title="Delete ORS"><i class="fa-solid fa-trash-can fa-lg"></i> </button>';
+						} else {
+							return '<button class="btn-xs btn btn-outline-danger disabled"><i class="fa-solid fa-trash-can fa-lg gray"></i></button>';
+						}
+					}				
+				});
+			}
+
 			var rs_table = $('#rs_table').DataTable({
 				destroy: true,
 				info: true,
@@ -159,25 +187,7 @@
 						'search' : search_filter,
 					}      
 				},
-				columns: [  
-					{data: 'id', name: 'id', visible: false}, 
-					{data: 'rs_date', name: 'ORS Date', className: 'dt-center'}, 
-					{data: 'rs_no', name: 'ORS No.', className: 'dt-center'},
-					{data: 'payee', name: 'name',className: 'dt-head-center'},
-					{data: 'particulars', name: 'Particulars', className: 'dt-head-center'},
-					{data: 'total_rs_activity_amount', name: 'Amount', className: 'dt-head-center dt-body-right',
-						render: $.fn.dataTable.render.number(',', '.', 2, '')
-					},		
-					{data: null,className: 'dt-center', orderable: false,
-						render: function ( data, type, full, meta ) {
-							if (full.rs_no==null) {
-								return '<button class="btn-xs btn_delete btn btn-outline-danger" data-id="' + full.id + '" type="button" data-toggle="tooltip" data-placement="left" title="Delete ORS"><i class="fa-solid fa-trash-can fa-lg"></i> </button>';
-							} else {
-								return '<button class="btn-xs btn btn-outline-danger disabled"><i class="fa-solid fa-trash-can fa-lg gray"></i></button>';
-							}
-						}				
-					},
-				],
+				columns: rs_table_columns,
 			});			
 		}
 

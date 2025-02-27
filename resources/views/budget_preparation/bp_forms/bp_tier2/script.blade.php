@@ -71,7 +71,7 @@
 {{-- modal start --}}
 	$('#bp_form9_modal').on('hide.bs.modal', function(){     
 		clear_attributes();
-		clear_fields();
+		clearFields
  	});  
 {{-- modal end --}}
 

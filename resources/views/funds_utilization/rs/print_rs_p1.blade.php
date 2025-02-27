@@ -104,127 +104,133 @@
 		<br><br>
 		<div class="display_screen">
 			Page 1 of 2<br />
-			<table width="100%" class="text-center" cellspacing="0" cellpadding="0">
+			<table width="100%" class="text-center" border="2" cellspacing="0" cellpadding="0">
 				<tr>
-					<td colspan="3">
-						<table width="98%" class="table-borderless" cellspacing="0" cellpadding="0">
+					<td colspan="3" class="bottom-border-2">
+						<table width="100%" class="table-borderless" cellspacing="0" cellpadding="3">
+							<tr>
+								<td><br><p class="title-font"><strong>{{ strtoupper($rs_type) }}</strong></p></td>
+							</tr>
 							<tr>
 								<td>Republic of the Philippines<br />
 									<p class="smallfont">DEPARTMENT OF SCIENCE AND TECHNOLOGY<br />
 									<strong>PHILIPPINE COUNCIL FOR AGRICULTURE, AQUATIC AND NATURAL RESOURCES RESEARCH AND DEVELOPMENT</strong><br />
 									LOS BANOS, LAGUNA</p></td>
 							</tr>
-							<tr>
-								<td><p class="title-font"><strong>{{ strtoupper($rs_type) }}</strong></p></td>
-							</tr>
 						</table>
 					</td>
-					<td>
+					<td colspan="2" class="text-left bottom-border-2 left-border-2">
+						&nbsp;Serial No.: _______________<br>
+						&nbsp;Date: _______________<br>
+						&nbsp;Fund Cluster:_______________
+					</td>
+					{{-- <td>
 						{!! QrCode::size(160)->generate('{{ $qr_code }}') !!}<br />
 						{{ $qr_code }}
+					</td> --}}
+				</tr>	
+				<tr>
+					<tr>
+						<td width="8%" height="30">Payee</td>
+						<td width="90%" colspan="4" class="text-left">&nbsp;{{ $payee }}</td>
+					</tr>
+					<tr>
+						<td height="30">Office</td>
+						<td colspan="4" class="text-left">&nbsp;{{ $office }}</td>
+					</tr>
+					<tr>
+						<td height="30">Address</td>
+						<td colspan="4" class="text-left">&nbsp;{{ $address }}</td>
+					</tr>
+				</tr>
+				<tr class="top-border-2 bottom-border-2">					
+					<td width="8%">Responsibility Center</td>
+					<td width="32%">Particulars</td>
+					<td width="24%">MFO/PAP</td>
+					<td width="18%">UACS Object Code</td>
+					<td width="18%">Amount</td>
+				</tr>
+				<tr class="text-left">
+					<td width="8%" class="text-center" height="79">{{ $division_acronym }}</td>
+					<td width="35%" height="79">{{ nl2br($particulars) }}</td>
+					<td height="79" colspan="3">
+						<table width="100%">
+							@foreach ($rs_activity as $row)
+								<tr>
+									<td valign="top" width="42%" class="no-bottom-border no-left-border"><i>{{ $row->allotment_division_acronym }}</i>:													
+										@if($rs_type_id==1)
+											{{ $row->activity }}
+											@if($row->subactivity<>NULL) - {{ $row->subactivity }} <br>@endif 
+										@else
+											@if($row->activity_code<>NULL) {{ $row->activity_code }} <br>
+											@else {{ $row->activity }} <br> @endif 
+											@if($row->subactivity<>NULL) {{ $row->subactivity }} <br>@endif 														
+										@endif
+									</td>
+									<td valign="top" width="32%" class="no-bottom-border">tet</td>
+									<td valign="top" class="text-right no-bottom-border no-right-border">₱ {{ number_format($row->amount, 2) }}&nbsp;</td>
+								</tr>
+							@endforeach
+						</table>									
 					</td>
-				</tr>
-				<tr>
-					<td width="20%" height="30">Payee</td>
-					<td colspan="2" class="text-left">&nbsp;{{ $payee }}</td>
-					<td width="22%" rowspan="4" valign="top">
-						<table width="100%" class="table-borderless" cellspacing="0" cellpadding="0">
-							<tr>
-								<td><br/><p>Division:<br />{{ $division_acronym }}<br /><br /></p></td>
-							</tr>
-						</table>      
-						<p>Amount:<br/><strong>Php {{ $total_rs_activity_amount }}</strong></p>
-					</td>
-				</tr>
-				<tr>
-				<td height="30">Office</td>
-				<td colspan="2" class="text-left">&nbsp;{{ $office }}</td>
-				</tr>
-				<tr>
-				<td height="30">Address</td>
-				<td colspan="2" class="text-left">&nbsp;{{ $address }}</td>
-				</tr>
-				<tr>
-					<td height="138" colspan="3" class="text-left" valign="top">
-						<table width="97%" class="table-borderless" cellpadding="0" cellspacing="0">
-							<tr>
-								<td>&nbsp;&nbsp;Particulars:<br/><br>&nbsp;&nbsp;<?php echo nl2br($particulars); ?></td>
-							</tr>
-							<tr>
-								<td>
-									<table width="100%" class="table-borderless" cellspacing="0" cellpadding="0">
+					{{-- <td colspan="6" cellspacing="0" cellpadding="0">
+						<table>
+							<td width="8%" class="text-center" height="79">{{ $division_acronym }}</td>
+							<td width="35%" height="79">{{ nl2br($particulars) }}</td>
+							<td width="32%" height="79">
+								<table cellspacing="0" cellpadding="0">
+									@foreach ($rs_activity as $row)
 										<tr>
-											<td height="23" colspan="4">&nbsp;</td>
+											<td><i>{{ $row->allotment_division_acronym }}</i>:													
+												@if($rs_type_id==1)
+													{{ $row->activity }}
+													@if($row->subactivity<>NULL) - {{ $row->subactivity }} <br>@endif 
+												@else
+													@if($row->activity_code<>NULL) {{ $row->activity_code }} <br>
+													@else {{ $row->activity }} <br> @endif 
+													@if($row->subactivity<>NULL) {{ $row->subactivity }} <br>@endif 														
+												@endif
+											</td>
+											<td></td>
+											<td class="text-right">Php{{ number_format($row->amount, 2) }}</td>
 										</tr>
-										<tr>
-											<td height="23" colspan="4">&nbsp;&nbsp;Charged to:</td>
-										</tr>
-										@foreach ($rs_activity as $row)
-											<tr>
-												<td width="7%">&nbsp;</td>
-												<td width="63%"><i>{{ $row->allotment_division_acronym }}</i>:													
-													@if($rs_type_id==1)
-														{{ $row->activity }}
-														@if($row->subactivity<>NULL) - {{ $row->subactivity }} <br>@endif 
-													@else
-														@if($row->activity_code<>NULL) {{ $row->activity_code }} <br>
-														@else {{ $row->activity }} <br> @endif 
-														@if($row->subactivity<>NULL) {{ $row->subactivity }} <br>@endif 														
-													@endif
-												<td width="25%" class="text-right">Php{{ number_format($row->amount, 2) }}</td>
-												<td width="5%" class="text-right">&nbsp;</td>
-											</tr>
-										@endforeach
-										<tr>
-											<td>&nbsp;</td>
-											<td class="text-right"><strong>TOTAL</strong></td>
-											<td class="text-right" style="border-top:thin; border-top-style:solid"><strong>Php{{ $total_rs_activity_amount }}</strong></td>
-											<td class="text-right">&nbsp;</td>
-										</tr>
-									</table>
-								</td>
-							</tr>
-						</table><p><br /> </p>
-					</td>
-				</tr>
+									@endforeach
+								</table>									
+							</td>
+						</table>
+					</td> --}}
+				</tr>	
 				<tr>
-					<td height="96" colspan="4" class="text-left" valign="top">
+					<td height="96" colspan="5" class="text-left top-border-2" valign="top">
 						<table width="100%" class="table-borderless" cellspacing="0" cellpadding="5">
 							<tr>
-								<td height="79" colspan="2" valign="top"><strong>A. CERTIFIED</strong><br />
-									<table width="98%" class="table-borderless" cellpadding="0" cellspacing="0">
-										<tr>
-											<td>&nbsp;</td>
-										</tr>
-										<tr>
-											<td>&emsp;[&nbsp;&nbsp;&nbsp;]&nbsp;&nbsp;Charges to appropriation/allotment necessary, lawful and under my direct supervision
-												<span class="smallfont"><br /></span>&emsp;[&nbsp;&nbsp;&nbsp;]&nbsp;&nbsp;Supporting documents valid, proper and legal             
-											</td>
-										</tr>
-									</table>
+								<td height="60" colspan="2" valign="top"><strong>A. Certified: </strong>
+									Charges to appropriation/alloment are necessary,
+									lawful and under my direct supervision;
+									and supporting documents valid, proper and legal <br />									
 								</td>
 							</tr>
 							<tr>
 								<td height="139" valign="top">
 								<table width="100%" class="table-borderless" cellspacing="0" cellpadding="5">
 									<tr>
-										<td width="26%" height="26" class="text-right">Signature:</td>
-										<td width="74%" style="border-bottom:thin; border-bottom-style:solid">&nbsp;</td>
+										<td width="30%" height="26" class="text-left cell-padleft-1">Signature:</td>
+										<td width="70%" style="border-bottom:thin; border-bottom-style:solid">&nbsp;</td>
 									</tr>
 									<tr>
-										<td height="21" class="text-right">Printed Name:</td>
+										<td height="21" class="text-left cell-padleft-1">Printed Name:</td>
 										<td style="border-bottom:thin; border-bottom-style:solid">{{ strtoupper($signatory1) }}</td>
 									</tr>
 									<tr>
-										<td height="19" class="text-right">Position:</td>
+										<td height="19" class="text-left cell-padleft-1">Position:</td>
 										<td style="border-bottom:thin; border-bottom-style:solid">{{ $signatory1_position }}</td>
 									</tr>
 									<tr>
-										<td height="19" class="text-right"></td>
-										<td>Head Requesting Office/ Authorized Representative</td>
+										<td height="19" class="text-left cell-padleft-1"></td>
+										<td class="text-center">Head Requesting Office/ Authorized Representative</td>
 									</tr>
 									<tr>
-										<td height="21" class="text-right">Date:</td>
+										<td height="21" class="text-left cell-padleft-1">Date:</td>
 										<td style="border-bottom:thin; border-bottom-style:solid">&nbsp;</td>
 									</tr>
 								</table>
@@ -233,19 +239,19 @@
 									@if($signatory2 <> "")
 									<table width="100%" class="table-borderless" cellspacing="0" cellpadding="5">
 										<tr>
-											<td width="26%" height="26" class="text-right">Signature:</td>
-											<td width="74%" style="border-bottom:thin; border-bottom-style:solid">&nbsp;</td>
+											<td width="30%" height="26" class="text-left cell-padleft-2">Signature:</td>
+											<td width="70%" style="border-bottom:thin; border-bottom-style:solid">&nbsp;</td>
 										</tr>
 										<tr>
-											<td height="21" class="text-right">Printed Name</td>
+											<td height="21" class="text-left cell-padleft-2">Printed Name:</td>
 											<td style="border-bottom:thin; border-bottom-style:solid">{{ strtoupper($signatory2) }}</td>
 										</tr>
 										<tr>
-											<td height="19" class="text-right">Position:</td>
+											<td height="19" class="text-left cell-padleft-2">Position:</td>
 											<td style="border-bottom:thin; border-bottom-style:solid">{{ $signatory2_position }}</td>
 										</tr>
 										<tr>
-											<td height="21" class="text-right">Date:</td>
+											<td height="21" class="text-left cell-padleft-2">Date:</td>
 											<td style="border-bottom:thin; border-bottom-style:solid">&nbsp;</td>
 										</tr>
 									</table>
@@ -257,19 +263,19 @@
 									@if($signatory3 <> "")
 									<table width="100%" class="table-borderless" cellspacing="0" cellpadding="5">
 										<tr>
-											<td width="26%" height="26" class="text-right">Signature:</td>
-											<td width="74%" style="border-bottom:thin; border-bottom-style:solid">&nbsp;</td>
+											<td width="30%" class="text-left cell-padleft-1">Signature:</td>
+											<td width="70%" style="border-bottom:thin; border-bottom-style:solid">&nbsp;</td>
 										</tr>
 										<tr>
-											<td height="21" class="text-right">Printed Name</td>
+											<td height="21" class="text-left cell-padleft-1">Printed Name</td>
 											<td style="border-bottom:thin; border-bottom-style:solid">{{ strtoupper($signatory3) }}</td>
 										</tr>
 										<tr>
-											<td height="19" class="text-right">Position:</td>
+											<td height="19" class="text-left cell-padleft-1">Position:</td>
 											<td style="border-bottom:thin; border-bottom-style:solid">{{ $signatory3_position }}</td>
 										</tr>
 										<tr>
-											<td height="21" class="text-right">Date:</td>
+											<td height="21" class="text-left cell-padleft-1">Date:</td>
 											<td style="border-bottom:thin; border-bottom-style:solid">&nbsp;</td>
 										</tr>
 									</table>
@@ -279,19 +285,19 @@
 									@if($signatory4 <> "")
 									<table width="100%" class="table-borderless" cellspacing="0" cellpadding="5">
 										<tr>
-											<td width="26%" height="26" class="text-right">Signature:</td>
-											<td width="74%" style="border-bottom:thin; border-bottom-style:solid">&nbsp;</td>
+											<td width="30%" height="26" class="text-left cell-padleft-2">Signature:</td>
+											<td width="70%" style="border-bottom:thin; border-bottom-style:solid">&nbsp;</td>
 										</tr>
 										<tr>
-											<td height="21" class="text-right">Printed Name</td>
+											<td height="21" class="text-left cell-padleft-2">Printed Name</td>
 											<td style="border-bottom:thin; border-bottom-style:solid">{{ strtoupper($signatory4) }}</td>
 										</tr>
 										<tr>
-											<td height="19" class="text-right">Position:</td>
+											<td height="19" class="text-left cell-padleft-2">Position:</td>
 											<td style="border-bottom:thin; border-bottom-style:solid">{{ $signatory4_position }}</td>
 										</tr>
 										<tr>
-											<td height="21" class="text-right">Date:</td>
+											<td height="21" class="text-left cell-padleft-2">Date:</td>
 											<td style="border-bottom:thin; border-bottom-style:solid">&nbsp;</td>
 										</tr>
 									</table>
@@ -301,26 +307,26 @@
 						</table>
 					</td>
 				</tr>
-				<tr>
-				<td height="68" colspan="4" class="text-left" valign="top">
-						<table width="100%" class="table-borderless" cellspacing="0" cellpadding="0">
-							<tr>
-								<td><strong>&nbsp;&nbsp;Supporting Documents:</strong><br /><br />
-									@foreach($rs_documents as $key=>$item)					
-										@if ($key % 1 == 0)
-										<tr>
-										@endif
-											<td>&nbsp;&nbsp;- {{ $item->document }}</td>
-										@if (($key + 1) % 1 == 0)
-										</tr>
-										@endif		
-									@endforeach
-								</td>
-							</tr>
-						</table>
-					</td>
-				</tr>
 			</table>
+			<tr>
+				<td height="68" colspan="4" class="text-left" valign="top">
+					<table width="100%" class="table-borderless" cellspacing="0" cellpadding="0">
+						<tr>
+							<td><strong>&nbsp;&nbsp;Supporting Documents:</strong><br /><br />
+								@foreach($rs_documents as $key=>$item)					
+									@if ($key % 1 == 0)
+									<tr>
+									@endif
+										<td>&nbsp;&nbsp;- {{ $item->document }}</td>
+									@if (($key + 1) % 1 == 0)
+									</tr>
+									@endif		
+								@endforeach
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
 		</div>
 		<br><br>
 	</body>

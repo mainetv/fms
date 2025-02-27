@@ -27,7 +27,7 @@
 				</div>    
 			</div>   
 			<div class="card-body">
-				<div class="row">		
+				<div class="row">							
 					<div>
 						<label>Request and Status Type:</label> 							  			
 						<select name="rstype_id_selected" id="rstype_id_selected" class="select_filter">               
@@ -131,6 +131,7 @@
 		})
 
 		$('.select_filter').on('change', function(){
+			view_selected = $('#view_selected').val(),
 			rstype_id_selected = $('#rstype_id_selected').val(),
 			year_selected = $('#year_selected').val(),
 			window.location.replace("{{ url('reports/allotment_summary') }}/"+rstype_id_selected+"/"+year_selected);

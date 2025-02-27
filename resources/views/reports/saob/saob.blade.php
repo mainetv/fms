@@ -4,15 +4,6 @@
 	$getAllActiveDivisions=getAllActiveDivisions();
 	$getYears=getYears();
 	$getRSTypes=getRSTypes();
-	$getUserDivisionID=getUserDivisionID($user_id);
-	if($user_id=='20' || $user_id=='14'){
-		$user_division_id = '9';
-		$user_division_acronym='FAD-DO';
-	}
-	if($user_id=='111'){
-		$division_id = '3';
-		$user_division_acronym='COA';
-	}
 @endphp
 
 @section('content') 

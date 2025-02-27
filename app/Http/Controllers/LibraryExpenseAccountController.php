@@ -2,19 +2,52 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\LibraryExpenseTitleModel;
 use Illuminate\Http\Request;
+use DB;
+use DataTables;
+use Validator;
+use Response;
+use Redirect;
+use Session;
+use View;
 
-class LibraryExpenseTitleController extends Controller
+class LibraryExpenseAccountController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function table(Request $request)
     {
-        //
+        if ($request->ajax()) { 
+            $data = DB::table('view_library_expense_account')->where('is_deleted', 0)->latest();
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->setRowAttr([
+                'data-id' => function($library_expense_account) {
+                return $library_expense_account->id;
+                }
+                ])
+                ->addColumn('action', function($row){
+                $btn =
+                "<div>
+                <button class='actionbtn view-library-expense' type='button'> 
+                <i class='fas fa-eye'></i></a>                    
+                </button>
+                <button class='actionbtn update-library-expense' type='button'>
+                <i class='fas fa-edit blue'></i>
+                </button>
+                <button class='actionbtn delete-library-expense red' type='button'>
+                <i class='fas fa-trash-alt red'></i>
+                </button>
+                </div>
+                ";
+                return $btn;
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }      
     }
 
     /**

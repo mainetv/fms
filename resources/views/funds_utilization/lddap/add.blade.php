@@ -103,7 +103,7 @@
                 <div class="col-4"> 
                   <select id="signatory3" name="signatory3" class="form-control dv-field select2bs4">   
                     <option value="" selected hidden>Select Signatory</option>
-                    @foreach ($getLDDAPSignatories as $row)
+                    @foreach ($getLDDAP2Signatories as $row)
                       <option value="{{ $row->fullname_first }}">{{ strtoupper($row->fullname_first) }}</option>
                     @endforeach                           
                   </select>

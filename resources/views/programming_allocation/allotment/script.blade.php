@@ -4,7 +4,7 @@
     $('#allotment_modal').on('hide.bs.modal', function(){
       init_view_allotment();
       clear_attributes();
-      clear_fields();      
+      clearFields      
     });    
 
     $('#allotment_modal').on('show.bs.modal', function () {
@@ -358,11 +358,41 @@
     $('.btn_adjustment').on('click', function(e){
       id = $(this).data('id')
       $(".modal-body #allotment_id").val(id);
-      
       $.getJSON( '{{ url('programming_allocation/allotment/show') }}/'+id, function( data ) {
         {{-- alert(data['allotment']['pap_activity']); --}}
-        $('#pap_to_adjust').val(data['allotment']['pap_activity']).change()   
-        $('#exp_to_adjust').val(data['allotment']['object_expenditure']).change()   
+        {{-- $('#pap_to_adjust').val(data['allotment']['pap_activity_subactivity']).change()    --}}
+        let activity = data['allotment']['pap_activity'];
+        let subactivity = data['allotment']['subactivity'];
+        let expenseAccount = data['allotment']['expense_account'];
+        let objectExpenditure = data['allotment']['object_expenditure'];
+
+        let actSubact = '';
+        let combinedValue = '';
+
+        if (activity) {
+          actSubact += activity;
+        }
+
+        if (subactivity) {
+          if (actSubact) {
+            actSubact += ' - ';
+          }
+          actSubact += subactivity;
+        }
+
+        if (expenseAccount) {
+            combinedValue += expenseAccount;
+        }
+
+        if (objectExpenditure) {
+            if (combinedValue) {
+                combinedValue += ' - ';
+            }
+            combinedValue += objectExpenditure;
+        }
+
+        $('#pap_act_subact_to_adjust').val(actSubact).change();
+        $('#exp_to_adjust').val(combinedValue).change();
       })
 
       .done(function(data) {                  
@@ -465,7 +495,7 @@
         .removeClass('d-none');
 
       clear_attributes();
-      clear_fields();  
+      clearFields  
     }
 
     $('.btn_add_adjustment').on('click', function(e){
@@ -665,7 +695,7 @@
       var msg = "";
       var notif_msg = "";
       clear_attributes();
-      clear_fields();      
+      clearFields      
     }); 
 
     $('.forward').on('click', function(e){

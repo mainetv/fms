@@ -49,7 +49,7 @@
       $('#budget_proposal_fiscal_years_modal').on('hide.bs.modal', function(){       
          init_view_budget_proposal_fiscal_years();
          clear_attributes();
-         clear_fields();
+         clearFields
       });  
 
       $('#budget_proposal_fiscal_years_modal').on('shown.bs.modal', function () {
@@ -331,7 +331,7 @@
          open_budget_proposal(fiscal_year_id, year);
       })
 
-      function open_budget_proposal(fiscal_year_id, year){      
+      function open_budget_proposal(fiscal_year_id, year){   
          Swal.fire({
             title: 'Open call for budget proposal to all divisions?',
             icon: 'warning',
@@ -341,8 +341,8 @@
          .then((result) => {
             if (result.value) {
                $.ajax({
-                  method: "POST",
-                  url: "{{ route('fiscal_years.store') }}",
+                  method: "PATCH",
+                  url: "{{ route('fiscal_years.open') }}",
                   data: {
                      '_token': '{{ csrf_token() }}',
                      'year' : year,

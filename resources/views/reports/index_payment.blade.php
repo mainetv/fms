@@ -52,9 +52,9 @@
 						<table width="100%" id="records_table" border="1" class="text-center" cellpadding="2" cellspacing="0">
 							<thead>
 								<tr class="text-left">
-									<td colspan="3" valign="top">Creditor:<br /><strong>{{ $payee ?? NULL }}</strong></td>
-									<td colspan="4" valign="top">Address:<br /><strong>{{ $address ?? NULL }}</strong></td>
-									<td colspan="3" valign="top">TIN: <br /><strong>{{ $tin ?? NULL }}</strong></td>
+									<td colspan="3" valign="top">Creditor:<br /><strong>{{ $payee ?? null }}</strong></td>
+									<td colspan="4" valign="top">Address:<br /><strong>{{ $address ?? null }}</strong></td>
+									<td colspan="3" valign="top">TIN: <br /><strong>{{ $tin ?? null }}</strong></td>
 								</tr>
 								<tr class="text-left">
 									<td width="53" rowspan="3" class="text-center">Date</td>

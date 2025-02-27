@@ -14,7 +14,7 @@
               <select id="users_employee_code" name="users_employee_code" class="form-control users-field select2bs4" required autofocus>   
                 <option value="" selected hidden>Select Employee</option>
                 @foreach ($employees as $row)
-                    <option value="{{ $row->username }}">{{ $row->lname.", ".$row->fname. " ".$row->mname." ~ ".$row->username }}</option>
+                    <option value="{{ $row->username }}">{{ $row->lname.", ".$row->fname. " ".$row->mname." : ".$row->username }}</option>
                 @endforeach                           
               </select>
               <span class="is-invalid"><small id="employee-code-error" class="error"></small></span>
@@ -29,7 +29,7 @@
             </select>
             <span class="is-invalid"><small id="user-role-error" class="error"></small></span>
           </div> 
-          <div class="form-group">
+          {{-- <div class="form-group">
             <label for="users_user_role_id">Username</label>
             <input type="text" id="users_username" name="users_username" :value="old('username')" class="form-control users-field" required>
             <span class="is-invalid"><small id="username-error" class="error"></small></span>
@@ -38,12 +38,12 @@
             <label for="users_user_role_id">Password</label>
             <input type="password" id="users_password" name="users_password" class="form-control users-field" required>
             <span class="is-invalid"><small id="password-error" class="error"></small></span>
-          </div> 
+          </div>  --}}
           <div class="form-check form-check-inline">
             <label for="users_is_active">Is Active</label>&nbsp;
             <input type="checkbox" id="users_is_active" name="users_is_active" class="form-check-input users-field" 
             @foreach ($view_users as $row)
-              {{ $row->is_active=="yes"?true:false }}
+              {{ $row->is_active=="yes" ? 'checked' : '' }}
             @endforeach>
           </div>
        </div>      

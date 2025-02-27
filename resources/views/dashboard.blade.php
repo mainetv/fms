@@ -7,15 +7,15 @@
       <div class="row mb-2">
         <div class="col-sm-6">
           <h1 class="m-0">Dashboard</h1>
-        </div><!-- /.col -->
+        </div>
         <div class="col-sm-6">
           <ol class="breadcrumb float-sm-right">
             <li class="breadcrumb-item"><a href="#">Home</a></li>
             <li class="breadcrumb-item active">Dashboard</li>
           </ol>
-        </div><!-- /.col -->
-      </div><!-- /.row -->
-    </div><!-- /.container-fluid -->
+        </div>
+      </div>
+    </div>
   </div>
   <!-- /.content-header -->
   <!-- Main content -->
@@ -31,7 +31,6 @@
   <section class="content">
     <div class="container-fluid">     
       <!-- Small boxes (Stat box) -->
-      {{$user_role_id}}
       @if($user_role_id==3)
       @php
         $getGTORS = DB::table("view_allotment")->select("view_allotment.*",
@@ -149,7 +148,13 @@
           $adjustment = $q1_adjustment+$q2_adjustment+$q3_adjustment+$q4_adjustment;
           $total_allotment = $allotment+$adjustment;
           $total_obligation = $q1_obligation+$q2_obligation+$q3_obligation+$q4_obligation;
-          $utilized_budget = ($total_obligation/$total_allotment)*100;
+
+          // $utilized_budget = ($total_obligation/$total_allotment)*100;
+          if ($total_allotment > 0) {
+              $utilized_budget = ($total_obligation / $total_allotment) * 100;
+          } else {
+              $utilized_budget = 0; // or null, based on your requirements
+          }
           $total_balance = $total_allotment-$total_obligation;
         } 
         foreach($getGTORSprev->groupBY('year') as $key=>$row){
@@ -169,7 +174,13 @@
           $adjustment_prev = $q1_adjustment_prev+$q2_adjustment_prev+$q3_adjustment_prev+$q4_adjustment_prev;
           $total_allotment_prev = $allotment_prev+$adjustment_prev;
           $total_obligation_prev = $q1_obligation_prev+$q2_obligation_prev+$q3_obligation_prev+$q4_obligation_prev;
-          $utilized_budget_prev = ($total_obligation_prev/$total_allotment_prev)*100;
+
+          if ($total_allotment_prev > 0) {
+              $utilized_budget_prev = ($total_obligation_prev / $total_allotment_prev) * 100;
+          } else {
+              $utilized_budget_prev = 0; // or null, based on your requirements
+          }
+          // $utilized_budget_prev = ($total_obligation_prev/$total_allotment_prev)*100;
           $total_balance_prev = $total_allotment_prev-$total_obligation_prev;
         }  
       @endphp
@@ -391,23 +402,29 @@
               ->where('rs_type_id', 2)->where('is_active', 1)->where('is_deleted', 0)->where('division_id', $division_id)
               ->get();
         foreach($getGTORS->groupBY('year') as $key=>$row){
-          $q1_allotment = $row->sum('q1_allotment');
-          $q2_allotment = $row->sum('q2_allotment');
-          $q3_allotment = $row->sum('q3_allotment');
-          $q4_allotment = $row->sum('q4_allotment');
-          $q1_adjustment = $row->sum('q1_adjustment');
-          $q2_adjustment = $row->sum('q2_adjustment');
-          $q3_adjustment = $row->sum('q3_adjustment');
-          $q4_adjustment = $row->sum('q4_adjustment');
-          $q1_obligation = $row->sum('q1_obligation');
-          $q2_obligation = $row->sum('q2_obligation');
-          $q3_obligation = $row->sum('q3_obligation');
-          $q4_obligation = $row->sum('q4_obligation');
+          $q1_allotment = $row->sum('q1_allotment') ?? 0;
+          $q2_allotment = $row->sum('q2_allotment') ?? 0;
+          $q3_allotment = $row->sum('q3_allotment') ?? 0;
+          $q4_allotment = $row->sum('q4_allotment') ?? 0;
+          $q1_adjustment = $row->sum('q1_adjustment') ?? 0;
+          $q2_adjustment = $row->sum('q2_adjustment') ?? 0;
+          $q3_adjustment = $row->sum('q3_adjustment') ?? 0;
+          $q4_adjustment = $row->sum('q4_adjustment') ?? 0;
+          $q1_obligation = $row->sum('q1_obligation') ?? 0;
+          $q2_obligation = $row->sum('q2_obligation') ?? 0;
+          $q3_obligation = $row->sum('q3_obligation') ?? 0;
+          $q4_obligation = $row->sum('q4_obligation') ?? 0;
           $allotment = $q1_allotment+$q2_allotment+$q3_allotment+$q4_allotment;
           $adjustment = $q1_adjustment+$q2_adjustment+$q3_adjustment+$q4_adjustment;
-          $total_allotment = $allotment+$adjustment;
+          $total_allotment = $allotment+$adjustment ?? 0;
           $total_obligation = $q1_obligation+$q2_obligation+$q3_obligation+$q4_obligation;
-          $utilized_budget = ($total_obligation/$total_allotment)*100;
+
+          if ($total_allotment > 0) {
+              $utilized_budget = ($total_obligation / $total_allotment) * 100;
+          } else {
+              $utilized_budget = 0; // or null, based on your requirements
+          }
+          // $utilized_budget = ($total_obligation/$total_allotment)*100;
           $total_balance = $total_allotment-$total_obligation;
         } 
         foreach($getGTORSprev->groupBY('year') as $key=>$row){
@@ -427,7 +444,14 @@
           $adjustment_prev = $q1_adjustment_prev+$q2_adjustment_prev+$q3_adjustment_prev+$q4_adjustment_prev;
           $total_allotment_prev = $allotment_prev+$adjustment_prev;
           $total_obligation_prev = $q1_obligation_prev+$q2_obligation_prev+$q3_obligation_prev+$q4_obligation_prev;
-          $utilized_budget_prev = ($total_obligation_prev/$total_allotment_prev)*100;
+
+          // Avoid division by zero
+          if ($total_allotment_prev > 0) {
+              $utilized_budget_prev = ($total_obligation_prev / $total_allotment_prev) * 100;
+          } else {
+              $utilized_budget_prev = 0; // or null, based on your requirements
+          }
+          // $utilized_budget_prev = ($total_obligation_prev/$total_allotment_prev)*100;
           $total_balance_prev = $total_allotment_prev-$total_obligation_prev;
         }  
       @endphp
@@ -508,12 +532,18 @@
           $adjustment = $q1_adjustment+$q2_adjustment+$q3_adjustment+$q4_adjustment;
           $total_allotment = $allotment+$adjustment;
           $total_obligation = $q1_obligation+$q2_obligation+$q3_obligation+$q4_obligation;
-          $utilized_budget = ($total_obligation/$total_allotment)*100;
+
+          if ($total_allotment > 0) {
+              $utilized_budget = ($total_obligation / $total_allotment) * 100;
+          } else {
+              $utilized_budget = 0; // or null, based on your requirements
+          }
+          // $utilized_budget = ($total_obligation/$total_allotment)*100;
           $total_balance = $total_allotment-$total_obligation;
         }
       @endphp
       
-      <!-- /.row -->
+      
       <!-- Main row -->      
       <div class="row">
         <!-- Left col -->
@@ -1577,7 +1607,7 @@
       </div>
       
      
-    </div><!-- /.container-fluid -->
+    </div>
   </section>
   <!-- /.content -->
 @endsection

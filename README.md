@@ -66,6 +66,7 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 ## Installed Packages
 
 Jetstream Authentication:
+
 - composer require laravel/jetstream
 - php artisan jetstream:install livewire
 - npm install
@@ -74,33 +75,39 @@ Jetstream Authentication:
 - php artisan vendor:publish --tag=jetstream-views
 
 Interfaces:
+
 - npm install bootstrap
 - npm install sweetalert2 --save-dev
 - composer require realrashid/sweet-alert
 
 Admin LTE:
 Via npm
+
 - npm install admin-lte@^3.2 --save
-- npm i admin-lte@3.0.0-alpha.2  --save-dev
-Via Composer
+- npm i admin-lte@3.0.0-alpha.2 --save-dev
+  Via Composer
 - composer require "almasaeed2010/adminlte=~3.2"
 
 Audit:
+
 - composer require owen-it/laravel-auditing
 - php artisan vendor:publish --provider "OwenIt\Auditing\AuditingServiceProvider" --tag="migrations"
 
 Datatable :
+
 - composer require yajra/laravel-datatables-oracle:"~9.0"
 - php artisan vendor:publish --tag=datatables
 - php artisan vendor:publish --provider="Yajra\DataTables\DataTablesServiceProvider"
 
 JQuery:
+
 - npm i jquery --save-dev
 - npm i jquery-ui --save-dev
 - npm install bootstrap jquery popper.js --save-dev
 - npm i @popperjs/core
 
 Roles:
+
 - composer require spatie/laravel-permission
 - php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
 - php artisan optimize:clear or php artisan config:clear

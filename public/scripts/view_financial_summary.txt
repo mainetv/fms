@@ -1,0 +1,86 @@
+SELECT
+    rs.id as rs_id, 
+    rs.rs_type_id,
+     divi.division_acronym as allotment_division_acronym, 
+    divi1.division_acronym as rs_division_acronym,
+    dvnet.allotment_class_id,
+    dvnet.allotment_class,
+    activity,
+    subactivity,
+    CONCAT(
+        (CASE WHEN(object_expenditure IS NULL) THEN expense_account_code ELSE object_code END), ': ',
+        (CASE WHEN(object_expenditure IS NULL) THEN expense_account ELSE object_expenditure END)
+    ) AS objcode,   
+    (CASE WHEN(object_expenditure IS NULL) THEN expense_account ELSE object_expenditure END) AS expense_account_object_expenditure,
+   (CASE WHEN(object_expenditure IS NULL) THEN expense_account_code ELSE object_code END) AS expense_account_object_code,
+    rs_date1 as rs_date,
+    rs.particulars,
+    rs.rs_no, rs.total_rs_pap_amount,
+    dv.id as dv_id, dv.dv_no,
+    dv_date1 as dv_date,
+    divi2.division_acronym as dv_division_acronym,
+    (CASE WHEN(dvpayee.payee IS NULL) THEN rspayee.payee ELSE dvpayee.payee END) AS payee,
+    dv.total_dv_gross_amount,
+    dv.total_dv_net_amount,
+    lddap_no,lddap_date,
+    ada_no,ada_date
+    from request_status rs
+left join rs_pap rsp on rs.id=rsp.rs_id
+left join view_allotment a on rsp.allotment_id=a.id
+left join commonlibrariesdb.pcaarrd_divisions divi on a.division_id=divi.id
+left join commonlibrariesdb.pcaarrd_divisions divi1 on rs.division_id=divi1.id
+left join view_dv_rs_net dvnet ON rs.id=dvnet.rs_id
+left join disbursement_vouchers dv on dvnet.dv_id=dv.id
+left join commonlibrariesdb.pcaarrd_divisions divi2 on dv.division_id=divi2.id
+left join library_payees dvpayee on dv.payee_id=dvpayee.id
+left join library_payees rspayee on rs.payee_id=rspayee.id
+left join lddap_dv ON dv.id=lddap_dv.dv_id
+left join lddap ON lddap_dv.lddap_id=lddap.id
+left join ada_lddap on lddap.id=ada_lddap.lddap_id
+left join ada on ada_lddap.ada_id=ada.id
+where length(rs.rs_no)>16  and rs.is_deleted=0 and rs.is_active=1 and dv.is_active=1 and 
+dv.is_deleted=0 and dvnet.is_active=1 and dvnet.is_deleted=0 and dvnet.gross_amount!=0 and total_dv_gross_amount!=0
+union
+SELECT 
+    rs.id as rs_id, 
+    rs.rs_type_id,
+     divi.division_acronym as allotment_division_acronym, 
+    divi1.division_acronym as rs_division_acronym,
+    dvnet.allotment_class_id,
+    dvnet.allotment_class,
+    activity,
+    subactivity,
+    CONCAT(
+        (CASE WHEN(object_expenditure IS NULL) THEN expense_account_code ELSE object_code END), ': ',
+        (CASE WHEN(object_expenditure IS NULL) THEN expense_account ELSE object_expenditure END)
+    ) AS objcode,   
+    (CASE WHEN(object_expenditure IS NULL) THEN expense_account ELSE object_expenditure END) AS expense_account_object_expenditure,
+   (CASE WHEN(object_expenditure IS NULL) THEN expense_account_code ELSE object_code END) AS expense_account_object_code,
+    rs_date1 as rs_date,
+    rs.particulars,
+    rs.rs_no, rs.total_rs_pap_amount,
+    dv.id as dv_id, dv.dv_no,
+    dv_date1 as dv_date,
+    divi2.division_acronym as dv_division_acronym,
+    (CASE WHEN(dvpayee.payee IS NULL) THEN rspayee.payee ELSE dvpayee.payee END) AS payee,
+    dv.total_dv_gross_amount,
+    dv.total_dv_net_amount,
+    '' as lddap_no,'' as lddap_date,
+    '' as ada_no,'' as ada_date
+    from request_status rs
+left join rs_pap rsp on rs.id=rsp.rs_id
+left join view_allotment a on rsp.allotment_id=a.id
+left join commonlibrariesdb.pcaarrd_divisions divi on a.division_id=divi.id
+left join commonlibrariesdb.pcaarrd_divisions divi1 on rs.division_id=divi1.id
+left join view_dv_rs_net dvnet ON rs.id=dvnet.rs_id
+left join disbursement_vouchers dv on dvnet.dv_id=dv.id
+left join commonlibrariesdb.pcaarrd_divisions divi2 on dv.division_id=divi2.id
+left join library_payees dvpayee on dv.payee_id=dvpayee.id
+left join library_payees rspayee on rs.payee_id=rspayee.id
+left join checks ON dv.id=checks.dv_id
+where length(rs.rs_no)>16  and rs.is_deleted=0 and rs.is_active=1 and dv.is_active=1 and 
+dv.is_deleted=0 and dvnet.is_active=1 and dvnet.is_deleted=0 and dvnet.gross_amount!=0 and total_dv_gross_amount!=0
+
+
+and rs.rs_type_id=2  
+ORDER BY `rs`.`id`  DESC

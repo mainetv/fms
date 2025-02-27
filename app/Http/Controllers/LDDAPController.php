@@ -79,6 +79,8 @@ class LDDAPController extends Controller
 		// $getFund = FundsModel::where('id', $fund_id)->where("is_active", 1)->where("is_deleted", 0)->pluck('fund')->first();            
       $getLDDAP1Signatories = ViewLibrarySignatoriesModel::where('module_id', 7)
          ->where('signatory_no', 1)->where("is_active", 1)->where("is_deleted", 0)->orderBy('fullname_first')->get();
+      $getLDDAP2Signatories = ViewLibrarySignatoriesModel::where('module_id', 7)
+         ->where('signatory_no', 2)->where("is_active", 1)->where("is_deleted", 0)->orderBy('fullname_first')->get();
       $getLDDAPSignatories = ViewLibrarySignatoriesModel::where('module_id', 7)
          ->whereNull('signatory_no')->where("is_active", 1)->where("is_deleted", 0)->orderBy('fullname_first')->get();
       $getLDDAPSignatoriesD = ViewLibrarySignatoriesModel::where('module_id', 7)->where("is_active", 1)->where("is_deleted", 0)->orderBy('fullname_first')->get();
@@ -91,6 +93,7 @@ class LDDAPController extends Controller
          // ->with(compact('fund_id'))
          // ->with(compact('getFund'))
          ->with(compact('getLDDAP1Signatories'))
+         ->with(compact('getLDDAP2Signatories'))
          ->with(compact('getLDDAPSignatories'))
          ->with(compact('getLDDAPSignatoriesD'))
          ->with(compact('getPaymentModes'))
@@ -99,18 +102,22 @@ class LDDAPController extends Controller
 	
 	public function edit(Request $request){     
       $user_id = auth()->user()->id;       
-      $user_role_id = auth()->user()->user_role_id; 
+      $user_role_id = auth()->user()->user_role_id;      
 		$lddap_id=$request->id;
+		$user_division_id = ViewUsersModel::where('id', $user_id)->pluck('division_id')->first();
       $getLDDAPDetails =  ViewLDDAPModel::where('id', $lddap_id)->where('is_active', 1)->where('is_deleted', 0)->get();		
       $getFunds = FundsModel::where("is_active", 1)->where("is_deleted", 0)->orderBy('fund')->get();      
       $getBankAccounts = LibraryBankAccountsModel::where("is_active", 1)->where("is_deleted", 0)->get();      
       $getLDDAP1Signatories = ViewLibrarySignatoriesModel::where('module_id', 7)
          ->where('signatory_no', 1)->where("is_active", 1)->where("is_deleted", 0)->orderBy('fullname_first')->get();
+      $getLDDAP2Signatories = ViewLibrarySignatoriesModel::where('module_id', 7)
+         ->where('signatory_no', 2)->where("is_active", 1)->where("is_deleted", 0)->orderBy('fullname_first')->get();
       $getLDDAPSignatories = ViewLibrarySignatoriesModel::where('module_id', 7)
          ->whereNull('signatory_no')->where("is_active", 1)->where("is_deleted", 0)->orderBy('fullname_first')->get();
       $getLDDAPSignatoriesD = ViewLibrarySignatoriesModel::where('module_id', 7)->where("is_active", 1)->where("is_deleted", 0)->orderBy('fullname_first')->get();
       $getAttachedDVbyLDDAP = ViewLDDAPDVModel::where('lddap_id', $lddap_id)->where("is_active", 1)->where("is_deleted", 0)->orderBy('id', 'asc')->get();
       $title = "Edit LDDAP";
+      // dd($getAttachedDVbyLDDAP);
       return view('funds_utilization.lddap.edit')
          ->with(compact('user_id'))
          ->with(compact('user_role_id'))
@@ -119,9 +126,11 @@ class LDDAPController extends Controller
          ->with(compact('getLDDAP1Signatories'))
          ->with(compact('getLDDAPSignatories'))
          ->with(compact('getLDDAPSignatoriesD'))
+         ->with(compact('getLDDAP2Signatories'))
          ->with(compact('getFunds'))
          ->with(compact('getAttachedDVbyLDDAP'))
-         ->with(compact('getBankAccounts'));     
+         ->with(compact('getBankAccounts'))    
+         ->with(compact('user_division_id'));     
    }
 
    public function view_check(Request $request){    
@@ -498,7 +507,9 @@ class LDDAPController extends Controller
    public function print_lddap($lddap_id) {
       $lddap_data = ViewLDDAPModel::where('id', $lddap_id)->get();
       $lddap_dv = ViewLDDAPDVModel::where('lddap_id', $lddap_id)->where('is_active', 1)->where('is_deleted', 0)->orderBY('id', 'asc')->get();
+      $now=Carbon::now()->setTimezone('Asia/Manila')->format('l jS \of F Y h:i:s A'); 
       return \View::make('funds_utilization.lddap.print_lddap')
+         ->with('now', $now)
          ->with('lddap_data', $lddap_data)
          ->with('lddap_dv', $lddap_dv);
    }

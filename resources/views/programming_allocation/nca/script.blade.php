@@ -4,7 +4,7 @@
     $('#nca_modal').on('hide.bs.modal', function(){
       init_view_nca();
       clear_attributes();
-      clear_fields();      
+      clearFields      
     });     
   {{-- modal end --}}
 

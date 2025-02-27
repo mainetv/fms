@@ -14,7 +14,7 @@
             <div>
                 {{ $slot }}                
             </div>
-            <p style="text-align:center;">Copyright © 2022. PCAARRD FMS. All Rights Reserved.
+            <p style="text-align:center;">Copyright © 2023. PCAARRD FMS. All Rights Reserved.
         </div>
     </div>
 </div>

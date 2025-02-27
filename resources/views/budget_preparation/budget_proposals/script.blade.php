@@ -4,7 +4,7 @@
     $('#bp_modal').on('hide.bs.modal', function(){
       init_view_bp();
       clear_attributes();
-      clear_fields();      
+      clearFields      
     });    
 
     $('#bp_modal').on('shown.bs.modal', function () {
@@ -683,7 +683,7 @@
       var msg = "";
       var notif_msg = "";
       clear_attributes();
-      clear_fields();      
+      clearFields      
     }); 
 
     $('.btn_forward').on('click', function(){      
@@ -698,7 +698,7 @@
       $(".modal-body #forward_year").val(year);            
       var user_role_id = $(".modal-body #forward_user_role_id").val();   
       {{-- alert(active_status_id);
-      alert(division_id); --}}
+      alert(user_role_id); --}}
       if(user_role_id == 7){ 
         if(active_status_id==1 || active_status_id==5 || active_status_id==9 || active_status_id==12){
           if(user_parent_division_id!=0 && division_id!=3){        
@@ -741,11 +741,11 @@
           notif_msg = "FAD-Budget forwarded " + division_acronym + "'s budget proposal to BPAC.";    
           $(".modal-body #forward_status_id").val('10');            
         }
-        {{-- else if(active_status_id == 14){
-          alert_msg = "Are you sure you want to forward " + division_acronym + "'s budget proposal to approve budget?";
-          notif_msg = "FAD-Budget forwarded " + division_acronym + "'s budget proposal to approve budget.";  
-          $(".modal-body #forward_status_id").val('15');        
-        }        --}}
+        else if(active_status_id == 15){
+          alert_msg = "Are you sure you want to forward " + division_acronym + "'s budget proposal to allotment status?";
+          notif_msg = "FAD-Budget forwarded " + division_acronym + "'s budget proposal to llotment status.";  
+          $(".modal-body #forward_status_id").val('21');        
+        }       
       }     
       else if(user_role_id == 9){
         if(active_status_id == 11){
@@ -855,10 +855,17 @@
         }     
       } 
       else if(user_role_id == 3){
-        alert_msg = "Receive " + division_acronym + "'s budget proposal?";
-        notif_msg = "FAD-Budget has received " + division_acronym + "'s budget proposal."; 
-        $(".modal-body #receive_status_id").val('7');
-      }   
+        if(active_status_id == 6){ 
+          alert_msg = "Receive " + division_acronym + "'s budget proposal?";
+          notif_msg = "FAD-Budget has received " + division_acronym + "'s budget proposal."; 
+          $(".modal-body #receive_status_id").val('7');
+        }   
+        else if(active_status_id == 14){ 
+          alert_msg = "Receive " + division_acronym + "'s budget proposal?";
+          notif_msg = "FAD-Budget has received " + division_acronym + "'s budget proposal."; 
+          $(".modal-body #receive_status_id").val('15');
+        }
+      }
       else if(user_role_id == 9){
         alert_msg = "Receive " + division_acronym + "'s budget proposal?";
         notif_msg = "BPAC Chair has received " + division_acronym + "'s budget proposal.";    
@@ -911,7 +918,7 @@
       var msg = "";
       var notif_msg = "";
       clear_attributes();
-      clear_fields();      
+      clearFields      
     }); 
 
     $('.btn_reverse').on('click', function(){      

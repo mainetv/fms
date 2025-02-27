@@ -30,7 +30,8 @@ SELECT
     payees.is_active AS is_active,
     payees.is_deleted AS is_deleted,
     payees.created_at AS created_at,
-    payees.updated_at AS updated_at
+    payees.updated_at AS updated_at,
+    deleted_at
 FROM fmsdb.library_payees payees
 LEFT JOIN fmsdb.library_payee_type payeetype ON payees.payee_type_id = payeetype.id
 LEFT JOIN commonlibrariesdb.banks ON payees.bank_id = banks.id

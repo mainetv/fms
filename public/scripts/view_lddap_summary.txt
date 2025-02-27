@@ -14,8 +14,8 @@ p.bank_account_name as payee_bank_account_name,
 SUM( tax_one + tax_two + tax_twob + tax_three + tax_five + tax_six + wtax + other_tax)  AS total_tax, 
 SUM(liquidated_damages + other_deductions)  AS other_deductions,
 rs.rs_no,
-(CASE WHEN(object_expenditure IS NULL) THEN expense_account ELSE object_expenditure END) AS accnt_obj,
-(CASE WHEN(object_expenditure IS NULL) THEN expense_account_code ELSE object_code END) AS accnt_obj_code,
+(CASE WHEN(object_expenditure IS NULL) THEN expense_account ELSE object_expenditure END) AS expense_account_object_expenditure,
+(CASE WHEN(object_expenditure IS NULL) THEN expense_account_code ELSE object_code END) AS expense_account_object_code,
 lddap.is_active,
 lddap.is_deleted
 FROM view_lddap_dvs vw_lddap
@@ -46,8 +46,8 @@ SELECT
     SUM( tax_one + tax_two + tax_twob + tax_three + tax_five + tax_six + wtax + other_tax)  AS total_tax, 
     SUM(liquidated_damages + other_deductions)  AS other_deductions,
     rs.rs_no,
-   (CASE WHEN(object_expenditure IS NULL) THEN expense_account ELSE object_expenditure END) AS accnt_obj,
-   (CASE WHEN(object_expenditure IS NULL) THEN expense_account_code ELSE object_code END) AS accnt_obj_code,
+   (CASE WHEN(object_expenditure IS NULL) THEN expense_account ELSE object_expenditure END) AS expense_account_object_expenditure,
+   (CASE WHEN(object_expenditure IS NULL) THEN expense_account_code ELSE object_code END) AS expense_account_object_code,
     checks.is_active,
     checks.is_deleted
 FROM checks

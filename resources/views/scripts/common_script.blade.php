@@ -5,11 +5,18 @@ function clear_attributes(){
   $('.modal').removeClass('error');
 }
 
-function clear_fields(){ 
+function clearFields(){ 
   $(".form-control").val('');
   $(".form-control").val('').change();
   $(".form-check-input").val('');
   $('input[type=checkbox]').not('#chk_fy').prop("checked", false);
+}
+
+function clearModalFields(formSelector) {
+  $(formSelector).find('input, textarea, select').not('#search').val('');
+  $(formSelector).find('select').prop('selectedIndex', 0); // Reset dropdowns
+  $(formSelector).find('input[type="checkbox"]').prop("checked", false);
+  $(".organization, .individual").addClass("d-none");
 }
 
 function clear_select(){

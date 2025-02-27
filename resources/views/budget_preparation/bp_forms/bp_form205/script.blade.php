@@ -2,7 +2,7 @@
    $('#bp_form205_modal').on('hide.bs.modal', function(){  
       init_view_bp_form205();   
       clear_attributes();
-      clear_fields();
+      clearFields
    });  
    $('#bp_form205_modal').on('shown.bs.modal', function () {
       $('#retiree_emp_code').focus();

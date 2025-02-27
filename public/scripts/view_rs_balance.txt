@@ -1,3 +1,37 @@
+
+SELECT
+    fmsdb.rs.id AS id,
+    fmsdb.rs.rs_type_id AS rs_type_id,
+    dv.id AS dv_id,
+    fmsdb.a.division_acronym AS allotment_division_acronym,
+    fmsdb.a.pap_code AS pap_code,
+    fmsdb.a.expense_account_object_code AS expense_account_object_code,
+    fmsdb.a.expense_account_object_expenditure AS expense_account_object_expenditure,
+    fmsdb.a.division_id AS allotment_division_id,
+    fmsdb.rs.division_acronym AS rs_division_acronym,
+    fmsdb.rs.division_id AS rs_division_id,
+    (CASE WHEN(fmsdb.rs.rs_date IS NULL) THEN fmsdb.rs.rs_date ELSE fmsdb.rs.rs_date END) AS rs_date,
+    fmsdb.rs.rs_no AS rs_no,
+    fmsdb.rs.payee AS payee,
+    fmsdb.rs.total_rs_pap_amount AS total_rs_pap_amount,
+    dv.dv_no AS dv_no,
+    dvnet.gross_amount AS gross_amount,
+    fmsdb.rs.balance AS balance,
+    (CASE WHEN(dv.lddap_id IS NOT NULL) 
+        THEN(SELECT fmsdb.lddap.lddap_no FROM fmsdb.lddap WHERE fmsdb.lddap.id = dv.lddap_id
+            ) ELSE(SELECT fmsdb.checks.check_no FROM fmsdb.checks WHERE fmsdb.checks.id = dv.check_id) 
+        END ) AS lddap_check_no,
+    fmsdb.rs.is_active AS is_active,
+    fmsdb.rs.is_deleted AS is_deleted
+    FROM fmsdb.disbursement_vouchers dv
+        LEFT JOIN fmsdb.dv_rs_net dvnet ON dv.id = dvnet.dv_id 
+        LEFT JOIN fmsdb.view_rs_total_dv rs ON dvnet.rs_id = fmsdb.rs.id
+        JOIN fmsdb.rs_pap rsp ON fmsdb.rs.id = rsp.rs_id
+        JOIN fmsdb.view_allotment a ON rsp.allotment_id = fmsdb.a.id
+    WHERE ((LENGTH(fmsdb.rs.rs_no) > 16) AND(dvnet.is_active = 1) AND(dvnet.is_deleted = 0))
+    GROUP BY dv.id
+
+
 SELECT 
     rs.id, 
     rs.rs_type_id,
@@ -9,8 +43,8 @@ SELECT
     payee, 
     total_rs_pap_amount,
     pap_code,
-   (CASE WHEN(object_expenditure IS NULL) THEN expense_account ELSE object_expenditure END) AS accnt_obj,
-   (CASE WHEN(object_expenditure IS NULL) THEN expense_account_code ELSE object_code END) AS accnt_obj_code,
+   (CASE WHEN(object_expenditure IS NULL) THEN expense_account ELSE object_expenditure END) AS expense_account_object_expenditure,
+   (CASE WHEN(object_expenditure IS NULL) THEN expense_account_code ELSE object_code END) AS expense_account_object_code,
     dv_no, 
     (CASE WHEN total_dv_net_amount is NULL THEN 0 ELSE total_dv_net_amount END) as total_dv_net_amount,
     (total_rs_pap_amount - (CASE WHEN total_dv_net_amount is NULL THEN 0 ELSE total_dv_net_amount END)) as balance,
@@ -37,8 +71,8 @@ SELECT
     payee, 
     total_rs_pap_amount,
     pap_code,
-   (CASE WHEN(object_expenditure IS NULL) THEN expense_account ELSE object_expenditure END) AS accnt_obj,
-   (CASE WHEN(object_expenditure IS NULL) THEN expense_account_code ELSE object_code END) AS accnt_obj_code,
+   (CASE WHEN(object_expenditure IS NULL) THEN expense_account ELSE object_expenditure END) AS expense_account_object_expenditure,
+   (CASE WHEN(object_expenditure IS NULL) THEN expense_account_code ELSE object_code END) AS expense_account_object_code,
     dv_no,
     (CASE WHEN total_dv_net_amount is NULL THEN 0 ELSE total_dv_net_amount END) as total_dv_net_amount,
     (total_rs_pap_amount-(CASE WHEN total_dv_net_amount is NULL THEN 0 ELSE total_dv_net_amount END)) as balance,
@@ -86,7 +120,7 @@ left join library_payees p on rs.payee_id=p.id
 left join view_allotment a on rsp.allotment_id=a.id
 left join commonlibrariesdb.pcaarrd_divisions divs1 on a.division_id=divs1.id
 where rs.id is not null and rsp.is_active=1 and rsp.is_deleted=0
-ORDER BY `rs`.`id`  ASC
+ORDER BY rs.id  ASC
 
 **export from fais rs, rspsp and allotment
 SELECT

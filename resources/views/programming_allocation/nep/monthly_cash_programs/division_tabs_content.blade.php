@@ -12,7 +12,6 @@
 	foreach ($getUserDetails as $key => $value) {
 		$emp_code = $value->emp_code;
 		$user_parent_division_id = $value->parent_division_id;
-		$user_division_id = $value->division_id;
 		$user_division_acronym = $value->division_acronym;
 		$user_cluster_id = $value->cluster_id;
 		$user_role_id = $value->user_role_id;

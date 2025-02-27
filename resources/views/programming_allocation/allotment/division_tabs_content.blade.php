@@ -20,7 +20,7 @@
 				<th>Total Adjustment</th>
 				<th>Total Obligation</th>
 				<th>Total Balance</th>
-				@role('Budget Officer')
+				@role('Budget Officer|Super Administrator')
 					@if($division_id!=5)
 					<td class="text-center" style="width:140px">										
 						<button id="btn_add" type="button" class="btn-xs btn_add" data-division-id="{{ $division_id }}"
@@ -664,7 +664,7 @@
 														<td class="lightgreen-bg">{{ number_format($q4_obligation, 2) }}</td>													
 														<td>{{ number_format($q4_balance, 2) }}</td>		
 													@endif			
-													@role('Budget Officer')		
+													@role('Budget Officer|Super Administrator')		
 														@if($division_id!=5)	
 														<td class="text-center">
 															<button type="button" data-id="{{ $item5->id }}"
@@ -780,7 +780,7 @@
 																<td class="lightgreen-bg">{{ number_format($q4_obligation, 2) }}</td>													
 																<td>{{ number_format($q4_balance, 2) }}</td>		
 															@endif			
-															@role('Budget Officer')		
+															@role('Budget Officer|Super Administrator')		
 																@if($division_id!=5)	
 																<td class="text-center">
 																	<button type="button" data-id="{{ $item6->id }}"
@@ -1164,93 +1164,109 @@
 								foreach($data->where('pap_id', $item1->pap_id)
 									->where('activity_id', $item2->activity_id)
 									->where('subactivity_id', $item3->subactivity_id)
-									->groupBY('expense_account_id') as $key4=>$row4){
-									foreach($row4 as $item4) {}//item 4									
+									->groupBY('cost_type_id') as $key4=>$row4){
+									foreach($row4 as $item4) {} ?>
+										<tr>
+											<td class="costtype font-weight-bold">
+												@if($item4->cost_type_id==1) Direct Cost
+												@elseif($item4->cost_type_id==2) Indirect Cost
+												@endif
+											</td>			
+										</tr>
+										<?php								
 									foreach($data->where('pap_id', $item1->pap_id)
 										->where('activity_id', $item2->activity_id)
 										->where('subactivity_id', $item3->subactivity_id)
-										->where('expense_account_id', $item4->expense_account_id)
-										->groupBY('id') as $key5=>$row5){
-										foreach($row5 as $item5) {}//item 4
-										$q1_allotment = $item5->q1_allotment;
-										$q2_allotment = $item5->q2_allotment;
-										$q3_allotment = $item5->q3_allotment;
-										$q4_allotment = $item5->q4_allotment;
-										$q1_adjustment = $item5->q1_adjustment;
-										$q2_adjustment = $item5->q2_adjustment;
-										$q3_adjustment = $item5->q3_adjustment;
-										$q4_adjustment = $item5->q4_adjustment;
-										$q1_obligation = $item5->q1_obligation;
-										$q2_obligation = $item5->q2_obligation;
-										$q3_obligation = $item5->q3_obligation;
-										$q4_obligation = $item5->q4_obligation;
-										$q1_balance = ($q1_allotment + $q1_adjustment) - $q1_obligation;
-										$q2_balance = ($q2_allotment + $q2_adjustment) - $q2_obligation;
-										$q3_balance = ($q3_allotment + $q3_adjustment) - $q3_obligation;
-										$q4_balance = ($q4_allotment + $q4_adjustment) - $q4_obligation;
-										$total_allotment = $q1_allotment + $q2_allotment + $q3_allotment + $q4_allotment;
-										$total_adjustment = $q1_adjustment + $q2_adjustment + $q3_adjustment + $q4_adjustment;
-										$total_obligation = $q1_obligation + $q2_obligation + $q3_obligation + $q4_obligation;
-										$total_balance = ($total_allotment + $total_adjustment) - $total_obligation;?>
-										<tr>
-											<td class="expense1">
-												@if($item5->object_expenditure!=NULL) {{ $item5->object_code }}: {{ $item5->object_expenditure }} 
-												@else {{ $item5->expense_account_code }}: {{ $item5->expense_account }}
-												@endif
-											</td>												
-											@if($view_selected == 'annual')
-												<td class="yellow-bg ">{{ number_format($total_allotment, 2) }}</td>													
-												<td class="lightred-bg">
-													<a class="btn_adjustment" data-id="{{ $item5->id }}" data-toggle="modal" data-target="#adjustment_modal"
-														data-toggle="tooltip" data-placement='auto' title='Adjust Allotment'>
-														{{ number_format($total_adjustment, 2) }}</a>
-												</td>														
-												<td class="lightgreen-bg">{{ number_format($total_obligation, 2) }}</td>													
-												<td>{{ number_format($total_balance, 2) }}</td>		
-											@elseif($view_selected == 'q1')		
-												<td class="yellow-bg">{{ number_format($q1_allotment, 2) }}</td>													
-												<td class="lightred-bg">{{ number_format($q1_adjustment, 2) }}</td>													
-												<td class="lightgreen-bg">{{ number_format($q1_obligation, 2) }}</td>													
-												<td>{{ number_format($q1_balance, 2) }}</td>		
-											@elseif($view_selected == 'q2')		
-												<td class="yellow-bg">{{ number_format($q2_allotment, 2) }}</td>													
-												<td class="lightred-bg">{{ number_format($q2_adjustment, 2) }}</td>													
-												<td class="lightgreen-bg">{{ number_format($q2_obligation, 2) }}</td>													
-												<td>{{ number_format($q2_balance, 2) }}</td>	
-											@elseif($view_selected == 'q3')		
-												<td class="yellow-bg">{{ number_format($q3_allotment, 2) }}</td>													
-												<td class="lightred-bg">{{ number_format($q3_adjustment, 2) }}</td>													
-												<td class="lightgreen-bg">{{ number_format($q3_obligation, 2) }}</td>													
-												<td>{{ number_format($q3_balance, 2) }}</td>	
-											@elseif($view_selected == 'q4')		
-												<td class="yellow-bg">{{ number_format($q4_allotment, 2) }}</td>													
-												<td class="lightred-bg">{{ number_format($q4_adjustment, 2) }}</td>													
-												<td class="lightgreen-bg">{{ number_format($q4_obligation, 2) }}</td>													
-												<td>{{ number_format($q4_balance, 2) }}</td>		
-											@endif			
-											@role('Budget Officer')		
-												@if($division_id!=5)	
-												<td class="text-center">
-													<button type="button" data-id="{{ $item5->id }}"
-														data-toggle="modal" data-target="#allotment_modal" data-toggle="tooltip" 
-														data-placement='auto' title='View'class="btn-xs btn_view">
-														<i class="fa-solid fa-eye"></i>																				
-													</button>		
-													<button type="button" class="btn-xs btn_edit" data-id="{{ $item5->id }}" 
-														data-toggle="modal" data-target="#allotment_modal" data-toggle="tooltip" 
-														data-placement='auto' title='Edit'>
-														<i class="fa-solid fa-edit green fa-lg"></i>																				
-													</button>																																	
-													<button type="button" class="btn-xs btn_delete" data-id="{{ $item5->id }}" 
-														data-toggle="tooltip" data-placement='auto'title='Delete'>
-														<i class="fa-solid fa-trash-can fa-lg red"></i>
-													</button>																																					 
-												</td>
-												@endif
-											@endrole	
-										</tr><?php	
-									}										
-								}	
+										->where('cost_type_id', $item4->cost_type_id)
+										->groupBY('expense_account_id') as $key5=>$row5){
+										foreach($row5 as $item5) {}
+										foreach($data->where('pap_id', $item1->pap_id)
+											->where('activity_id', $item2->activity_id)
+											->where('subactivity_id', $item3->subactivity_id)
+											->where('cost_type_id', $item4->cost_type_id)
+											->where('expense_account_id', $item5->expense_account_id)
+											->groupBY('id') as $key6=>$row6){
+											foreach($row6 as $item6) {}//item 4
+											$q1_allotment = $item6->q1_allotment;
+											$q2_allotment = $item6->q2_allotment;
+											$q3_allotment = $item6->q3_allotment;
+											$q4_allotment = $item6->q4_allotment;
+											$q1_adjustment = $item6->q1_adjustment;
+											$q2_adjustment = $item6->q2_adjustment;
+											$q3_adjustment = $item6->q3_adjustment;
+											$q4_adjustment = $item6->q4_adjustment;
+											$q1_obligation = $item6->q1_obligation;
+											$q2_obligation = $item6->q2_obligation;
+											$q3_obligation = $item6->q3_obligation;
+											$q4_obligation = $item6->q4_obligation;
+											$q1_balance = ($q1_allotment + $q1_adjustment) - $q1_obligation;
+											$q2_balance = ($q2_allotment + $q2_adjustment) - $q2_obligation;
+											$q3_balance = ($q3_allotment + $q3_adjustment) - $q3_obligation;
+											$q4_balance = ($q4_allotment + $q4_adjustment) - $q4_obligation;
+											$total_allotment = $q1_allotment + $q2_allotment + $q3_allotment + $q4_allotment;
+											$total_adjustment = $q1_adjustment + $q2_adjustment + $q3_adjustment + $q4_adjustment;
+											$total_obligation = $q1_obligation + $q2_obligation + $q3_obligation + $q4_obligation;
+											$total_balance = ($total_allotment + $total_adjustment) - $total_obligation;?>											
+											<tr>
+												<td class="expense1">
+													@if($item6->object_expenditure!=NULL) {{ $item6->object_code }}: {{ $item6->object_expenditure }} 
+													@else {{ $item6->expense_account_code }}: {{ $item6->expense_account }}
+													@endif
+												</td>												
+												@if($view_selected == 'annual')
+													<td class="yellow-bg ">{{ number_format($total_allotment, 2) }}</td>													
+													<td class="lightred-bg">
+														<a class="btn_adjustment" data-id="{{ $item6->id }}" data-toggle="modal" data-target="#adjustment_modal"
+															data-toggle="tooltip" data-placement='auto' title='Adjust Allotment'>
+															{{ number_format($total_adjustment, 2) }}</a>
+													</td>														
+													<td class="lightgreen-bg">{{ number_format($total_obligation, 2) }}</td>													
+													<td>{{ number_format($total_balance, 2) }}</td>		
+												@elseif($view_selected == 'q1')		
+													<td class="yellow-bg">{{ number_format($q1_allotment, 2) }}</td>													
+													<td class="lightred-bg">{{ number_format($q1_adjustment, 2) }}</td>													
+													<td class="lightgreen-bg">{{ number_format($q1_obligation, 2) }}</td>													
+													<td>{{ number_format($q1_balance, 2) }}</td>		
+												@elseif($view_selected == 'q2')		
+													<td class="yellow-bg">{{ number_format($q2_allotment, 2) }}</td>													
+													<td class="lightred-bg">{{ number_format($q2_adjustment, 2) }}</td>													
+													<td class="lightgreen-bg">{{ number_format($q2_obligation, 2) }}</td>													
+													<td>{{ number_format($q2_balance, 2) }}</td>	
+												@elseif($view_selected == 'q3')		
+													<td class="yellow-bg">{{ number_format($q3_allotment, 2) }}</td>													
+													<td class="lightred-bg">{{ number_format($q3_adjustment, 2) }}</td>													
+													<td class="lightgreen-bg">{{ number_format($q3_obligation, 2) }}</td>													
+													<td>{{ number_format($q3_balance, 2) }}</td>	
+												@elseif($view_selected == 'q4')		
+													<td class="yellow-bg">{{ number_format($q4_allotment, 2) }}</td>													
+													<td class="lightred-bg">{{ number_format($q4_adjustment, 2) }}</td>													
+													<td class="lightgreen-bg">{{ number_format($q4_obligation, 2) }}</td>													
+													<td>{{ number_format($q4_balance, 2) }}</td>		
+												@endif			
+												@role('Budget Officer|Super Administrator')		
+													@if($division_id!=5)	
+													<td class="text-center">
+														<button type="button" data-id="{{ $item6->id }}"
+															data-toggle="modal" data-target="#allotment_modal" data-toggle="tooltip" 
+															data-placement='auto' title='View'class="btn-xs btn_view">
+															<i class="fa-solid fa-eye"></i>																				
+														</button>		
+														<button type="button" class="btn-xs btn_edit" data-id="{{ $item6->id }}" 
+															data-toggle="modal" data-target="#allotment_modal" data-toggle="tooltip" 
+															data-placement='auto' title='Edit'>
+															<i class="fa-solid fa-edit green fa-lg"></i>																				
+														</button>																																	
+														<button type="button" class="btn-xs btn_delete" data-id="{{ $item6->id }}" 
+															data-toggle="tooltip" data-placement='auto'title='Delete'>
+															<i class="fa-solid fa-trash-can fa-lg red"></i>
+														</button>																																					 
+													</td>
+													@endif
+												@endrole	
+											</tr><?php	
+										}										
+									}	
+								}
 								if(isset($item3->subactivity)){
 									$q1_allotment_subactivity = $row3->sum('q1_allotment');
 									$q2_allotment_subactivity = $row3->sum('q2_allotment');

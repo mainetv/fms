@@ -6,16 +6,16 @@
 			<div class="row mb-2">
 				<div class="col-sm-6">
 				<h1 class="m-0">{{ $title }}</h1>
-				</div><!-- /.col -->
+				</div>
 				<div class="col-sm-6">
 				<ol class="breadcrumb float-sm-right">
 						<li class="breadcrumb-item"><a href="/fms/public">Home</a></li>
 						<li class="breadcrumb-item active">Budget Preparation</li>
 						<li class="breadcrumb-item active">{{ $title }}</li>
 				</ol>
-				</div><!-- /.col -->
-			</div><!-- /.row -->
-		</div><!-- /.container-fluid -->
+				</div>
+			</div>
+		</div>
 	</div>
 
 	<section class="content">  
@@ -106,55 +106,115 @@
 									})
 									->orderBy('pap_code', 'ASC')
 									->orderBy('expense_account_code','ASC')->orderBy('object_code','ASC')->groupBy('id')->get();	
-
+									
 								foreach($data_t1->groupBY('pap_id') as $key=>$row){			
 									foreach($row as $item) {} //item?>									
 									<tr>
 										<td class="font-weight-bold gray1-bg" colspan="4">{{ $item->pap }} - {{ $item->pap_code }}</td>										
 									</tr><?php
-									foreach($data_t1->where('pap_id', $item->pap_id)->groupBY('expense_account_id') as $key1=>$row1){
+									//all except subsidy nga
+									foreach($data_t1->where('pap_id', $item->pap_id)->where('expense_account_id', '!=', 4)
+										->groupBY('expense_account_id') as $key1=>$row1){
 										foreach($row1 as $item1) {} //item 1
-											$fy1_expense = round($row1->sum('fy1_amount'), -3)/1000;
-											$fy2_expense = round($row1->sum('fy2_amount'), -3)/1000;
-											$fy3_expense = round($row1->sum('fy3_amount'), -3)/1000; ?>
+											$fy1_expense = $row1->sum('fy1_amount');
+											$fy2_expense = $row1->sum('fy2_amount');
+											$fy3_expense = $row1->sum('fy3_amount'); ?>
 										<tr class="font-weight-bold text-right font-weight-bold gray-bg">
 											<td class="subactivity">{{ $item1->expense_account}}</td>
-											<td>{{ number_format($fy1_expense) }}</td>													
-											<td>{{ number_format($fy2_expense) }}</td>													
-											<td>{{ number_format($fy3_expense) }}</td>													
+											<td>{{ number_format($fy1_expense, 2) }}</td>													
+											<td>{{ number_format($fy2_expense, 2) }}</td>													
+											<td>{{ number_format($fy3_expense, 2) }}</td>													
 										</tr><?php 	
-										foreach($data_t1->where('pap_id', $item->pap_id)->where('expense_account_id', $item1->expense_account_id)
+										foreach($data_t1->where('pap_id', $item->pap_id)
+											->where('expense_account_id', $item1->expense_account_id)
 											->groupBY('object_expenditure_id') as $key2=>$row2){
 											foreach($row2 as $item2) {} //item 2
-											$fy1_expenditure = round($row2->sum('fy1_amount'), -3)/1000;
-											$fy2_expenditure = round($row2->sum('fy2_amount'), -3)/1000;
-											$fy3_expenditure = round($row2->sum('fy3_amount'), -3)/1000; ?>
+											$fy1_expenditure = $row2->sum('fy1_amount');
+											$fy2_expenditure = $row2->sum('fy2_amount');
+											$fy3_expenditure = $row2->sum('fy3_amount'); ?>
 											<tr class="text-right">
-												<td class="expense">{{ $item2->object_expenditure }}</td>													
-												<td>{{ number_format($fy1_expenditure) }}</td>													
-												<td>{{ number_format($fy2_expenditure) }}</td>													
-												<td>{{ number_format($fy3_expenditure) }}</td>																
+												<td class="expense">{{ $item2->object_code }}: {{ $item2->object_expenditure }}</td>													
+												<td>{{ number_format($fy1_expenditure, 2) }}</td>													
+												<td>{{ number_format($fy2_expenditure, 2) }}</td>													
+												<td>{{ number_format($fy3_expenditure, 2) }}</td>																
 											</tr><?php 
 										}	
-									}		
+									}	
+									
+									//subsidy nga non rd
+									foreach($data_t1->where('pap_id', $item->pap_id)->where('division_id', '!=', 20)->where('expense_account_id', 4)
+										->groupBY('expense_account_id') as $key1=>$row1){
+										foreach($row1 as $item1) {} //item 1
+											$fy1_expense = $row1->sum('fy1_amount');
+											$fy2_expense = $row1->sum('fy2_amount');
+											$fy3_expense = $row1->sum('fy3_amount'); ?>
+										<tr class="font-weight-bold text-right font-weight-bold gray-bg">
+											<td class="subactivity">Capacity Building - {{ $item1->expense_account}}</td>
+											<td>{{ number_format($fy1_expense, 2) }}</td>													
+											<td>{{ number_format($fy2_expense, 2) }}</td>													
+											<td>{{ number_format($fy3_expense, 2) }}</td>													
+										</tr><?php 	
+										foreach($data_t1->where('pap_id', $item->pap_id)->where('division_id', '!=', 20)->where('expense_account_id', 4)
+											->groupBY('object_expenditure_id') as $key2=>$row2){
+											foreach($row2 as $item2) {} //item 2
+											$fy1_expenditure = $row2->sum('fy1_amount');
+											$fy2_expenditure = $row2->sum('fy2_amount');
+											$fy3_expenditure = $row2->sum('fy3_amount'); ?>
+											<tr class="text-right">
+												<td class="expense">{{ $item2->object_code }}: {{ $item2->object_expenditure }}</td>													
+												<td>{{ number_format($fy1_expenditure, 2) }}</td>													
+												<td>{{ number_format($fy2_expenditure, 2) }}</td>													
+												<td>{{ number_format($fy3_expenditure, 2) }}</td>																
+											</tr><?php 
+										}	
+									}
+
+									//subsidy nga rd
+									foreach($data_t1->where('pap_id', $item->pap_id)->where('division_id', 20)->where('expense_account_id', 4)
+										->groupBY('expense_account_id') as $key1=>$row1){
+										foreach($row1 as $item1) {} //item 1
+											$fy1_expense = $row1->sum('fy1_amount');
+											$fy2_expense = $row1->sum('fy2_amount');
+											$fy3_expense = $row1->sum('fy3_amount'); ?>
+										<tr class="font-weight-bold text-right font-weight-bold gray-bg">
+											<td class="subactivity">{{ $item1->activity }} - {{ $item1->expense_account}}</td>
+											<td>{{ number_format($fy1_expense, 2) }}</td>													
+											<td>{{ number_format($fy2_expense, 2) }}</td>													
+											<td>{{ number_format($fy3_expense, 2) }}</td>													
+										</tr><?php 	
+										foreach($data_t1->where('pap_id', $item->pap_id)->where('division_id', 20)->where('expense_account_id', 4)
+											->groupBY('object_expenditure_id') as $key2=>$row2){
+											foreach($row2 as $item2) {} //item 2
+											$fy1_expenditure = $row2->sum('fy1_amount');
+											$fy2_expenditure = $row2->sum('fy2_amount');
+											$fy3_expenditure = $row2->sum('fy3_amount'); ?>
+											<tr class="text-right">
+												<td class="expense">{{ $item2->object_code }}: {{ $item2->object_expenditure }}</td>													
+												<td>{{ number_format($fy1_expenditure, 2) }}</td>													
+												<td>{{ number_format($fy2_expenditure, 2) }}</td>													
+												<td>{{ number_format($fy3_expenditure, 2) }}</td>																
+											</tr><?php 
+										}	
+									}
+
 									if(isset($item->pap)){
-										$fy1_pap = round($row->sum('fy1_amount'), -3)/1000;
-										$fy2_pap = round($row->sum('fy2_amount'), -3)/1000;
-										$fy3_pap = round($row->sum('fy3_amount'), -3)/1000; ?>
+										$fy1_pap = $row->sum('fy1_amount');
+										$fy2_pap = $row->sum('fy2_amount');
+										$fy3_pap = $row->sum('fy3_amount'); ?>
 										<tr class="text-right font-weight-bold gray-bg">
 											<td>TOTAL PAP, {{ $item->pap }}</td>
-											<td>{{ number_format($fy1_pap) }}</td>			
-											<td>{{ number_format($fy2_pap) }}</td>			
-											<td>{{ number_format($fy3_pap) }}</td>			
+											<td>{{ number_format($fy1_pap, 2) }}</td>			
+											<td>{{ number_format($fy2_pap, 2) }}</td>			
+											<td>{{ number_format($fy3_pap, 2) }}</td>			
 										</tr><?php 
 									}									
 								}
 								
 								//MOOE Tier 1 Total								
 								foreach($data_t1->groupBy('year') as $key_mooe_t1=>$row_mooe_t1){
-									$fy1_mooe_t1 = round($row_mooe_t1->sum('fy1_amount'), -3)/1000;
-									$fy2_mooe_t1 = round($row_mooe_t1->sum('fy2_amount'), -3)/1000;
-									$fy3_mooe_t1 = round($row_mooe_t1->sum('fy3_amount'), -3)/1000; ?>
+									$fy1_mooe_t1 = $row_mooe_t1->sum('fy1_amount');
+									$fy2_mooe_t1 = $row_mooe_t1->sum('fy2_amount');
+									$fy3_mooe_t1 = $row_mooe_t1->sum('fy3_amount'); ?>
 									<tr class="text-right font-weight-bold gray-bg">
 										<td>TOTAL TIER 1 MOOE</td>
 										<td>{{ number_format($fy1_mooe_t1) }}</td>	
@@ -180,52 +240,52 @@
 									</tr><?php
 									foreach($data_t2->where('pap_id', $item->pap_id)->groupBY('expense_account_id') as $key1=>$row1){
 										foreach($row1 as $item1) {} //item 1
-											$fy1_expense = round($row1->sum('fy1_amount'), -3)/1000;
-											$fy2_expense = round($row1->sum('fy2_amount'), -3)/1000;
-											$fy3_expense = round($row1->sum('fy3_amount'), -3)/1000; ?>
+											$fy1_expense = $row1->sum('fy1_amount');
+											$fy2_expense = $row1->sum('fy2_amount');
+											$fy3_expense = $row1->sum('fy3_amount'); ?>
 										<tr class="font-weight-bold text-right font-weight-bold gray-bg">
 											<td class="subactivity">{{ $item1->expense_account}}</td>
-											<td>{{ number_format($fy1_expense) }}</td>													
-											<td>{{ number_format($fy2_expense) }}</td>													
-											<td>{{ number_format($fy3_expense) }}</td>													
+											<td>{{ number_format($fy1_expense, 2) }}</td>													
+											<td>{{ number_format($fy2_expense, 2) }}</td>													
+											<td>{{ number_format($fy3_expense, 2) }}</td>													
 										</tr><?php 	
 										foreach($data_t2->where('pap_id', $item->pap_id)->where('expense_account_id', $item1->expense_account_id)
 											->groupBY('object_expenditure_id') as $key2=>$row2){
 											foreach($row2 as $item2) {} //item 2
-											$fy1_expenditure = round($row2->sum('fy1_amount'), -3)/1000;
-											$fy2_expenditure = round($row2->sum('fy2_amount'), -3)/1000;
-											$fy3_expenditure = round($row2->sum('fy3_amount'), -3)/1000; ?>
+											$fy1_expenditure = $row2->sum('fy1_amount');
+											$fy2_expenditure = $row2->sum('fy2_amount');
+											$fy3_expenditure = $row2->sum('fy3_amount'); ?>
 											<tr class="text-right">
-												<td class="expense">{{ $item2->object_expenditure }}</td>													
-												<td>{{ number_format($fy1_expenditure) }}</td>													
-												<td>{{ number_format($fy2_expenditure) }}</td>													
-												<td>{{ number_format($fy3_expenditure) }}</td>																
+												<td class="expense">{{ $item2->object_code }}: {{ $item2->object_expenditure }}</td>													
+												<td>{{ number_format($fy1_expenditure, 2) }}</td>													
+												<td>{{ number_format($fy2_expenditure, 2) }}</td>													
+												<td>{{ number_format($fy3_expenditure, 2) }}</td>																
 											</tr><?php 
 										}	
 									}		
 									if(isset($item->pap)){
-										$fy1_pap = round($row->sum('fy1_amount'), -3)/1000;
-										$fy2_pap = round($row->sum('fy2_amount'), -3)/1000;
-										$fy3_pap = round($row->sum('fy3_amount'), -3)/1000; ?>
+										$fy1_pap = $row->sum('fy1_amount');
+										$fy2_pap = $row->sum('fy2_amount');
+										$fy3_pap = $row->sum('fy3_amount'); ?>
 										<tr class="text-right font-weight-bold gray-bg">
 											<td>TOTAL PAP, {{ $item->pap }}</td>
-											<td>{{ number_format($fy1_pap) }}</td>			
-											<td>{{ number_format($fy2_pap) }}</td>			
-											<td>{{ number_format($fy3_pap) }}</td>			
+											<td>{{ number_format($fy1_pap, 2) }}</td>			
+											<td>{{ number_format($fy2_pap, 2) }}</td>			
+											<td>{{ number_format($fy3_pap, 2) }}</td>			
 										</tr><?php 
 									}									
 								} 
 
 								//MOEE Tier 2 Total
 								foreach($data_t2->groupBy('year') as $key_mooe_t2_total=>$row_mooe_t2_total){
-									$fy1_mooe_t2 = round($row_mooe_t2_total->sum('fy1_amount'), -3)/1000;
-									$fy2_mooe_t2 = round($row_mooe_t2_total->sum('fy2_amount'), -3)/1000;
-									$fy3_mooe_t2 = round($row_mooe_t2_total->sum('fy3_amount'), -3)/1000; ?>
+									$fy1_mooe_t2 = $row_mooe_t2_total->sum('fy1_amount');
+									$fy2_mooe_t2 = $row_mooe_t2_total->sum('fy2_amount');
+									$fy3_mooe_t2 = $row_mooe_t2_total->sum('fy3_amount'); ?>
 									<tr class="text-right font-weight-bold gray-bg">
 										<td>TOTAL TIER 2 MOOE</td>
-										<td>{{ number_format($fy1_mooe_t2) }}</td>	
-										<td>{{ number_format($fy2_mooe_t2) }}</td>	
-										<td>{{ number_format($fy3_mooe_t2) }}</td>	
+										<td>{{ number_format($fy1_mooe_t2, 2) }}</td>	
+										<td>{{ number_format($fy2_mooe_t2, 2) }}</td>	
+										<td>{{ number_format($fy3_mooe_t2, 2) }}</td>	
 									</tr><?php
 								}
 
@@ -234,14 +294,14 @@
 									->where('is_active', 1)->where('is_deleted', 0)->groupBy('id')->get();
 
 								foreach($data_mooe_total->groupBy('year') as $key_mooe_total=>$row_mooe_total){
-									$fy1_mooe = round($row_mooe_total->sum('fy1_amount'), -3)/1000;
-									$fy2_mooe = round($row_mooe_total->sum('fy2_amount'), -3)/1000;
-									$fy3_mooe = round($row_mooe_total->sum('fy3_amount'), -3)/1000; ?>
+									$fy1_mooe = $row_mooe_total->sum('fy1_amount');
+									$fy2_mooe = $row_mooe_total->sum('fy2_amount');
+									$fy3_mooe = $row_mooe_total->sum('fy3_amount'); ?>
 									<tr class="text-right font-weight-bold gray-bg">
 										<td>TOTAL MOOE</td>
-										<td>{{ number_format($fy1_mooe) }}</td>	
-										<td>{{ number_format($fy2_mooe) }}</td>	
-										<td>{{ number_format($fy3_mooe) }}</td>	
+										<td>{{ number_format($fy1_mooe, 2) }}</td>	
+										<td>{{ number_format($fy2_mooe, 2) }}</td>	
+										<td>{{ number_format($fy3_mooe, 2) }}</td>	
 									</tr><?php
 								}?>
 
@@ -263,52 +323,52 @@
 									</tr><?php
 									foreach($data_co->where('pap_id', $item->pap_id)->groupBY('expense_account_id') as $key1=>$row1){
 										foreach($row1 as $item1) {} //item 1
-											$fy1_expense = round($row1->sum('fy1_amount'), -3)/1000;
-											$fy2_expense = round($row1->sum('fy2_amount'), -3)/1000;
-											$fy3_expense = round($row1->sum('fy3_amount'), -3)/1000; ?>
+											$fy1_expense = $row1->sum('fy1_amount');
+											$fy2_expense = $row1->sum('fy2_amount');
+											$fy3_expense = $row1->sum('fy3_amount'); ?>
 										<tr class="font-weight-bold text-right font-weight-bold gray-bg">
 											<td class="subactivity">{{ $item1->expense_account}}</td>
-											<td>{{ number_format($fy1_expense) }}</td>													
-											<td>{{ number_format($fy2_expense) }}</td>													
-											<td>{{ number_format($fy3_expense) }}</td>													
+											<td>{{ number_format($fy1_expense, 2) }}</td>													
+											<td>{{ number_format($fy2_expense, 2) }}</td>													
+											<td>{{ number_format($fy3_expense, 2) }}</td>													
 										</tr><?php 	
 										foreach($data_co->where('pap_id', $item->pap_id)->where('expense_account_id', $item1->expense_account_id)
 											->groupBY('object_expenditure_id') as $key2=>$row2){
 											foreach($row2 as $item2) {} //item 2
-											$fy1_expenditure = round($row2->sum('fy1_amount'), -3)/1000;
-											$fy2_expenditure = round($row2->sum('fy2_amount'), -3)/1000;
-											$fy3_expenditure = round($row2->sum('fy3_amount'), -3)/1000; ?>
+											$fy1_expenditure = $row2->sum('fy1_amount');
+											$fy2_expenditure = $row2->sum('fy2_amount');
+											$fy3_expenditure = $row2->sum('fy3_amount'); ?>
 											<tr class="text-right">
-												<td class="expense">{{ $item2->object_expenditure }}</td>													
-												<td>{{ number_format($fy1_expenditure) }}</td>													
-												<td>{{ number_format($fy2_expenditure) }}</td>													
-												<td>{{ number_format($fy3_expenditure) }}</td>																
+												<td class="expense">{{ $item2->object_code }}: {{ $item2->object_expenditure }}</td>													
+												<td>{{ number_format($fy1_expenditure, 2) }}</td>													
+												<td>{{ number_format($fy2_expenditure, 2) }}</td>													
+												<td>{{ number_format($fy3_expenditure, 2) }}</td>																
 											</tr><?php 
 										}	
 									}		
 									if(isset($item->pap)){
-										$fy1_pap = round($row->sum('fy1_amount'), -3)/1000;
-										$fy2_pap = round($row->sum('fy2_amount'), -3)/1000;
-										$fy3_pap = round($row->sum('fy3_amount'), -3)/1000; ?>
+										$fy1_pap = $row->sum('fy1_amount');
+										$fy2_pap = $row->sum('fy2_amount');
+										$fy3_pap = $row->sum('fy3_amount'); ?>
 										<tr class="text-right font-weight-bold gray-bg">
 											<td>TOTAL PAP, {{ $item->pap }}</td>
-											<td>{{ number_format($fy1_pap) }}</td>			
-											<td>{{ number_format($fy2_pap) }}</td>			
-											<td>{{ number_format($fy3_pap) }}</td>			
+											<td>{{ number_format($fy1_pap, 2) }}</td>			
+											<td>{{ number_format($fy2_pap, 2) }}</td>			
+											<td>{{ number_format($fy3_pap, 2) }}</td>			
 										</tr><?php 
 									}
 								}
 
 								//CO TOTAL
 								foreach($data_co->groupBy('year') as $key_co=>$row_co){
-									$fy1_co = round($row_co->sum('fy1_amount'), -3)/1000;
-									$fy2_co = round($row_co->sum('fy2_amount'), -3)/1000;
-									$fy3_co = round($row_co->sum('fy3_amount'), -3)/1000; ?>
+									$fy1_co = $row_co->sum('fy1_amount');
+									$fy2_co = $row_co->sum('fy2_amount');
+									$fy3_co = $row_co->sum('fy3_amount'); ?>
 									<tr class="text-right font-weight-bold gray-bg">
 										<td>TOTAL CO</td>
-										<td>{{ number_format($fy1_co) }}</td>	
-										<td>{{ number_format($fy2_co) }}</td>	
-										<td>{{ number_format($fy3_co) }}</td>	
+										<td>{{ number_format($fy1_co, 2) }}</td>	
+										<td>{{ number_format($fy2_co, 2) }}</td>	
+										<td>{{ number_format($fy3_co, 2) }}</td>	
 									</tr><?php
 								}
 
@@ -317,14 +377,14 @@
 									->where('is_active', 1)->where('is_deleted', 0)->groupBy('id')->get();
 
 								foreach($data_total->groupBy('year') as $keyBPSum=>$rowBPSum){
-									$fy1_gt = round($rowBPSum->sum('fy1_amount'), -3)/1000;
-									$fy2_gt = round($rowBPSum->sum('fy2_amount'), -3)/1000;
-									$fy3_gt = round($rowBPSum->sum('fy3_amount'), -3)/1000; ?>
+									$fy1_gt = $rowBPSum->sum('fy1_amount');
+									$fy2_gt = $rowBPSum->sum('fy2_amount');
+									$fy3_gt = $rowBPSum->sum('fy3_amount'); ?>
 									<tr class="text-right font-weight-bold gray-bg">
 										<td >GRAND TOTAL</td>
-										<td>{{ number_format($fy1_gt) }}</td>	
-										<td>{{ number_format($fy2_gt) }}</td>	
-										<td>{{ number_format($fy3_gt) }}</td>	
+										<td>{{ number_format($fy1_gt, 2) }}</td>	
+										<td>{{ number_format($fy2_gt, 2) }}</td>	
+										<td>{{ number_format($fy3_gt, 2) }}</td>	
 									</tr><?php
 								}?>	
 							</tbody>
@@ -341,6 +401,7 @@
       $(document).ready(function(){   
          @include('scripts.common_script')       
       })     
+		
 		function changeYear()
 		{
 			year = $("#year_selected").val();

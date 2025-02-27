@@ -354,7 +354,7 @@ function getBanks(){
 }
 
 function getPayees(){
-   $data = ViewLibraryPayeesModel::where('is_active',1)->where("is_deleted", 0)->orderBy('payee', 'asc')->get();
+   $data = ViewLibraryPayeesModel::where('is_verified', 1)->where('is_active',1)->where("is_deleted", 0)->orderBy('payee', 'asc')->get();
    // dd($data);
    return $data;
 }

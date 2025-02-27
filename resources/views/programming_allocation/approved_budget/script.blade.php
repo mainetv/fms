@@ -4,7 +4,7 @@
     $('#cp_modal').on('hide.bs.modal', function(){
       init_view_cp();
       clear_attributes();
-      clear_fields();      
+      clearFields      
     }); 
     
     $('#cp_modal').on('shown.bs.modal', function () {
@@ -489,7 +489,7 @@
       var msg = "";
       var notif_msg = "";
       clear_attributes();
-      clear_fields();      
+      clearFields      
     }); 
 
     $('.btn_forward').on('click', function(){      

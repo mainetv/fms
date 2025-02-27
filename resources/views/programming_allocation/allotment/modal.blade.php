@@ -14,7 +14,7 @@
           <input type="hidden" id="rs_type_id" name="rs_type_id">
           <input type="hidden" id="id" name="id">   
           <div class="form-group row">            
-            <label for="allotment_fund_id" class="col-sm-2 col-form-label">Fund</label>
+            <label for="allotment_fund_id" class="col-sm-2 col-form-label">Fund Reference</label>
             <div class="col-sm-10">
               <select id="allotment_fund_id" name="allotment_fund_id" class="form-control allotment-field select2bs4">   
                 <option value="" selected hidden>Select Allotment Fund</option>
@@ -49,7 +49,7 @@
               <span class="is-invalid"><small id="activity-error" class="error"></small></span>
             </div>   
           </div>   
-          @if($user_division_id==9 || $user_division_id==10 || $user_division_id==12 || $user_division_id==21 || $user_division_id==16 || $user_division_id==7 || $user_division_id==13 || $user_division_id==20)
+          @if($user_division_id==9 || $user_division_id==10 || $user_division_id==12 || $user_division_id==21 || $user_division_id==16 || $user_division_id==7 || $user_division_id==13 || $user_division_id==20 || $user_division_id==19)
             <div class="form-group row">
               <label for="subactivity_id" class="col-sm-2 col-form-label">Subactivity</label>
               <div class="col-sm-10">
@@ -183,7 +183,7 @@
         </div>  
         <div class="modal-body">  
           <div>
-            <input id="pap_to_adjust" size="100%" style="background-color:white; border:none;" readonly><br>
+            <textarea id="pap_act_subact_to_adjust" cols="100%" style="background-color:white; border:none;" readonly></textarea><br>
             <input id="exp_to_adjust" size="100%" style="background-color:white; border:none;" readonly>
           </div>   
           <input type="text" id="allotment_id" name="allotment_id" hidden>        

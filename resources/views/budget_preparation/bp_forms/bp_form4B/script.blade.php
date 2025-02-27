@@ -2,7 +2,7 @@
 	$('#bp_form4_modal').on('hide.bs.modal', function(){     
 		init_view_bp_form4();
 		clear_attributes();
-		clear_fields();
+		clearFields
  	}); 
 	
 	$('#bp_form4_modal').on('shown.bs.modal', function () {

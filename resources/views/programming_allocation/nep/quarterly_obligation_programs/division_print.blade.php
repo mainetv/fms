@@ -335,12 +335,24 @@
 				<td>___________________________</td>
 			</tr>
 			<tr class="text-center">
-				<td>{{ strtoupper($user_fullname) }}</td>
-				<td>{{ strtoupper($user_division_director) }}</td>
+            @if($division_id==3)
+				   <td>{{ strtoupper($user_fullname) }}</td>
+				   <td>ROSETE, EDLYNE A.</td>
+            @else
+               <td>{{ strtoupper($user_fullname) }}</td>
+               <td>{{ strtoupper($user_division_director) }}</td>
+            @endif
 			</tr>
 			<tr class="text-center">
-				<td style="font-size:11px;">{{ $user_role }}</td>
-				<td style="font-size:11px;">Division Director</td>
+            @if($division_id==3)
+               <td style="font-size:11px;">{{ $user_role }}</td>
+               <td style="font-size:11px;">Audit Team Leader</td>
+            @else
+               <td style="font-size:11px;">{{ $user_role }}</td>
+               <td style="font-size:11px;">
+                  Division Director
+               </td>
+            @endif
 			</tr>	
 		</table> 
       <br>

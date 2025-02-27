@@ -8,7 +8,7 @@
     stateSave: true,
     dom: 'Bfrtip',
     ajax: {
-      url: "{{ route('users.table') }}",
+      url: "{{ route('administration.users.table') }}",
       method: "GET",
       data : {
       '_token': '{{ csrf_token() }}'
@@ -45,7 +45,7 @@
     $('#user_modal').on('hide.bs.modal', function(){       
       init_view_user();
       clear_attributes();
-      clear_fields();
+      clearFields
     });  
 
     $('#user_modal').on('shown.bs.modal', function () {
@@ -68,7 +68,7 @@
     function view_user(user_id){
       var request = $.ajax({
         method: "GET",
-        url: "{{ route('users.show') }}",
+        url: "{{ route('administration.users.show') }}",
         data: {
           '_token': '{{ csrf_token() }}',
           'id' : user_id
@@ -105,7 +105,9 @@
       $('#add_user.save-buttons')
         .addClass('d-inline')
         .removeClass('d-none')
-        .attr('disabled', false);      
+        .attr('disabled', false);     
+        
+      $('#users_is_active').prop('checked', true);
     }
 
     $('#add_new_user').on('click', function(){ 
@@ -119,19 +121,19 @@
       clear_attributes();  
       $.ajax({
         method: "POST",
-        url: "{{ route('users.store') }}",
+        url: "{{ route('administration.users.store') }}",
         data: {
         '_token': '{{ csrf_token() }}',
         'emp_code' : $('#users_employee_code').val(),
         'user_role_id' : $('#users_user_role_id').val(),
-        'username' : $('#users_username').val(),
-        'password' : $('#users_password').val(),
+        {{-- 'username' : $('#users_username').val(),
+        'password' : $('#users_password').val(), --}}
         'is_active' :  ($('#users_is_active').iCheck('update')[0].checked ? 1  : 0)
         },
         success:function(data) {
           console.log(data);
           if(data.errors) {         
-              if(data.errors.emp_code){
+              {{-- if(data.errors.emp_code){
                 $('#users_employee_code').addClass('is-invalid');
                 $('#employee-code-error').html(data.errors.emp_code[0]);
               }   
@@ -146,7 +148,7 @@
               if(data.errors.password){
                 $('#users_password').addClass('is-invalid');
                 $('#password-error').html(data.errors.password[0]);
-              }                         
+              }                          --}}
           }
           if(data.success) {
             Swal.fire({
@@ -189,7 +191,7 @@
         if (result.value) {
           var request = $.ajax({
             method: "PATCH",
-            url: "{{ route('users.update') }}",
+            url: "{{ route('administration.users.update') }}",
             data: {
               '_token': '{{ csrf_token() }}',
               'emp_code' : $('#users_employee_code').val(),

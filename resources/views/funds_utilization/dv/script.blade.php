@@ -4,7 +4,7 @@
     $('#dv_modal').on('hide.bs.modal', function(){
       init_view_dv();
       clear_attributes();
-      clear_fields();  
+      clearFields  
     });    
 
     $('#dv_modal').on('shown.bs.modal', function () {

@@ -1,0 +1,50 @@
+{
+  "public/fonts/fontawesome-free-6.1.1-web/webfonts/fa-brands-400.ttf": {
+    "file": "assets/fa-brands-400-C_FnhXFt.ttf",
+    "src": "public/fonts/fontawesome-free-6.1.1-web/webfonts/fa-brands-400.ttf"
+  },
+  "public/fonts/fontawesome-free-6.1.1-web/webfonts/fa-brands-400.woff2": {
+    "file": "assets/fa-brands-400-DGgeaIc2.woff2",
+    "src": "public/fonts/fontawesome-free-6.1.1-web/webfonts/fa-brands-400.woff2"
+  },
+  "public/fonts/fontawesome-free-6.1.1-web/webfonts/fa-regular-400.ttf": {
+    "file": "assets/fa-regular-400-D_4U4xH3.ttf",
+    "src": "public/fonts/fontawesome-free-6.1.1-web/webfonts/fa-regular-400.ttf"
+  },
+  "public/fonts/fontawesome-free-6.1.1-web/webfonts/fa-regular-400.woff2": {
+    "file": "assets/fa-regular-400-BZeDGO4g.woff2",
+    "src": "public/fonts/fontawesome-free-6.1.1-web/webfonts/fa-regular-400.woff2"
+  },
+  "public/fonts/fontawesome-free-6.1.1-web/webfonts/fa-solid-900.ttf": {
+    "file": "assets/fa-solid-900-BNO9VvVv.ttf",
+    "src": "public/fonts/fontawesome-free-6.1.1-web/webfonts/fa-solid-900.ttf"
+  },
+  "public/fonts/fontawesome-free-6.1.1-web/webfonts/fa-solid-900.woff2": {
+    "file": "assets/fa-solid-900-BVqQ4OpK.woff2",
+    "src": "public/fonts/fontawesome-free-6.1.1-web/webfonts/fa-solid-900.woff2"
+  },
+  "public/fonts/fontawesome-free-6.1.1-web/webfonts/fa-v4compatibility.ttf": {
+    "file": "assets/fa-v4compatibility-BMlqg2iP.ttf",
+    "src": "public/fonts/fontawesome-free-6.1.1-web/webfonts/fa-v4compatibility.ttf"
+  },
+  "public/fonts/fontawesome-free-6.1.1-web/webfonts/fa-v4compatibility.woff2": {
+    "file": "assets/fa-v4compatibility-CxX3iInv.woff2",
+    "src": "public/fonts/fontawesome-free-6.1.1-web/webfonts/fa-v4compatibility.woff2"
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-B3SRh887.css",
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-96xZpadE.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  },
+  "resources/sass/app.scss": {
+    "file": "assets/app-0vesYUcu.css",
+    "src": "resources/sass/app.scss",
+    "isEntry": true
+  }
+}

@@ -1,17 +1,17 @@
-(function(factory) {
-  if (typeof define === 'function' && define.amd) {
+(function (factory) {
+  if (typeof define === "function" && define.amd) {
     // AMD. Register as an anonymous module.
-    define(['jquery'], factory);
-  } else if (typeof module === 'object' && module.exports) {
+    define(["jquery"], factory);
+  } else if (typeof module === "object" && module.exports) {
     // Node/CommonJS
-    module.exports = factory(require('jquery'));
+    module.exports = factory(require("jquery"));
   } else {
     // Browser globals
     factory(window.jQuery);
   }
-}(function($) {
+})(function ($) {
   $.extend($.summernote.plugins, {
-    'specialchars': function(context) {
+    specialchars: function (context) {
       var self = this;
       var ui = $.summernote.ui;
 
@@ -36,41 +36,140 @@
 
       // special characters data set
       var specialCharDataSet = [
-        '&quot;', '&amp;', '&lt;', '&gt;', '&iexcl;', '&cent;',
-        '&pound;', '&curren;', '&yen;', '&brvbar;', '&sect;',
-        '&uml;', '&copy;', '&ordf;', '&laquo;', '&not;',
-        '&reg;', '&macr;', '&deg;', '&plusmn;', '&sup2;',
-        '&sup3;', '&acute;', '&micro;', '&para;', '&middot;',
-        '&cedil;', '&sup1;', '&ordm;', '&raquo;', '&frac14;',
-        '&frac12;', '&frac34;', '&iquest;', '&times;', '&divide;',
-        '&fnof;', '&circ;', '&tilde;', '&ndash;', '&mdash;',
-        '&lsquo;', '&rsquo;', '&sbquo;', '&ldquo;', '&rdquo;',
-        '&bdquo;', '&dagger;', '&Dagger;', '&bull;', '&hellip;',
-        '&permil;', '&prime;', '&Prime;', '&lsaquo;', '&rsaquo;',
-        '&oline;', '&frasl;', '&euro;', '&image;', '&weierp;',
-        '&real;', '&trade;', '&alefsym;', '&larr;', '&uarr;',
-        '&rarr;', '&darr;', '&harr;', '&crarr;', '&lArr;',
-        '&uArr;', '&rArr;', '&dArr;', '&hArr;', '&forall;',
-        '&part;', '&exist;', '&empty;', '&nabla;', '&isin;',
-        '&notin;', '&ni;', '&prod;', '&sum;', '&minus;',
-        '&lowast;', '&radic;', '&prop;', '&infin;', '&ang;',
-        '&and;', '&or;', '&cap;', '&cup;', '&int;',
-        '&there4;', '&sim;', '&cong;', '&asymp;', '&ne;',
-        '&equiv;', '&le;', '&ge;', '&sub;', '&sup;',
-        '&nsub;', '&sube;', '&supe;', '&oplus;', '&otimes;',
-        '&perp;', '&sdot;', '&lceil;', '&rceil;', '&lfloor;',
-        '&rfloor;', '&loz;', '&spades;', '&clubs;', '&hearts;',
-        '&diams;',
+        "&quot;",
+        "&amp;",
+        "&lt;",
+        "&gt;",
+        "&iexcl;",
+        "&cent;",
+        "&pound;",
+        "&curren;",
+        "&yen;",
+        "&brvbar;",
+        "&sect;",
+        "&uml;",
+        "&copy;",
+        "&ordf;",
+        "&laquo;",
+        "&not;",
+        "&reg;",
+        "&macr;",
+        "&deg;",
+        "&plusmn;",
+        "&sup2;",
+        "&sup3;",
+        "&acute;",
+        "&micro;",
+        "&para;",
+        "&middot;",
+        "&cedil;",
+        "&sup1;",
+        "&ordm;",
+        "&raquo;",
+        "&frac14;",
+        "&frac12;",
+        "&frac34;",
+        "&iquest;",
+        "&times;",
+        "&divide;",
+        "&fnof;",
+        "&circ;",
+        "&tilde;",
+        "&ndash;",
+        "&mdash;",
+        "&lsquo;",
+        "&rsquo;",
+        "&sbquo;",
+        "&ldquo;",
+        "&rdquo;",
+        "&bdquo;",
+        "&dagger;",
+        "&Dagger;",
+        "&bull;",
+        "&hellip;",
+        "&permil;",
+        "&prime;",
+        "&Prime;",
+        "&lsaquo;",
+        "&rsaquo;",
+        "&oline;",
+        "&frasl;",
+        "&euro;",
+        "&image;",
+        "&weierp;",
+        "&real;",
+        "&trade;",
+        "&alefsym;",
+        "&larr;",
+        "&uarr;",
+        "&rarr;",
+        "&darr;",
+        "&harr;",
+        "&crarr;",
+        "&lArr;",
+        "&uArr;",
+        "&rArr;",
+        "&dArr;",
+        "&hArr;",
+        "&forall;",
+        "&part;",
+        "&exist;",
+        "&empty;",
+        "&nabla;",
+        "&isin;",
+        "&notin;",
+        "&ni;",
+        "&prod;",
+        "&sum;",
+        "&minus;",
+        "&lowast;",
+        "&radic;",
+        "&prop;",
+        "&infin;",
+        "&ang;",
+        "&and;",
+        "&or;",
+        "&cap;",
+        "&cup;",
+        "&int;",
+        "&there4;",
+        "&sim;",
+        "&cong;",
+        "&asymp;",
+        "&ne;",
+        "&equiv;",
+        "&le;",
+        "&ge;",
+        "&sub;",
+        "&sup;",
+        "&nsub;",
+        "&sube;",
+        "&supe;",
+        "&oplus;",
+        "&otimes;",
+        "&perp;",
+        "&sdot;",
+        "&lceil;",
+        "&rceil;",
+        "&lfloor;",
+        "&rfloor;",
+        "&loz;",
+        "&spades;",
+        "&clubs;",
+        "&hearts;",
+        "&diams;",
       ];
 
-      context.memo('button.specialchars', function() {
-        return ui.button({
-          contents: '<i class="fa fa-font fa-flip-vertical"></i>',
-          tooltip: lang.specialChar.specialChar,
-          click: function() {
-            self.show();
-          },
-        }).render();
+      context.memo("button.specialchars", function () {
+        return ui
+          .button({
+            contents: '<i class="fa fa-font fa-flip-vertical"></i>',
+            tooltip: lang.specialChar.specialChar,
+            click: function () {
+              self.show();
+            },
+          })
+          .render();
       });
 
       /**
@@ -80,24 +179,29 @@
        * @private
        * @return {jQuery}
        */
-      this.makeSpecialCharSetTable = function() {
-        var $table = $('<table></table>');
-        $.each(specialCharDataSet, function(idx, text) {
-          var $td = $('<td></td>').addClass('note-specialchar-node');
-          var $tr = (idx % COLUMN_LENGTH === 0) ? $('<tr></tr>') : $table.find('tr').last();
+      this.makeSpecialCharSetTable = function () {
+        var $table = $("<table></table>");
+        $.each(specialCharDataSet, function (idx, text) {
+          var $td = $("<td></td>").addClass("note-specialchar-node");
+          var $tr =
+            idx % COLUMN_LENGTH === 0
+              ? $("<tr></tr>")
+              : $table.find("tr").last();
 
-          var $button = ui.button({
-            callback: function($node) {
-              $node.html(text);
-              $node.attr('title', text);
-              $node.attr('data-value', encodeURIComponent(text));
-              $node.css({
-                width: COLUMN_WIDTH,
-                'margin-right': '2px',
-                'margin-bottom': '2px',
-              });
-            },
-          }).render();
+          var $button = ui
+            .button({
+              callback: function ($node) {
+                $node.html(text);
+                $node.attr("title", text);
+                $node.attr("data-value", encodeURIComponent(text));
+                $node.css({
+                  width: COLUMN_WIDTH,
+                  "margin-right": "2px",
+                  "margin-bottom": "2px",
+                });
+              },
+            })
+            .render();
 
           $td.append($button);
 
@@ -107,39 +211,47 @@
           }
         });
 
-        totalRow = $table.find('tr').length;
+        totalRow = $table.find("tr").length;
         totalColumn = COLUMN_LENGTH;
 
         return $table;
       };
 
-      this.initialize = function() {
+      this.initialize = function () {
         var $container = options.dialogsInBody ? $(document.body) : $editor;
 
-        var body = '<div class="form-group row-fluid">' + this.makeSpecialCharSetTable()[0].outerHTML + '</div>';
+        var body =
+          '<div class="form-group row-fluid">' +
+          this.makeSpecialCharSetTable()[0].outerHTML +
+          "</div>";
 
-        this.$dialog = ui.dialog({
-          title: lang.specialChar.select,
-          body: body,
-        }).render().appendTo($container);
+        this.$dialog = ui
+          .dialog({
+            title: lang.specialChar.select,
+            body: body,
+          })
+          .render()
+          .appendTo($container);
       };
 
-      this.show = function() {
-        var text = context.invoke('editor.getSelectedText');
-        context.invoke('editor.saveRange');
-        this.showSpecialCharDialog(text).then(function(selectChar) {
-          context.invoke('editor.restoreRange');
+      this.show = function () {
+        var text = context.invoke("editor.getSelectedText");
+        context.invoke("editor.saveRange");
+        this.showSpecialCharDialog(text)
+          .then(function (selectChar) {
+            context.invoke("editor.restoreRange");
 
-          // build node
-          var $node = $('<span></span>').html(selectChar)[0];
+            // build node
+            var $node = $("<span></span>").html(selectChar)[0];
 
-          if ($node) {
-            // insert video node
-            context.invoke('editor.insertNode', $node);
-          }
-        }).fail(function() {
-          context.invoke('editor.restoreRange');
-        });
+            if ($node) {
+              // insert video node
+              context.invoke("editor.insertNode", $node);
+            }
+          })
+          .fail(function () {
+            context.invoke("editor.restoreRange");
+          });
       };
 
       /**
@@ -148,10 +260,12 @@
        * @param {jQuery} $dialog
        * @return {Promise}
        */
-      this.showSpecialCharDialog = function(text) {
-        return $.Deferred(function(deferred) {
+      this.showSpecialCharDialog = function (text) {
+        return $.Deferred(function (deferred) {
           var $specialCharDialog = self.$dialog;
-          var $specialCharNode = $specialCharDialog.find('.note-specialchar-node');
+          var $specialCharNode = $specialCharDialog.find(
+            ".note-specialchar-node",
+          );
           var $selectedNode = null;
           var ARROW_KEYS = [KEY.UP, KEY.DOWN, KEY.LEFT, KEY.RIGHT];
           var ENTER_KEY = KEY.ENTER;
@@ -160,21 +274,24 @@
             if (!$target) {
               return;
             }
-            $target.find('button').addClass('active');
+            $target.find("button").addClass("active");
             $selectedNode = $target;
           }
 
           function removeActiveClass($target) {
-            $target.find('button').removeClass('active');
+            $target.find("button").removeClass("active");
             $selectedNode = null;
           }
 
           // find next node
           function findNextNode(row, column) {
             var findNode = null;
-            $.each($specialCharNode, function(idx, $node) {
+            $.each($specialCharNode, function (idx, $node) {
               var findRow = Math.ceil((idx + 1) / COLUMN_LENGTH);
-              var findColumn = ((idx + 1) % COLUMN_LENGTH === 0) ? COLUMN_LENGTH : (idx + 1) % COLUMN_LENGTH;
+              var findColumn =
+                (idx + 1) % COLUMN_LENGTH === 0
+                  ? COLUMN_LENGTH
+                  : (idx + 1) % COLUMN_LENGTH;
               if (findRow === row && findColumn === column) {
                 findNode = $node;
                 return false;
@@ -199,7 +316,10 @@
                 currentRow = currentRow - 1;
               }
             } else if (KEY.RIGHT === keyCode) {
-              if (currentRow === totalRow && lastRowColumnLength === currentColumn) {
+              if (
+                currentRow === totalRow &&
+                lastRowColumnLength === currentColumn
+              ) {
                 currentColumn = 1;
                 currentRow = 1;
               } else if (currentColumn < totalColumn) {
@@ -218,7 +338,10 @@
               currentRow = currentRow + 1;
             }
 
-            if (currentRow === totalRow && currentColumn > lastRowColumnLength) {
+            if (
+              currentRow === totalRow &&
+              currentColumn > lastRowColumnLength
+            ) {
               currentRow = 1;
             } else if (currentRow > totalRow) {
               currentRow = 1;
@@ -239,8 +362,12 @@
               return;
             }
 
-            deferred.resolve(decodeURIComponent($selectedNode.find('button').attr('data-value')));
-            $specialCharDialog.modal('hide');
+            deferred.resolve(
+              decodeURIComponent(
+                $selectedNode.find("button").attr("data-value"),
+              ),
+            );
+            $specialCharDialog.modal("hide");
           }
 
           function keyDownEventHandler(event) {
@@ -279,26 +406,30 @@
             }
           }
 
-          ui.onDialogShown(self.$dialog, function() {
-            $(document).on('keydown', keyDownEventHandler);
+          ui.onDialogShown(self.$dialog, function () {
+            $(document).on("keydown", keyDownEventHandler);
 
-            self.$dialog.find('button').tooltip();
+            self.$dialog.find("button").tooltip();
 
-            $specialCharNode.on('click', function(event) {
+            $specialCharNode.on("click", function (event) {
               event.preventDefault();
-              deferred.resolve(decodeURIComponent($(event.currentTarget).find('button').attr('data-value')));
+              deferred.resolve(
+                decodeURIComponent(
+                  $(event.currentTarget).find("button").attr("data-value"),
+                ),
+              );
               ui.hideDialog(self.$dialog);
             });
           });
 
-          ui.onDialogHidden(self.$dialog, function() {
-            $specialCharNode.off('click');
+          ui.onDialogHidden(self.$dialog, function () {
+            $specialCharNode.off("click");
 
-            self.$dialog.find('button').tooltip();
+            self.$dialog.find("button").tooltip();
 
-            $(document).off('keydown', keyDownEventHandler);
+            $(document).off("keydown", keyDownEventHandler);
 
-            if (deferred.state() === 'pending') {
+            if (deferred.state() === "pending") {
               deferred.reject();
             }
           });
@@ -308,4 +439,4 @@
       };
     },
   });
-}));
+});

@@ -52,19 +52,13 @@ class FiscalYearsController extends Controller
 				  	}
 					$btn =
 					"<div>
-						<button class='actionbtn view-fiscal-years' type='button' data-toggle='tooltip' data-placement='top' title='View'> 
-							<i class='fas fa-eye'></i></a>           
-						</button>
 						<button class='actionbtn update-fiscal-years' type='button' data-toggle='tooltip' data-placement='top' title='Update'>
 							<i class='fas fa-edit blue'></i>
-						</button>
-						<button class='actionbtn delete-fiscal-years red' type='button' data-toggle='tooltip' data-placement='top' title='Delete'>
-							<i class='fas fa-trash-alt red'></i>
 						</button>
 						<button class='actionbtn open-budget-proposal' type='button' data-toggle='tooltip' data-placement='top'					
 						 title='Open Call For Budget Proposal'>
 							<i class='fa-solid fa-bullhorn green'></i>
-							<form action=".route('fiscal_years.store')." method='POST'>
+							<form action=".route('fiscal_years.open')." method='POST'>
 								$options
 							</form>
 						</button>
@@ -141,51 +135,7 @@ class FiscalYearsController extends Controller
 					'filename' => $filename ?? '',
                'is_active' => $request->get('is_active'),
             ]);		
-            $data->save(); 			
-
-				$all_divisions = DivisionsModel::where("is_active", 1)->where("is_deleted", 0)->get(); 
-				$user_id = auth()->user()->id; 
-				$user_division_id = ViewUsersModel::where('id', $user_id)->pluck('division_id')->first(); 
-				
-				foreach($all_divisions as $value)
-				{
-					//add initial budget proposal status for all division
-					$data1[] =[
-						'division_id' => $value->id,
-						'year' => $year,
-						'status_id' => '1',
-						'status_by_user_id' => auth()->user()->id,
-               	'status_by_user_role_id' => auth()->user()->user_role_id,
-						'is_active' => '1',
-					];
-
-					//add notifications for division budget officers user for all divisions
-					$data2[] =[
-						'message' => 'Call for submission of Budget Proposal FY '.$fiscal_year1.'-'.$fiscal_year3.' is now open from '.$open_date_from.' to '.$open_date_to,
-						'module_id' => '2',
-						'year' => $year,
-						'division_id_from' => $user_division_id,
-						'division_id_to' => $value->id,
-						'user_id_from' => auth()->user()->id, //user id from
-						'user_role_id_to' => '7', //division budget controllers user role id
-					];
-					
-					//add notifications for division director user for all divisions
-					$data3[] =[
-						'message' => 'Call for submission of Budget Proposal FY '.$fiscal_year1.'-'.$fiscal_year3.' is now open from '.$open_date_from.' to '.$open_date_to,
-						'module_id' => '2',
-						'year' => $year,
-						'division_id_from' => $user_division_id,
-						'division_id_to' => $value->id,
-						'user_id_from' => auth()->user()->id, //user id from
-						'user_role_id_to' => '6', //division director user role id
-					];
-
-					
-				}				
-				BpStatusModel::insert($data1); // Eloquent approach
-				NotificationsModel::insert($data2); // Eloquent approach  
-				NotificationsModel::insert($data3); // Eloquent approach  
+            $data->save(); 		 
 
             return Response::json(['success' => '1']); 
          }
@@ -193,6 +143,85 @@ class FiscalYearsController extends Controller
          return Response::json(['errors' => $validator->errors()]);
       }		
    } 
+
+	public function open(Request $request)
+	{   	 
+		    
+		$now = Carbon::now()->timezone('Asia/Manila')->format('Ymd.His');	
+		$created_at = Carbon::now()->timezone('Asia/Manila')->format('Y-m-d H:i:s');
+		if ($request->ajax()) {
+			$year = $request->year;	
+			$prev_year = $request->year-1;	
+			$fy_data = FiscalYearsModel::where('year', $year)->where('is_active', 1)->where('is_deleted', 0)->first();
+			$fiscal_year1 = $fy_data->fiscal_year1;
+			$fiscal_year3 = $fy_data->fiscal_year3;
+			$open_date_from = $fy_data->open_date_from;
+			$open_date_to = $fy_data->open_date_to;
+			$all_divisions = DivisionsModel::where("is_active", 1)->where("is_deleted", 0)->get(); 
+			$user_id = auth()->user()->id; 
+			$user_division_id = ViewUsersModel::where('id', $user_id)->pluck('division_id')->first(); 
+			$budget_proposals_data = BudgetProposalsModel::where('year', $prev_year)->where('is_active', 1)->where('is_deleted', 0)->get(); 
+			// dd($budget_proposals_data);
+			foreach ($budget_proposals_data as $proposal) {
+				$bp_data[] = [
+					'division_id' => $proposal->division_id,
+					'year' => $year,
+					'pap_id' => $proposal->pap_id,
+					'activity_id' => $proposal->activity_id,
+					'subactivity_id' => $proposal->subactivity_id,
+					'expense_account_id' => $proposal->expense_account_id,
+					'object_expenditure_id' => $proposal->object_expenditure_id,
+					'object_specific_id' => $proposal->object_specific_id,
+					'pooled_at_division_id' => $proposal->pooled_at_division_id,
+				];
+		  	}
+			// Insert into the database
+			//add budget proposal initial data with 0 values to all division
+			if (!empty($bp_data)) {
+			BudgetProposalsModel::insert($bp_data);
+	 	 	}
+
+			foreach($all_divisions as $value)
+			{
+				//add initial budget proposal status for all division
+				$data1[] =[
+					'division_id' => $value->id,
+					'year' => $year,
+					'status_id' => '1',
+					'status_by_user_id' => auth()->user()->id,
+					'status_by_user_role_id' => auth()->user()->user_role_id,
+					'is_active' => '1',
+				];			
+
+				//add notifications for division budget officers user for all divisions
+				$data2[] =[
+					'message' => 'Call for submission of Budget Proposal FY '.$fiscal_year1.'-'.$fiscal_year3.' is now open from '.$open_date_from.' to '.$open_date_to,
+					'module_id' => '2',
+					'year' => $year,
+					'division_id_from' => $user_division_id,
+					'division_id_to' => $value->id,
+					'user_id_from' => auth()->user()->id, //user id from
+					'user_role_id_to' => '7', //division budget controllers user role id
+				];
+				
+				//add notifications for division director user for all divisions
+				$data3[] =[
+					'message' => 'Call for submission of Budget Proposal FY '.$fiscal_year1.'-'.$fiscal_year3.' is now open from '.$open_date_from.' to '.$open_date_to,
+					'module_id' => '2',
+					'year' => $year,
+					'division_id_from' => $user_division_id,
+					'division_id_to' => $value->id,
+					'user_id_from' => auth()->user()->id, //user id from
+					'user_role_id_to' => '6', //division director user role id
+				];				
+			}				
+			BpStatusModel::insert($data1); // Eloquent approach
+			NotificationsModel::insert($data2); // Eloquent approach  
+			NotificationsModel::insert($data3); // Eloquent approach  
+
+			return Response::json(['success' => '1']); 
+      }		
+   }
 
 	/**
 	 * Display the specified resource.
