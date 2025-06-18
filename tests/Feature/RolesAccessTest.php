@@ -11,74 +11,74 @@ class RolesAccessTest extends TestCase
     public function user_must_login_to_access_to_admin_dashboard()
     {
         $this->get(route('dashboard.index'))
-             ->assertRedirect('login');
+            ->assertRedirect('login');
     }
 
     /** @test */
     public function admin_can_access_to_admin_dashboard()
     {
-        //Having
+        // Having
         $adminUser = factory(User::class)->create();
 
         $adminUser->assignRole('Administrator');
 
         $this->actingAs($adminUser);
 
-        //When
+        // When
         $response = $this->get(route('dashboard.index'));
 
-        //Then
+        // Then
         $response->assertOk();
     }
 
     /** @test */
     public function users_cannot_access_to_admin_dashboard()
     {
-        //Having
+        // Having
         $user = factory(User::class)->create();
 
         $user->assignRole('Division Budget Officer');
 
         $this->actingAs($user);
 
-        //When
+        // When
         $response = $this->get(route('dashboard.index'));
 
-        //Then
+        // Then
         $response->assertForbidden();
     }
 
     /** @test */
     public function user_can_access_to_home()
     {
-        //Having
+        // Having
         $user = factory(User::class)->create();
 
         $user->assignRole('Division Budget Officer');
 
         $this->actingAs($user);
 
-        //When
+        // When
         $response = $this->get(route('dashboard.index'));
 
-        //Then
+        // Then
         $response->assertOk();
     }
 
     /** @test */
     public function admin_can_access_to_home()
     {
-        //Having
+        // Having
         $adminUser = factory(User::class)->create();
 
         $adminUser->assignRole('Administrator');
 
         $this->actingAs($adminUser);
 
-        //When
+        // When
         $response = $this->get(route('global.budget_maintenance'));
 
-        //Then
+        // Then
         $response->assertOk();
     }
 }

@@ -10,7 +10,8 @@ use OwenIt\Auditing\Contracts\Auditable;
 class ViewLibraryPayeesModel extends Model implements Auditable
 {
     use HasFactory;
+    use \OwenIt\Auditing\Auditable;
     use SoftDeletes;
-   use \OwenIt\Auditing\Auditable;
+
     protected $table = 'view_library_payees';
 }

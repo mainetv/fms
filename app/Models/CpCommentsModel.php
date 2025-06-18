@@ -9,15 +9,17 @@ use OwenIt\Auditing\Contracts\Auditable;
 class CpCommentsModel extends Model implements Auditable
 {
     use HasFactory;
-   use \OwenIt\Auditing\Auditable;
+    use \OwenIt\Auditing\Auditable;
+
     public $fillable = [
-        'id', 
-        'cash_program_id',  
-        'comment',  
-        'comment_by', 
-        'is_resolved', 
-        'is_active', 
-        'is_deleted'
-      ];
+        'id',
+        'cash_program_id',
+        'comment',
+        'comment_by',
+        'is_resolved',
+        'is_active',
+        'is_deleted',
+    ];
+
     protected $table = 'cp_comments';
 }

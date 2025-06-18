@@ -9,6 +9,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 class PrefixNumberModel extends Model implements Auditable
 {
     use HasFactory;
-   use \OwenIt\Auditing\Auditable;
+    use \OwenIt\Auditing\Auditable;
+
     protected $table = 'prefix_number';
 }

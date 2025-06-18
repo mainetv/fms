@@ -9,16 +9,18 @@ use OwenIt\Auditing\Contracts\Auditable;
 class CpSubactivityModel extends Model implements Auditable
 {
     use HasFactory;
-   use \OwenIt\Auditing\Auditable;
-    public $fillable = [		
-		'cp_id', 
-		'cp_pap_id', 
-		'cp_activity_id', 
-		'subactivity_id', 
-		'remarks', 
-		'tags', 
-		'is_active', 
-		'is_deleted'
-	];
-	protected $table = 'cp_subactivity';
+    use \OwenIt\Auditing\Auditable;
+
+    public $fillable = [
+        'cp_id',
+        'cp_pap_id',
+        'cp_activity_id',
+        'subactivity_id',
+        'remarks',
+        'tags',
+        'is_active',
+        'is_deleted',
+    ];
+
+    protected $table = 'cp_subactivity';
 }

@@ -9,14 +9,16 @@ use OwenIt\Auditing\Contracts\Auditable;
 class LibrarySignatoriesModel extends Model implements Auditable
 {
     use HasFactory;
-   use \OwenIt\Auditing\Auditable;
-    public $fillable = [		 
-        'user_id', 
-        'module', 
-        'form', 
-        'tags',        
-        'is_active', 
-        'is_deleted'
-      ];
-      protected $table = 'library_signatories';
+    use \OwenIt\Auditing\Auditable;
+
+    public $fillable = [
+        'user_id',
+        'module',
+        'form',
+        'tags',
+        'is_active',
+        'is_deleted',
+    ];
+
+    protected $table = 'library_signatories';
 }

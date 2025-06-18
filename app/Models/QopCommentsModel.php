@@ -9,13 +9,15 @@ use OwenIt\Auditing\Contracts\Auditable;
 class QopCommentsModel extends Model implements Auditable
 {
     use HasFactory;
-   use \OwenIt\Auditing\Auditable;
+    use \OwenIt\Auditing\Auditable;
+
     public $fillable = [
-        'qop_id', 
-        'comment_by', 
-        'is_resolved', 
-        'is_active', 
-        'is_deleted'
-      ];
+        'qop_id',
+        'comment_by',
+        'is_resolved',
+        'is_active',
+        'is_deleted',
+    ];
+
     protected $table = 'qop_comments';
 }

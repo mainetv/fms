@@ -9,11 +9,12 @@ use OwenIt\Auditing\Contracts\Auditable;
 class NcaModel extends Model implements Auditable
 {
     use HasFactory;
-   use \OwenIt\Auditing\Auditable;
-    public $fillable = [		 
-        'fund_id', 
-        'year', 
-        'jan_nca', 
+    use \OwenIt\Auditing\Auditable;
+
+    public $fillable = [
+        'fund_id',
+        'year',
+        'jan_nca',
         'feb_nca',
         'mar_nca',
         'apr_nca',
@@ -25,8 +26,9 @@ class NcaModel extends Model implements Auditable
         'oct_nca',
         'nov_nca',
         'dec_nca',
-        'is_active', 
-        'is_deleted'
-        ];
+        'is_active',
+        'is_deleted',
+    ];
+
     protected $table = 'nca';
 }

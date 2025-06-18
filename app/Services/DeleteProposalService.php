@@ -2,18 +2,17 @@
 
 namespace App\Services;
 
-use App\Http\Controllers\Proposal\ProposalLibsController;
 use App\Models\Proposal;
 use Exception;
 
 class DeleteProposalService
 {
-   public function deleteProposal($id)
-   {
-      $proposal = Proposal::find($id);
-      if (!$proposal) {
+    public function deleteProposal($id)
+    {
+        $proposal = Proposal::find($id);
+        if (! $proposal) {
             throw new Exception('Proposal not found');
-      }
-      $proposal->delete();
-   }
+        }
+        $proposal->delete();
+    }
 }

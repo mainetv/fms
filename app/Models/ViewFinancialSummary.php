@@ -8,5 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class ViewFinancialSummary extends Model
 {
     use HasFactory;
+
     protected $table = 'view_financial_summary';
 }

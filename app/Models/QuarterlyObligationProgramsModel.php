@@ -9,23 +9,25 @@ use OwenIt\Auditing\Contracts\Auditable;
 class QuarterlyObligationProgramsModel extends Model implements Auditable
 {
     use HasFactory;
-   use \OwenIt\Auditing\Auditable;
-    public $fillable = [		 
-		'reference_allotment_id', 
-		'division_id', 
-		'year', 		
-		'pap_id', 		
-		'activity_id', 		
-		'subactivity_id', 		
-		'expense_account_id', 		
-		'object_expenditure_id', 		
-		'object_specific_id', 		
-		'q1_amount', 		
-		'q2_amount', 		
-		'q3_amount', 		
-		'q4_amount',	
-		'is_active', 
-		'is_deleted'
-	];
-	protected $table = 'quarterly_obligation_programs';
+    use \OwenIt\Auditing\Auditable;
+
+    public $fillable = [
+        'reference_allotment_id',
+        'division_id',
+        'year',
+        'pap_id',
+        'activity_id',
+        'subactivity_id',
+        'expense_account_id',
+        'object_expenditure_id',
+        'object_specific_id',
+        'q1_amount',
+        'q2_amount',
+        'q3_amount',
+        'q4_amount',
+        'is_active',
+        'is_deleted',
+    ];
+
+    protected $table = 'quarterly_obligation_programs';
 }

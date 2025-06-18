@@ -9,12 +9,14 @@ use OwenIt\Auditing\Contracts\Auditable;
 class RsTransactionTypeModel extends Model implements Auditable
 {
     use HasFactory;
-   use \OwenIt\Auditing\Auditable;
-    public $fillable = [	
-        'rs_id', 
-        'rs_transaction_type_id', 
-        'is_active', 
-        'is_deleted', 
+    use \OwenIt\Auditing\Auditable;
+
+    public $fillable = [
+        'rs_id',
+        'rs_transaction_type_id',
+        'is_active',
+        'is_deleted',
     ];
+
     protected $table = 'rs_transaction_type';
 }
