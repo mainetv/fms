@@ -1,52 +1,55 @@
 {
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build"
-  },
-  "devDependencies": {
-    "@popperjs/core": "^2.11.5",
-    "@tailwindcss/forms": "^0.4.0",
-    "@tailwindcss/typography": "^0.5.0",
-    "alpinejs": "^3.2.6",
-    "axios": "^1.7.9",
-    "bootstrap": "^5.2.0-beta1",
-    "jquery": "^3.6.0",
-    "lodash": "^4.17.19",
-    "postcss": "^8.1.14",
-    "postcss-import": "^14.0.1",
-    "prettier": "^3.5.2",
-    "prettier-plugin-blade": "^2.1.21",
-    "resolve-url-loader": "^5.0.0",
-    "sass": "^1.50.1",
-    "sass-loader": "^12.1.0",
-    "sweetalert2": "^11.4.17",
-    "tailwindcss": "^3.0.0",
-    "typescript": "^4.7.2"
-  },
-  "name": "fms",
-  "description": "<p align=\"center\"><a href=\"https://laravel.com\" target=\"_blank\"><img src=\"https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg\" width=\"400\"></a></p>",
-  "version": "1.0.0",
-  "main": "webpack.mix.js",
-  "directories": {
-    "test": "tests"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/mainetv/fms.git"
-  },
-  "author": "Normaine T. Villar",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://gitlab.com/sddmu/fms/issues"
-  },
-  "homepage": "https://gitlab.com/sddmu/fms#readme",
-  "dependencies": {
-    "@fortawesome/fontawesome-free": "^6.1.1",
-    "admin-lte": "^4.0.0-beta3",
-    "html2pdf.js": "^0.10.1",
-    "laravel-vite-plugin": "^1.1.1",
-    "vite": "^6.0.7"
-  }
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build"
+    },
+    "devDependencies": {
+        "@popperjs/core": "^2.11.5",
+        "@tailwindcss/forms": "^0.4.0",
+        "@tailwindcss/typography": "^0.5.0",
+        "alpinejs": "^3.2.6",
+        "axios": "^1.7.9",
+        "bootstrap": "^5.2.0-beta1",
+        "jquery": "^3.6.0",
+        "lodash": "^4.17.19",
+        "postcss": "^8.1.14",
+        "postcss-import": "^14.0.1",
+        "prettier": "^3.5.2",
+        "prettier-plugin-blade": "^2.1.21",
+        "resolve-url-loader": "^5.0.0",
+        "sass": "^1.50.1",
+        "sass-loader": "^12.1.0",
+        "sweetalert2": "^11.4.17",
+        "tailwindcss": "^3.0.0",
+        "typescript": "^4.7.2",
+        "vite": "^3.0.2",
+        "laravel-vite-plugin": "^0.6.0",
+        "autoprefixer": "^10.4.0"
+    },
+    "name": "fms",
+    "description": "<p align=\"center\"><a href=\"https://laravel.com\" target=\"_blank\"><img src=\"https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg\" width=\"400\"></a></p>",
+    "version": "1.0.0",
+    "main": "webpack.mix.js",
+    "directories": {
+        "test": "tests"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+ssh://git@github.com/mainetv/fms.git"
+    },
+    "author": "Normaine T. Villar",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://gitlab.com/sddmu/fms/issues"
+    },
+    "homepage": "https://gitlab.com/sddmu/fms#readme",
+    "dependencies": {
+        "@fortawesome/fontawesome-free": "^6.1.1",
+        "admin-lte": "^4.0.0-beta3",
+        "html2pdf.js": "^0.10.1",
+        "laravel-vite-plugin": "^1.1.1",
+        "vite": "^6.0.7"
+    }
 }
