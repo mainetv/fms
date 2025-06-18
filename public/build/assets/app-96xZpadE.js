@@ -2850,6 +2850,6 @@ se.setEvaluator(qt);
 se.setReactivityEngine({ reactive: pt, effect: li, release: fi, raw: _ });
 var Qi = se,
   Kn = Qi;
-require("./bootstrap");
+import "./bootstrap";
 window.Alpine = Kn;
 Kn.start();
