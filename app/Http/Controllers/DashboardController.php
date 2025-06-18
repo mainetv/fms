@@ -2,13 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\BudgetProposalsModel;
-use App\Models\NotificationsModel;
-use App\Models\ViewUsersHasRolesModel;
-use App\Models\ViewNotificationsModel;
 use App\Models\ViewUsersModel;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
@@ -31,13 +26,14 @@ class DashboardController extends Controller
     {
         // session(['set_user_role_id' => $user_role_id]);
         $current_year = Carbon::now()->timezone('Asia/Manila')->format('Y');
-        $user_id = auth()->user()->id;  
+        $user_id = auth()->user()->id;
         $user_division_id = ViewUsersModel::where('id', $user_id)->pluck('division_id')->first();
-        $title = "Dashboard";
-        if($user_id==149 || $user_id==117){
-            $user_division_id=3;
-            $division_acronym='COA';
-         }
+        $title = 'Dashboard';
+        if ($user_id == 149 || $user_id == 117) {
+            $user_division_id = 3;
+            $division_acronym = 'COA';
+        }
+
         return view('dashboard')
             ->with(compact('title'))
             ->with(compact('user_id'))

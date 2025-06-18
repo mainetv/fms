@@ -10,24 +10,26 @@ use OwenIt\Auditing\Contracts\Auditable;
 class AdjustmentModel extends Model implements Auditable
 {
     use HasFactory;
-   use \OwenIt\Auditing\Auditable;
-    public $fillable = [		
-		'allotment_id', 
-		'adjustment_type_id', 		
-		'date', 		
-		'reference_no', 		
-		'q1_adjustment', 		
-		'q2_adjustment', 		
-		'q3_adjustment', 		
-		'q4_adjustment', 	
-		'remarks',				
-		'is_active', 
-		'is_deleted'
-	];
+    use \OwenIt\Auditing\Auditable;
+
+    public $fillable = [
+        'allotment_id',
+        'adjustment_type_id',
+        'date',
+        'reference_no',
+        'q1_adjustment',
+        'q2_adjustment',
+        'q3_adjustment',
+        'q4_adjustment',
+        'remarks',
+        'is_active',
+        'is_deleted',
+    ];
+
     protected $table = 'adjustment';
 
-	 public function allotment() : BelongsTo
-	{
-		return $this->belongsTo(AllotmentModel::class, 'allotment_id');
-	} 
+    public function allotment(): BelongsTo
+    {
+        return $this->belongsTo(AllotmentModel::class, 'allotment_id');
+    }
 }

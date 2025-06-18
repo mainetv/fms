@@ -9,7 +9,9 @@ use OwenIt\Auditing\Contracts\Auditable;
 class ViewRSTypesModel extends Model implements Auditable
 {
     use HasFactory;
-   use \OwenIt\Auditing\Auditable;
+    use \OwenIt\Auditing\Auditable;
+
     protected $connection = 'mysql_comlib';
+
     protected $table = 'view_rs_types';
 }

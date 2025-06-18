@@ -9,6 +9,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 class AllotmentClass extends Model implements Auditable
 {
     use HasFactory;
-   use \OwenIt\Auditing\Auditable;
+    use \OwenIt\Auditing\Auditable;
+
     protected $table = 'library_allotment_class';
 }

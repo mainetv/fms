@@ -11,15 +11,17 @@ use Spatie\Permission\Traits\HasRoles;
 class UserRolesModel extends Model implements Auditable
 {
     use HasFactory;
-   use \OwenIt\Auditing\Auditable;
-    use HasRoles;
     use HasPermissions;
+    use HasRoles;
+    use \OwenIt\Auditing\Auditable;
+
     protected $fillable = [
         'name',
         'guard_name',
         'username',
         'is_active',
-        'is_deleted'
+        'is_deleted',
     ];
-    protected $table="user_roles";
+
+    protected $table = 'user_roles';
 }

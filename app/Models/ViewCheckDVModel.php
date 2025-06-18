@@ -9,6 +9,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 class ViewCheckDVModel extends Model implements Auditable
 {
     use HasFactory;
-   use \OwenIt\Auditing\Auditable;
-    protected $table ='view_check_dv';
+    use \OwenIt\Auditing\Auditable;
+
+    protected $table = 'view_check_dv';
 }

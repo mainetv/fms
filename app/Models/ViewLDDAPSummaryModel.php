@@ -9,6 +9,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 class ViewLDDAPSummaryModel extends Model implements Auditable
 {
     use HasFactory;
-   use \OwenIt\Auditing\Auditable;
+    use \OwenIt\Auditing\Auditable;
+
     protected $table = 'view_lddap_summary';
 }

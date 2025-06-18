@@ -9,6 +9,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 class ViewBpExpenseAccountModel extends Model implements Auditable
 {
     use HasFactory;
-   use \OwenIt\Auditing\Auditable;
+    use \OwenIt\Auditing\Auditable;
+
     protected $table = 'view_bp_expense_account';
 }

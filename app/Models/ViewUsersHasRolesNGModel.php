@@ -9,6 +9,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 class ViewUsersHasRolesNGModel extends Model implements Auditable
 {
     use HasFactory;
-   use \OwenIt\Auditing\Auditable;
+    use \OwenIt\Auditing\Auditable;
+
     protected $table = 'view_users_has_roles_ng';
 }

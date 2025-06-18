@@ -3,14 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\LibraryObjectSpecificModel;
-use Illuminate\Http\Request;
-use DB;
 use DataTables;
-use Validator;
+use DB;
+use Illuminate\Http\Request;
 use Response;
-use Redirect;
-use Session;
-use View;
+use Validator;
+
 class LibraryObjectSpecificController extends Controller
 {
     /**
@@ -20,18 +18,19 @@ class LibraryObjectSpecificController extends Controller
      */
     public function table(Request $request)
     {
-        if ($request->ajax()) { 
+        if ($request->ajax()) {
             $data = DB::table('view_library_object_specific')->where('is_deleted', 0)->latest();
+
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->setRowAttr([
-                'data-id' => function($library_object_specific) {
-                return $library_object_specific->id;
-                }
+                    'data-id' => function ($library_object_specific) {
+                        return $library_object_specific->id;
+                    },
                 ])
-                ->addColumn('action', function($row){
-                $btn =
-                "<div>
+                ->addColumn('action', function ($row) {
+                    $btn =
+                    "<div>
                 <button class='actionbtn view-library-specific' type='button'> 
                 <i class='fas fa-eye'></i></a>                    
                 </button>
@@ -43,11 +42,12 @@ class LibraryObjectSpecificController extends Controller
                 </button>
                 </div>
                 ";
-                return $btn;
+
+                    return $btn;
                 })
                 ->rawColumns(['action'])
                 ->make(true);
-        }      
+        }
     }
 
     /**
@@ -63,28 +63,27 @@ class LibraryObjectSpecificController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {      
-            if ($request->ajax()) {
-                $message = array(    
-                    'object_specific.required' => 'Object specific field is required.',      
-                    'account_code.required' => 'Account Code field is required.',    
-                    'description.required' => 'Description field is required.',      
-                    'obligation_type.required' => 'Obligation type field is required.', 
-                );
-                $validator =  Validator::make($request->all(), [
-                    'object_specific' => 'required',
-                    'account_code' => 'required',
-                    'description' => 'required',
-                    'obligation_type' => 'required',
-                ], $message);
+    {
+        if ($request->ajax()) {
+            $message = [
+                'object_specific.required' => 'Object specific field is required.',
+                'account_code.required' => 'Account Code field is required.',
+                'description.required' => 'Description field is required.',
+                'obligation_type.required' => 'Obligation type field is required.',
+            ];
+            $validator = Validator::make($request->all(), [
+                'object_specific' => 'required',
+                'account_code' => 'required',
+                'description' => 'required',
+                'obligation_type' => 'required',
+            ], $message);
 
-                $input = $request->all();
-                if ($validator->passes()) {
-                    $data = new LibraryObjectspecificModel([
+            $input = $request->all();
+            if ($validator->passes()) {
+                $data = new LibraryObjectspecificModel([
                     'object_specific' => $request->get('object_specific'),
                     'account_code' => $request->get('account_code'),
                     'description' => $request->get('description'),
@@ -92,18 +91,19 @@ class LibraryObjectSpecificController extends Controller
                     'is_continuing' => $request->get('is_continuing'),
                     'remarks' => $request->get('remarks'),
                     'is_active' => $request->get('is_active'),
-                    ]);
-                    $data->save();   
-                    return Response::json(['success' => '1']); 
-                }
-                return Response::json(['errors' => $validator->errors()]);
+                ]);
+                $data->save();
+
+                return Response::json(['success' => '1']);
             }
+
+            return Response::json(['errors' => $validator->errors()]);
+        }
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\LibraryObjectSpecificModel  $libraryObjectSpecificModel
      * @return \Illuminate\Http\Response
      */
     public function show(LibraryObjectSpecificModel $libraryObjectSpecificModel)
@@ -114,7 +114,6 @@ class LibraryObjectSpecificController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\LibraryObjectSpecificModel  $libraryObjectSpecificModel
      * @return \Illuminate\Http\Response
      */
     public function edit(LibraryObjectSpecificModel $libraryObjectSpecificModel)
@@ -125,46 +124,47 @@ class LibraryObjectSpecificController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\LibraryObjectSpecificModel  $libraryObjectSpecificModel
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request)
     {
         if ($request->ajax()) {
-            $message = array(    
-                'object_expenditure.required' => 'Object of expenditure field is required.',      
-                'account_code.required' => 'Account Code field is required.',    
-                'description.required' => 'Description field is required.',      
-                'obligation_type.required' => 'Obligation type field is required.', 
-            );
-            $validator =  Validator::make($request->all(), [
+            $message = [
+                'object_expenditure.required' => 'Object of expenditure field is required.',
+                'account_code.required' => 'Account Code field is required.',
+                'description.required' => 'Description field is required.',
+                'obligation_type.required' => 'Obligation type field is required.',
+            ];
+            $validator = Validator::make($request->all(), [
                 'object_expenditure' => 'required',
                 'account_code' => 'required',
                 'description' => 'required',
                 'obligation_type' => 'required',
             ], $message);
-            
+
             $input = $request->all();
-            
+
             if ($validator->passes()) {
                 LibraryPAPModel::find($request->get('id'))
-                ->update([                  
-                    'object_expenditure' => $request->get('object_expenditure'),
-                    'account_code' => $request->get('account_code'),
-                    'description' => $request->get('description'),
-                    'expense' => $request->get('expense'),
-                    'is_continuing' => $request->get('is_continuing'),
-                    'remarks' => $request->get('remarks'),
-                    'is_active' => $request->get('is_active'),
-                ]);             
+                    ->update([
+                        'object_expenditure' => $request->get('object_expenditure'),
+                        'account_code' => $request->get('account_code'),
+                        'description' => $request->get('description'),
+                        'expense' => $request->get('expense'),
+                        'is_continuing' => $request->get('is_continuing'),
+                        'remarks' => $request->get('remarks'),
+                        'is_active' => $request->get('is_active'),
+                    ]);
+
                 return Response::json([
-                'success' => '1',          
-                'status' => '0'
+                    'success' => '1',
+                    'status' => '0',
                 ]);
-            }     
-        return Response::json(['errors' => $validator->errors()]);
-      }
+            }
+
+            return Response::json(['errors' => $validator->errors()]);
+        }
     }
 
     /**
@@ -175,19 +175,20 @@ class LibraryObjectSpecificController extends Controller
      */
     public function delete(Request $request)
     {
-        if($request->ajax()) {
-            try {     
+        if ($request->ajax()) {
+            try {
                 LibraryObjectExpenditureModel::find($request->get('id'))
-                ->update([
-                'is_deleted' => '1'
-            ]);
-            }catch (\Exception $e) {
-            return Response::json([
-                'status'=>'0'
-            ]);
+                    ->update([
+                        'is_deleted' => '1',
+                    ]);
+            } catch (\Exception $e) {
+                return Response::json([
+                    'status' => '0',
+                ]);
             }
+
             return Response::json([
-            'status'=>'1'
+                'status' => '1',
             ]);
         }
     }

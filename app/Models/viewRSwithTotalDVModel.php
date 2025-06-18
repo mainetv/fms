@@ -9,6 +9,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 class viewRSwithTotalDVModel extends Model implements Auditable
 {
     use HasFactory;
-   use \OwenIt\Auditing\Auditable;
-    protected $table='view_rs_total_dv';
+    use \OwenIt\Auditing\Auditable;
+
+    protected $table = 'view_rs_total_dv';
 }

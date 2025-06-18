@@ -8,23 +8,25 @@ use OwenIt\Auditing\Contracts\Auditable;
 
 class BpForm7Model extends Model implements Auditable
 {
-  use HasFactory;
-   use \OwenIt\Auditing\Auditable;
-  public $fillable = [
-    'division_id', 
-    'year', 
-    'fiscal_year', 
-    'description', 
-    'area_sqm', 
-    'location', 
-    'amount', 
-    'num_years_completion', 
-    'date_started', 
-    'total_cost', 
-    'justification', 
-    'remarks', 
-    'is_active', 
-    'is_deleted'
-  ];
-  protected $table = 'bp_form7';
+    use HasFactory;
+    use \OwenIt\Auditing\Auditable;
+
+    public $fillable = [
+        'division_id',
+        'year',
+        'fiscal_year',
+        'description',
+        'area_sqm',
+        'location',
+        'amount',
+        'num_years_completion',
+        'date_started',
+        'total_cost',
+        'justification',
+        'remarks',
+        'is_active',
+        'is_deleted',
+    ];
+
+    protected $table = 'bp_form7';
 }

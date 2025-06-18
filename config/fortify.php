@@ -46,9 +46,9 @@ return [
     |
     */
 
-     // 'username' => 'email', //default
-     'username' => 'username', //maine
-     'email' => 'email',
+    // 'username' => 'email', //default
+    'username' => 'username', // maine
+    'email' => 'email',
 
     /*
     |--------------------------------------------------------------------------

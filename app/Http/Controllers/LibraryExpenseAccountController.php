@@ -2,14 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use DB;
 use DataTables;
-use Validator;
-use Response;
-use Redirect;
-use Session;
-use View;
+use DB;
+use Illuminate\Http\Request;
 
 class LibraryExpenseAccountController extends Controller
 {
@@ -20,18 +15,19 @@ class LibraryExpenseAccountController extends Controller
      */
     public function table(Request $request)
     {
-        if ($request->ajax()) { 
+        if ($request->ajax()) {
             $data = DB::table('view_library_expense_account')->where('is_deleted', 0)->latest();
+
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->setRowAttr([
-                'data-id' => function($library_expense_account) {
-                return $library_expense_account->id;
-                }
+                    'data-id' => function ($library_expense_account) {
+                        return $library_expense_account->id;
+                    },
                 ])
-                ->addColumn('action', function($row){
-                $btn =
-                "<div>
+                ->addColumn('action', function ($row) {
+                    $btn =
+                    "<div>
                 <button class='actionbtn view-library-expense' type='button'> 
                 <i class='fas fa-eye'></i></a>                    
                 </button>
@@ -43,11 +39,12 @@ class LibraryExpenseAccountController extends Controller
                 </button>
                 </div>
                 ";
-                return $btn;
+
+                    return $btn;
                 })
                 ->rawColumns(['action'])
                 ->make(true);
-        }      
+        }
     }
 
     /**
@@ -63,7 +60,6 @@ class LibraryExpenseAccountController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -96,7 +92,6 @@ class LibraryExpenseAccountController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\LibraryExpenseTitleModel  $libraryExpenseTitleModel
      * @return \Illuminate\Http\Response
      */

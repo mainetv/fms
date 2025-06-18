@@ -9,6 +9,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 class BURSModel extends Model implements Auditable
 {
     use HasFactory;
-   use \OwenIt\Auditing\Auditable;
+    use \OwenIt\Auditing\Auditable;
+
     protected $table = 'request_and_status';
 }

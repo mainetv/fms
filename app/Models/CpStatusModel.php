@@ -9,17 +9,19 @@ use OwenIt\Auditing\Contracts\Auditable;
 class CpStatusModel extends Model implements Auditable
 {
     use HasFactory;
-   use \OwenIt\Auditing\Auditable;
-    public $fillable = [		 
-        'division_id', 
-        'year', 
-        'status_id', 
+    use \OwenIt\Auditing\Auditable;
+
+    public $fillable = [
+        'division_id',
+        'year',
+        'status_id',
         'status_by_user_id',
         'status_by_user_role_id',
         'status_by_user_division_id',
-        'date', 
-        'is_active', 
-        'is_deleted'
+        'date',
+        'is_active',
+        'is_deleted',
     ];
+
     protected $table = 'cp_status';
 }
