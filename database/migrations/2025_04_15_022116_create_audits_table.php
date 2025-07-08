@@ -13,7 +13,8 @@ class CreateAuditsTable extends Migration
      */
     public function up()
     {
-        Schema::create('audits', function (Blueprint $table) {
+        $connection = env('DB_CONNECTION', 'mysql');
+      Schema::connection($connection)->create('audits', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('user_type')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();

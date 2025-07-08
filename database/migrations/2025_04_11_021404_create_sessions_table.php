@@ -13,7 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('sessions', function (Blueprint $table) {
+        $connection = env('DB_CONNECTION', 'mysql');
+      Schema::connection($connection)->create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->foreignId('user_id')->nullable()->index();
             $table->string('ip_address', 45)->nullable();
@@ -30,6 +31,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sessions');
+        $connection = env('DB_CONNECTION', 'mysql');
+      Schema::connection($connection)->dropIfExists('sessions');
     }
 };
