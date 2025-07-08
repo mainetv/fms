@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ChartAccount;
 use App\Models\DVModel;
+use App\Models\DvRsAccount;
 use App\Models\DvRsModel;
 use App\Models\DvRsNetModel;
 use App\Models\DvTransactionTypeModel;
@@ -143,7 +145,8 @@ class DVController extends Controller
       $getAllRSbyPayee =  ViewRSModel::where('payee_id', $dv_payee_id)->where('is_active', 1)->where('is_deleted', 0)->get();   
       $getDvTransactionTypes = ViewLibraryDvTransactionTypesModel::where("is_active", 1)->where("is_deleted", 0)
          ->orderBy('transaction_type')->get();
-      $getSelectedDvTransactionTypes = ViewDvTransactionTypeModel::where('dv_id', $dv_id)->where('is_active', 1)->where('is_deleted', 0)->get(); 
+      $getSelectedDvTransactionTypes = ViewDvTransactionTypeModel::where('dv_id', $dv_id)->where('is_active', 1)->where('is_deleted', 0)->get();
+      
       $user_division_id = ViewUsersModel::where('id', $user_id)->pluck('division_id')->first();
       // dd($getAttachedRsNetbyDV);
       return view('funds_utilization.dv.edit')
@@ -154,7 +157,7 @@ class DVController extends Controller
          ->with(compact('getAllRSbyPayee'))
          ->with(compact('getAttachedRSbyDV'))
          ->with(compact('getAttachedRsNetbyDV'))
-         ->with(compact('user_division_id'))
+         ->with(compact('user_division_id'))         
          ->with(compact('getSelectedDvTransactionTypes'));     
    }
 
@@ -176,9 +179,9 @@ class DVController extends Controller
       $getAllRSbyPayee =  ViewRSModel::where('payee_id', $dv_payee_id)->where('is_active', 1)->where('is_deleted', 0)->get();   
       $getDvTransactionTypes = ViewLibraryDvTransactionTypesModel::where("is_active", 1)->where("is_deleted", 0)
          ->orderBy('transaction_type')->get();
-      $getSelectedDvTransactionTypes = ViewDvTransactionTypeModel::where('dv_id', $dv_id)->where('is_active', 1)->where('is_deleted', 0)->get(); 
+      $getSelectedDvTransactionTypes = ViewDvTransactionTypeModel::where('dv_id', $dv_id)->where('is_active', 1)->where('is_deleted', 0)->get();
+      $getDvSignatory2 = ViewLibrarySignatoriesModel::where('module_id', 5)->where('part_id', 2)->where('is_default', 1)->where("is_active", 1)->where("is_deleted", 0)->first();
       $user_division_id = ViewUsersModel::where('id', $user_id)->pluck('division_id')->first();
-      // dd($getAttachedRsNetbyDV);
       return view('funds_utilization.dv.division.edit')
          ->with(compact('user_id'))
          ->with(compact('user_role_id'))
@@ -188,6 +191,7 @@ class DVController extends Controller
          ->with(compact('getAttachedRSbyDV'))
          ->with(compact('getAttachedRsNetbyDV'))
          ->with(compact('user_division_id'))
+         ->with(compact('getDvSignatory2'))
          ->with(compact('getSelectedDvTransactionTypes'));        
    }
 
@@ -212,7 +216,6 @@ class DVController extends Controller
 
    public function store(Request $request){
       if ($request->ajax()) { 
-         // dd($request->all());
          $user_id = auth()->user()->id; 
          $user_division_id = ViewUsersModel::where('id', $user_id)->pluck('division_id')->first();
          $user_division_acronym = ViewUsersModel::where('id', $user_id)->pluck('division_acronym')->first();
@@ -224,10 +227,13 @@ class DVController extends Controller
          $module_id = $request->module_id;  
          $signatory1 = $request->signatory1;
          $signatory2 = $request->signatory2;
+         $signatory3 = $request->signatory3;
          $get_signatory1_position = ViewLibrarySignatoriesModel::where('fullname_first', $signatory1)
             ->where("is_active", 1)->where("is_deleted", 0)->pluck('position')->first();   
          $get_signatory2_position = ViewLibrarySignatoriesModel::where('fullname_first', $signatory2)
-            ->where("is_active", 1)->where("is_deleted", 0)->pluck('position')->first(); 
+            ->where("is_active", 1)->where("is_deleted", 0)->pluck('position')->first();
+         $get_signatory3_position = ViewLibrarySignatoriesModel::where('fullname_first', $signatory3)
+            ->where("is_active", 1)->where("is_deleted", 0)->pluck('position')->first();
          if($request->add_dv==1){
             $message = array(    
                'dv_date.required' => 'Please select date.',
@@ -250,7 +256,9 @@ class DVController extends Controller
                   'signatory1' => $signatory1,
                   'signatory1_position' => $get_signatory1_position,
                   'signatory2' => $signatory2,
-                  'signatory2_position' => $get_signatory2_position,         
+                  'signatory2_position' => $get_signatory2_position,
+                  'signatory3' => $signatory3,
+                  'signatory3_position' => $get_signatory3_position,
                   'po_no' => $request->po_no,         
                   'po_date' => $request->po_date,         
                   'invoice_no' => $request->invoice_no,         
@@ -325,12 +333,16 @@ class DVController extends Controller
             $data1->save(); 
 
             $get_rs_particulars = RSModel::where('id', $rs_id)->pluck('particulars')->first();
+            $signatory1 = RSModel::where('id', $rs_id)->pluck('signatory1')->first();
+            $get_signatory1_position = RSModel::where('id', $rs_id)->pluck('signatory1_position')->first();
             DVModel::find($dv_id)
                ->update([   
                   'dv_date' => $dv_date,                
                   'payee_id' => $request->payee_id,                
                   'fund_id' => $request->fund_id,        
-                  'particulars' => $get_rs_particulars,                
+                  'particulars' => $get_rs_particulars,
+                  'signatory1' => $signatory1,
+                  'signatory1_position' => $get_signatory1_position,                
                ]);             
             return response()->json(array('success' => 1,'dv_rs_id' => $data->id), 200); 
          }
@@ -364,13 +376,30 @@ class DVController extends Controller
             ]);
 
             return response()->json(array('success' => 1,'dv_rs_id' => $data->id), 200); 
+         } 
+         elseif ($request->add_dv_account == 1) {
+            $data = DvRsAccount::create([
+               'dv_rs_net_id'     => $request->dv_rs_net_id,
+               'chart_account_id' => $request->accountId,
+            ]);
+
+            $dvAccounts = DvRsAccount::with(['dvRsNet', 'chartAccount'])
+               ->where('dv_rs_net_id', $request->dv_rs_net_id)
+               ->get();
+            $rsRow = DvRsNetModel::find($request->dv_rs_net_id);
+            $html = view('funds_utilization.dv.partials.chart_accounts_table', compact('dvAccounts', 'rsRow'))->render();
+
+            return response()->json([
+               'success' => true,
+               'html' => $html,
+            ]);
          }
       }
    }
 
    public function delete(Request $request){
       if($request->ajax()) {
-         // dd($request->all());
+         $now = Carbon::now()->timezone('Asia/Manila')->format('Y-m-d H:i:s');
          $id=$request->id;
          $dv_id=$request->dv_id;
          $rs_id=$request->rs_id;
@@ -460,6 +489,19 @@ class DVController extends Controller
                   'status'=>'0'
                ]);
             } 
+         } 
+         elseif ($request->delete_dv_account == 1) {
+            try {
+               DvRsAccount::find($id)
+                  ->update([
+                     'is_deleted' => '1',
+                     'deleted_at' => $now
+                  ]);
+            } catch (\Exception $e) {
+               return Response::json([
+                  'status' => '0'
+               ]);
+            }
          }
       }
    }
@@ -479,32 +521,35 @@ class DVController extends Controller
       } 
    }
 
-   public function update(Request $request, DVModel $dVModel){
+   public function update(Request $request){
+      // dd($request->all());
       if($request->ajax()) { 
-         // dd($request->all());
          $dv_id = $request->dv_id;             
          $lddap_id = $request->lddap_id;                 
          $dv_rs_id = $request->dv_rs_id;                 
          $rs_id = $request->rs_id;                                 
          $dv_rs_amount=removeComma($request->dv_rs_amount);
-         $gross_amount=removeComma($request->gross_amount);        
-         $tax_one=removeComma($request->tax_one);
-         $tax_two=removeComma($request->tax_two);
-         $tax_twob=removeComma($request->tax_twob);
-         $tax_three=removeComma($request->tax_three);
-         $tax_five=removeComma($request->tax_five);
-         $tax_six=removeComma($request->tax_six);        
-         $wtax=removeComma($request->wtax);        
-         $other_tax=removeComma($request->other_tax);        
-         $liquidated_damages=removeComma($request->liquidated_damages);        
-         $other_deductions=removeComma($request->other_deductions);  
-         $net_amount=removeComma($request->net_amount);      
+         // $gross_amount=removeComma($request->gross_amount);        
+         // $tax_one=removeComma($request->tax_one);
+         // $tax_two=removeComma($request->tax_two);
+         // $tax_twob=removeComma($request->tax_twob);
+         // $tax_three=removeComma($request->tax_three);
+         // $tax_five=removeComma($request->tax_five);
+         // $tax_six=removeComma($request->tax_six);        
+         // $wtax=removeComma($request->wtax);        
+         // $other_tax=removeComma($request->other_tax);        
+         // $liquidated_damages=removeComma($request->liquidated_damages);        
+         // $other_deductions=removeComma($request->other_deductions);  
+         // $net_amount=removeComma($request->net_amount);      
          $signatory1 = $request->signatory1;
          $signatory2 = $request->signatory2;
+         $signatory3 = $request->signatory3;
          $get_signatory1_position = ViewLibrarySignatoriesModel::where('fullname_first', $signatory1)
             ->where("is_active", 1)->where("is_deleted", 0)->pluck('position')->first();   
          $get_signatory2_position = ViewLibrarySignatoriesModel::where('fullname_first', $signatory2)
-            ->where("is_active", 1)->where("is_deleted", 0)->pluck('position')->first();     
+            ->where("is_active", 1)->where("is_deleted", 0)->pluck('position')->first();
+         $get_signatory3_position = ViewLibrarySignatoriesModel::where('fullname_first', $signatory3)
+            ->where("is_active", 1)->where("is_deleted", 0)->pluck('position')->first();
          if($request->edit_dv==1){  
             $message = array(    
                'dv_date.required' => 'Please select date.',
@@ -518,7 +563,7 @@ class DVController extends Controller
             ], $message);
                   
             if ($validator->passes()) {
-               if(isset($dv_rs_id)){                  
+               if(isset($dv_rs_id)){              
                   $rs_count = count($dv_rs_id);  
                   for ($i=0; $i < $rs_count; $i++) {   
                      DvRsModel::find($dv_rs_id[$i])
@@ -535,9 +580,9 @@ class DVController extends Controller
                            'allotment_class_id'=>$allotment_class_id,
                         ]); 
                   }      
-               }               
+               }                      
                $get_total_dv_gross_amount = DvRsModel::where('dv_id', $dv_id)
-                  ->where("is_active", 1)->where("is_deleted", 0)->sum('amount');          
+                  ->where("is_active", 1)->where("is_deleted", 0)->sum('amount');
                DVModel::find($dv_id)
                   ->update([     
                      'dv_date' => $request->dv_date,
@@ -549,7 +594,9 @@ class DVController extends Controller
                      'signatory1' => $signatory1,
                      'signatory1_position' => $get_signatory1_position,
                      'signatory2' => $signatory2,
-                     'signatory2_position' => $get_signatory2_position,           
+                     'signatory2_position' => $get_signatory2_position,
+                     'signatory3' => $signatory3,
+                     'signatory3_position' => $get_signatory3_position,
                      'po_no' => $request->po_no,           
                      'po_date' => $request->po_date,                      
                      'invoice_no' => $request->invoice_no,                      
@@ -583,7 +630,8 @@ class DVController extends Controller
             }             
             return Response::json(['errors' => $validator->errors()]);
          }
-         else if($request->update_dv==1){               
+         else if($request->update_dv==1){  
+            // dd($request->all());            
             $message = array(    
                'dv_date1.required' => 'Please select date.',  
             );
@@ -592,66 +640,143 @@ class DVController extends Controller
             ], $message);
                   
             if ($validator->passes()) {
-               if(isset($dv_rs_id)){                  
-                  $rs_count = count($dv_rs_id); 
-                  for ($i=0; $i < $rs_count; $i++) {   
-                     DvRsNetModel::find($dv_rs_id[$i])
-                        ->update([ 
-                           'gross_amount'=>$gross_amount[$i],
-                           'tax_one'=>$tax_one[$i],
-                           'tax_two'=>$tax_two[$i],
-                           'tax_twob'=>$tax_twob[$i],
-                           'tax_three'=>$tax_three[$i],
-                           'tax_five'=>$tax_five[$i],
-                           'tax_six'=>$tax_six[$i],
-                           'wtax'=>$wtax[$i],
-                           'other_tax'=>$other_tax[$i],
-                           'liquidated_damages'=>$liquidated_damages[$i],
-                           'other_deductions'=>$other_deductions[$i],
-                           'net_amount'=>$net_amount[$i],
-                        ]);       
-                  }  
+               // 1. Update all DvRsNetModel rows
+               $taxFields = ['tax_one', 'tax_two', 'tax_twob', 'tax_three', 'tax_five', 'tax_six', 'wtax', 'other_tax'];
+               $taxSums = [];
+
+               // Step 1: Build summed tax values per dv_rs_id
+               foreach ($taxFields as $field) {
+                  foreach ($request->$field ?? [] as $dvRsId => $accounts) {
+                     foreach ($accounts as $dvAccountId => $value) {
+                        $amount = floatval(removeComma($value));
+
+                        if ($amount != 0) {
+                           if (!isset($taxSums[$dvRsId])) {
+                              $taxSums[$dvRsId] = [];
+                           }
+
+                           if (!isset($taxSums[$dvRsId][$field])) {
+                              $taxSums[$dvRsId][$field] = 0;
+                           }
+
+                           $taxSums[$dvRsId][$field] += $amount;
+                        }
+                     }
+                  }
                }
+
+               // Step 2: Add gross_amount and net_amount, and update the model
+               foreach ($taxSums as $dvRsId => $fields) {
+                  $fields['gross_amount'] = removeComma($request->gross_amount[$dvRsId] ?? 0);
+                  $fields['net_amount'] = removeComma($request->net_amount[$dvRsId] ?? 0);
+
+                  DvRsNetModel::find($dvRsId)?->update($fields);
+               }
+
+               // 2. Update all DvRsAccount rows
+               $dv_account_ids = $request->dv_account_id ?? []; 
+               $amounts = $request->amount ?? [];
+
+               foreach ($dv_account_ids as $rsId => $accountIdArray) {
+                  foreach ($accountIdArray as $index => $accountId) {
+                     $account = DvRsAccount::find($accountId);
+
+                     if ($account) {
+                        $amountValue = removeComma($amounts[$rsId][$index] ?? 0);
+
+                        $account->update([
+                           'amount' => $amountValue,
+                        ]);
+                     }
+                  }
+               }
+
+
+               // 3. Update DVModel totals
+               $dv_id = $request->dv_id;
                $get_total_dv_gross_amount = DvRsNetModel::where('dv_id', $dv_id)
                   ->where("is_active", 1)->where("is_deleted", 0)->sum('gross_amount');
                $get_total_dv_net_amount = DvRsNetModel::where('dv_id', $dv_id)
-                  ->where("is_active", 1)->where("is_deleted", 0)->sum('net_amount');      
-               DVModel::find($dv_id)
-                  ->update([     
-                     'dv_no' => $request->dv_no,
-                     'dv_date1' => $request->dv_date1,
-                     'particulars' => $request->particulars,           
-                     'total_dv_gross_amount' => $get_total_dv_gross_amount ?? 0,           
-                     'total_dv_net_amount' => $get_total_dv_net_amount ?? 0,           
-                     'tax_type_id' => $request->tax_type_id,           
-                     'pay_type_id' => $request->pay_type_id,  
-                     'po_no' => $request->po_no,           
-                     'po_date' => $request->po_date,                      
-                     'invoice_no' => $request->invoice_no,                      
-                     'invoice_date' => $request->invoice_date,                      
-                     'jobcon_no' => $request->jobcon_no,                      
-                     'jobcon_date' => $request->jobcon_date,                      
-                     'or_no' => $request->or_no,                      
-                     'or_date' => $request->or_date,           
-                     'is_locked' => $request->is_locked,               
-                  ]);                   
+                  ->where("is_active", 1)->where("is_deleted", 0)->sum('net_amount');
 
-               $get_total_lddap_gross_amount=ViewLDDAPDVModel::where('lddap_id', $lddap_id)
-                  ->where('is_active',1)->where('is_deleted',0)->sum('total_dv_gross_amount');
-               $get_total_lddap_net_amount=ViewLDDAPDVModel::where('lddap_id', $lddap_id)
-                  ->where('is_active',1)->where('is_deleted',0)->sum('total_dv_net_amount');	
-               if(isset($lddap_id)){
-                  LDDAPModel::find($lddap_id)
-                     ->update([ 
-                        'total_lddap_gross_amount'=>$get_total_lddap_gross_amount,
-                        'total_lddap_net_amount'=>$get_total_lddap_net_amount,
-                     ]);      
-               }           
-               return response()->json(array('success' => 1, 200)); 
+               DVModel::find($dv_id)?->update([
+                  'dv_no' => $request->dv_no,
+                  'dv_date1' => $request->dv_date1,
+                  'particulars' => $request->particulars,
+                  'total_dv_gross_amount' => $get_total_dv_gross_amount,
+                  'total_dv_net_amount' => $get_total_dv_net_amount,
+                  'tax_type_id' => $request->tax_type_id,
+                  'pay_type_id' => $request->pay_type_id,
+                  'po_no' => $request->po_no,
+                  'po_date' => $request->po_date,
+                  'invoice_no' => $request->invoice_no,
+                  'invoice_date' => $request->invoice_date,
+                  'jobcon_no' => $request->jobcon_no,
+                  'jobcon_date' => $request->jobcon_date,
+                  'or_no' => $request->or_no,
+                  'or_date' => $request->or_date,
+                  'is_locked' => $request->is_locked,
+               ]);
+
+               // 4. Update LDDAP totals
+               $lddap_id = $request->lddap_id;
+               if ($lddap_id) {
+                  $get_total_lddap_gross_amount = ViewLDDAPDVModel::where('lddap_id', $lddap_id)
+                     ->where('is_active', 1)->where('is_deleted', 0)->sum('total_dv_gross_amount');
+                  
+                  $get_total_lddap_net_amount = ViewLDDAPDVModel::where('lddap_id', $lddap_id)
+                     ->where('is_active', 1)->where('is_deleted', 0)->sum('total_dv_net_amount');
+
+                  // LDDAPModel::find($lddap_id)?->update([
+                  //    'total_lddap_gross_amount' => $get_total_lddap_gross_amount,
+                  //    'total_lddap_net_amount' => $get_total_lddap_net_amount,
+                  // ]);
+                  dump($get_total_lddap_gross_amount);
+               }
+
+               return response()->json(['success' => 1, 200]);
             }    
             return Response::json(['errors' => $validator->errors()]);
-         }
-         else if($request->edit_attached_rs==1){   
+         } else if ($request->update_dv_account == 1) {
+            $accountId = (int) $request->dv_account_id;
+
+            // 1. Find the DvRsAccount by ID (with chartAccount relation)
+            $account = DvRsAccount::with('chartAccount')->find($accountId);
+
+            if ($account) {
+               $isBIR = stripos($account->chartAccount->name, 'BIR') !== false;
+
+               // Always update the amount
+               $amount = removeComma($request->amount ?? 0);
+               $account->update(['amount' => $amount]);
+
+               // Only update tax fields if "BIR" is in the account title
+               if ($isBIR) {
+                  $dvRsNetId = $account->dv_rs_net_id;
+                  $rsNet = DvRsNetModel::find($dvRsNetId);
+
+                  $taxFields = ['tax_one', 'tax_two', 'tax_twob', 'tax_three', 'tax_five', 'tax_six', 'wtax', 'other_tax'];
+                  $taxValues = [];
+
+                  foreach ($taxFields as $field) {
+                     $taxValues[$field] = removeComma($request->$field ?? 0);
+                  }
+
+                  if ($rsNet) {
+                     $rsNet->update($taxValues);
+                  }
+
+                  // Recompute total tax amount and override amount if > 0
+                  $totalAmount = array_sum($taxValues);
+                  if ($totalAmount > 0) {
+                     $account->update(['amount' => $totalAmount]);
+                  }
+               }
+            }
+
+            
+            return response()->json(['success' => true]);
+         } else if($request->edit_attached_rs==1){   
             DvRsModel::find($dv_rs_id)
                ->update([ 
                   'rs_id'=>$request->rs_id 
@@ -865,6 +990,61 @@ class DVController extends Controller
       }
    }
 
+   public function show_chart_accounts(Request $request)
+   {
+      $accounts = ChartAccount::whereNull('parent_id')->with('children')->get();
+      $flattened = $this->flattenChartAccounts($accounts);
+      return response()->json(['data' => $flattened]);
+   }
+
+   private function flattenChartAccounts($accounts, $level = 0)
+   {
+      $accounts = $accounts->sortBy('uacs');
+      $result = [];
+      foreach ($accounts as $account) {
+         $indent = str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $level);
+         // Determine display style and class
+         $cssClass = '';
+         $displayName = $account->name;
+
+         switch ((int) $account->level_id) {
+               case 1:
+                  $cssClass = 'font-weight-bold text-uppercase';
+                  $displayName = strtoupper($account->name);
+                  break;
+               case 2:
+                  $cssClass = 'font-weight-bold';
+                  break;
+               case 3:
+                  $cssClass = 'font-weight-bold font-italic';
+                  break;
+               case 5:
+                  $cssClass = 'font-italic';
+                  break;
+         }
+
+         $title = $indent . $displayName;
+         $result[] = [
+               'id'    => $account->id,
+               'parent_id' => $account->parent_id,
+               'level_id' => $account->level_id,
+               // 'name'  => $title
+               'title' => '<a href="#" class="add_dv_chart_account" data-id="' . $account->id . '">' . $title . '</button>',
+               'uacs'  => $account->uacs,
+               'subobject_code' => $account->subobject_code,
+               'css_class' => $cssClass,
+            
+
+         ];
+
+         if ($account->children->isNotEmpty()) {
+               $children = $this->flattenChartAccounts($account->children, $level + 1);
+               $result = array_merge($result, $children);
+         }
+      }
+      return $result;
+   }
+
    public function show_rs_by_payee(Request $request) {
       $payee_id=$request->payee_id;
       $fund_id=$request->fund_id;
@@ -1067,24 +1247,35 @@ class DVController extends Controller
    // public function print(Request $request) {
    public function print($dv_id) {
       // $dv_id=$request->dv_id;
-      $dv_data = ViewDVModel::where('id', $dv_id)->get();
+      $dv_data = ViewDVModel::where('id', $dv_id)->get();      
       $total_dv_amount = DB::table('view_dv_rs')->select(DB::raw("SUM(dv_amount) as 'total_dv_amount' "))
          ->where('dv_id', $dv_id)->where('is_active', 1)->where('is_deleted', 0)->pluck('total_dv_amount')->first();
-      $dv_rs = ViewDvRsModel::where('dv_id', $dv_id)->where('is_active', 1)->where('is_deleted', 0)->get();
+      $dvRsNet = ViewDvRsNetModel::where('dv_id', $dv_id)->where('is_active', 1)->where('is_deleted', 0)->get();
+      // $dv_rs_net_id = ViewDvRsNetModel::where('dv_id', $dv_id)->where('is_active', 1)->where('is_deleted', 0)->pluck('id')->first();
+      // $rs_id = ViewDvRsModel::where('dv_id', $dv_id)->where('is_active', 1)->where('is_deleted', 0)->pluck('rs_id');
+      // $rs_data = ViewRsPapModel::where('rs_id', $rs_id)->get();
+      // $dv_chart_accounts = DvRsAccount::with([
+      //    'dvRsNet',
+      //    'chartAccount',
+      // ])
+      // ->where('dv_rs_net_id', $dv_rs_net_id)
+      // ->get();
       $dv_documents = ViewDvDocumentModel::where('dv_id', $dv_id)->where('is_active', 1)->where('is_deleted', 0)->get();
-      $now=Carbon::now()->setTimezone('Asia/Manila')->format('l jS \of F Y h:i:s A'); 
+      $now=Carbon::now()->setTimezone('Asia/Manila')->format('l jS \of F Y h:i:s A');
       // $data = [
       //    'dv_data' => $dv_data,
       //    'total_dv_amount' => $total_dv_amount,
       //    'dv_rs' => $dv_rs,
       //    'dv_documents' => $dv_documents,
       // ];
-
+      // dd($rs_data);
       return \View::make('funds_utilization.dv.print')
          ->with('now', $now)
          ->with('dv_data', $dv_data)
+         // ->with('rs_data', $rs_data)
+         // ->with('dv_chart_accounts', $dv_chart_accounts)
          ->with('total_dv_amount', $total_dv_amount)
-         ->with('dv_rs', $dv_rs)
+         ->with('dvRsNet', $dvRsNet)
          ->with('dv_documents', $dv_documents);
       // $pdf = Pdf::loadView('pdf.invoice', $dv_data);
       // return $pdf->download('invoice.pdf');

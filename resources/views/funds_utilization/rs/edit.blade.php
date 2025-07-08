@@ -276,9 +276,7 @@
               <div class="form-group row">              
                 <label for="signatory_id" class="col-sm-1 col-form-label">B. Certified</label>
                 <div class="col"> 
-                    @foreach ($getRsSignatory1b as $row)
-                      <input value="{{ $row->fullname_first }}" id="signatory1b" name="signatory1b" class="form-control" readonly>
-                    @endforeach        
+                    <input value="{{ $getRsSignatory1b->fullname_first }}" id="signatory1b" name="signatory1b" class="form-control" readonly>      
                 </div>              
               </div> 
               <br>

@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')   
+  <?php use App\Models\DvRsAccount; ?>
   <section class="content"> 
     @php      
       $getPayTypes=getPayTypes();
@@ -156,25 +157,16 @@
               </div><br>
                 {{-- dv net by accounting --}}
               <div class="table-responsive">
-                <table id="attached_rs_net_table" class="table-xs table-bordered text-center" style="width: 100%;">    
+                <table id="attached_rs_net_table" class="table-xs table-bordered text-center" width="100%">    
                   <thead>
                     <th>RS ID</th>
                     <th>RS No.</th>    
                     <th>Division</th>                                        
-                    <th>DV Amount</th>                        
-                    <th>1%</th>
-                    <th>2%</th>
-                    <th>2%<br>(Franchise)</th>
-                    <th>3%</th>
-                    <th>5%</th>
-                    <th>6%</th>
-                    <th>WTax (0.08)</th>
-                    <th>Other Tax</th>
-                    <th>Liquidated<br>Damages</th>
-                    <th>Other<br>Deductions</th>
+                    <th>DV Amount</th> 
+                    <th>Total Deductions</th> 
                     <th>Net Amount</th>
                     @role('Accounting Officer')  
-                    <th style="min-width:1%; max-width:1%;">
+                    <th>
                       <button type="button" data-toggle="tooltip" data-placement='top' title='Attach request and status'
                         class="btn-xs btn_attach_rs_net dv-field btn btn-outline-primary add-buttons">
                       <i class="nav-icon fas fa-plus"></i></button>
@@ -185,7 +177,12 @@
                     <?php        
                       $total_dv_gross_amount = 0;                 
                       $total_dv_net_amount = 0;                 
+                      $all_tax = 0;                 
+                      $all_deductions = 0;                 
+                      $net_amount = 0;                 
                       foreach ($getAttachedRsNetbyDV as $row) {  
+                        $rs_id = $row->id;
+                        $dv_rs_net_id = $row->id;		
                         $gross_amount = $row->gross_amount; 
                         $tax_one = $row->tax_one; 
                         $tax_two = $row->tax_two; 
@@ -200,71 +197,87 @@
                         $all_tax = $tax_one + $tax_two + $tax_twob + $tax_three + $tax_five + $tax_six + $wtax + $other_tax;
                         $all_deductions = $all_tax + $liquidated_damages + $other_deductions;
                         $net_amount = $gross_amount - $all_deductions;                        
-                        $total_dv_net_amount += $net_amount;?>                            
-                        <tr class="text-right">
-                          <td class="text-center" style="min-width:2%; max-width:3%;">
+                        $total_dv_net_amount += $net_amount;
+                        $dvAccounts = \App\Models\DvRsAccount::with(['dvRsNet', 'chartAccount'])
+                          ->whereNULL('deleted_at')
+                          ->where('dv_rs_net_id', $dv_rs_net_id)
+                          ->get();
+                        ?>  
+                        <tr class="text-right summary-row" data-dv-rs-id="{{ $row->id }}">
+                          <td class="text-center">
                             <a href="#" class="btn_edit_attached_rs_net" data-dv-rs-id="{{ $row->id }}" 
                             data-toggle="tooltip" data-placement='right' title='Replace attached request and status' class="text-left">
-                            {{ $row->rs_id }}</a></td>
-                          <td nowrap class="text-center" style="min-width:12%; max-width:15%;">{{ $row->rs_no }}</td>
-                          <td class="text-center" style="min-width:8%; max-width:12%;">{{ $row->division_acronym }}</td>
-                          <td style="min-width:8%; max-width:8%;">
-                            <input type="text" size="12" class="text-right amount" id="gross_amount" name="gross_amount[]" value="{{ number_format($gross_amount, 2) }}">
-                          </td>   
-                          <td style="min-width:6%; max-width:6%;">
-                            <input type="text" size="7" class="text-right amount tax" id="tax_one" name="tax_one[]" value="{{ number_format($tax_one, 2) }}">
-                          </td>   
-                          <td style="min-width:6%; max-width:6%;">
-                            <input type="text" size="7" class="text-right amount tax" id="tax_two" name="tax_two[]" value="{{ number_format($tax_two, 2) }}">
-                          </td>   
-                          <td style="min-width:6%; max-width:6%;">
-                            <input type="text" size="7" class="text-right amount tax" id="tax_twob" name="tax_twob[]" value="{{ number_format($tax_twob, 2) }}">
-                          </td>   
-                          <td style="min-width:6%; max-width:6%;">
-                            <input type="text" size="7" class="text-right amount tax" id="tax_three" name="tax_three[]" value="{{ number_format($tax_three, 2) }}">
-                          </td>   
-                          <td style="min-width:6%; max-width:6%;">
-                            <input type="text" size="7" class="text-right amount tax" id="tax_five" name="tax_five[]" value="{{ number_format($tax_five, 2) }}">
-                          </td>   
-                          <td style="min-width:6%; max-width:6%;">
-                            <input type="text" size="7" class="text-right amount tax" id="tax_six" name="tax_six[]" value="{{ number_format($tax_six, 2) }}">
-                          </td>   
-                          <td style="min-width:6%; max-width:6%;">
-                            <input type="text" size="7" class="text-right amount tax" id="wtax" name="wtax[]" value="{{ number_format($wtax, 2) }}">
-                          </td>     
-                          <td style="min-width:6%; max-width:6%;">
-                            <input type="text" size="7" class="text-right amount tax" id="other_tax" name="other_tax[]" value="{{ number_format($other_tax, 2) }}">
-                        </td> 
-                          <td style="min-width:6%; max-width:6%;">
-                            <input type="text" size="7" class="text-right amount tax" id="liquidated_damages" name="liquidated_damages[]" value="{{ number_format($liquidated_damages, 2) }}">
-                          </td> 
-                          <td style="min-width:6%; max-width:6%;">
-                            <input type="text" size="7" class="text-right amount tax" id="liquidated_damages" name="other_deductions[]" value="{{ number_format($other_deductions, 2) }}">
-                          </td> 
-                          <td style="min-width:9%; max-width:9%;">
-                            <input type="text" size="9" class="text-right amount" id="net_amount" name="net_amount[]" value="{{ number_format($net_amount, 2) }}" readonly>
-                            <input type="text" id="dv_rs_id" name="dv_rs_id[]" value="{{ $row->id }}" hidden>                              
-                          </td> 
+                            {{ $row->rs_id }}</a>&emsp;
+                          <button type="button" data-dv-rs-id="{{ $row->id }}" data-toggle="tooltip" data-placement='top' title='Add DV chart of account'
+                            class="btn-xs btn_add_dv_chart_account dv-field btn btn-outline-primary add-buttons">
+                          <i class="nav-icon fas fa-plus"></i></button>
+                          </td>
+                          <td nowrap class="text-center">{{ $row->rs_no }}</td>
+                          <td class="text-center">{{ $row->division_acronym }}</td>
+                          <td>
+                            <input type="text" size="20" class="text-right amount" id="gross_amount_{{ $row->id }}" name="gross_amount[{{ $row->id }}]"
+                             value="{{ number_format($gross_amount, 2) }}">
+                          </td>  
+                          <td>
+                            <span class="all_deductions_display">{{ number_format($all_deductions, 2) }}</span>
+                            <input type="hidden" class="all_deductions_input" value="{{ $all_deductions }}">
+                          </td>
+                          <td>
+                            <span class="net_amount_display">{{ number_format($net_amount, 2) }}</span>
+                            <input type="hidden" class="net_amount_input" name="net_amount[{{ $row->id }}]" value="{{ $net_amount }}">
+                            <input type="hidden" id="dv_rs_id" name="dv_rs_id[]" value="{{ $row->id }}">
+                          </td>
+
                           @role('Accounting Officer')  
-                          <td class="text-center" style="min-width:1%; max-width:1%;">
-                            <button type="button" class="btn btn-xs btn-outline-secondary btn_compute" data-dv-rs-id="{{ $row->id }}">Compute</button>
+                          <td class="text-center">
                             <button type="button" class="btn-xs btn_remove_attached_rs_net btn btn-outline-danger" data-id="{{ $row->id }}" 
                               data-dv-id="{{ $row->dv_id }}" data-lddap-id="{{ $lddap_id }}" 
                               data-toggle="tooltip" data-placement='auto' title='Remove attached request and status'><i class="fa-solid fa-xmark"></i>
                             </button>
                           </td>
                           @endrole
-                        </tr>
+                        </tr>                                              
+                        <tr class="chart-accounts-row" data-dv-rs-id="{{ $row->id }}">
+                          <td></td>
+                          <td colspan="6"> 
+                            <table width="100%" id="tbl_dv_chart_accounts">  
+                              <thead>
+                                <th>Account Title</th>
+                                <th>1%</th>
+                                <th>2%</th>
+                                <th>2%<br>(Franchise)</th>
+                                <th>3%</th>
+                                <th>5%</th>
+                                <th>6%</th>
+                                <th>WTax (0.08)</th>
+                                <th>Other Tax</th>
+                                <th>Total Amount</th>
+                              </thead>
+                              <tbody class="chart-body-{{ $row->id }}">                            
+                                @include('funds_utilization.dv.partials.chart_accounts_table', [
+                                  'dvAccounts' => $dvAccounts,
+                                  'rsRow' => $row
+                                ])
+                               </tbody>
+                            </table>
+                          </td>                          
+                        </tr>                        
                         <?php
                       }
                     ?>
                     <tr class="text-right font-weight-bold">
-                      <td colspan="14">Total DV Net Amount</td>
-                      <td>₱ {{ number_format($total_dv_net_amount, 2) }}
+                      <td colspan="5">Total DV Net Amount</td>
+                      <td>
+                        ₱ <span id="total_dv_net_amount">{{ number_format($total_dv_net_amount, 2) }}</span>
+                      </td>
                     </tr>
+
+                    <tr></tr>
                   </tbody>          
                 </table>
-              </div><br>
+              </div>
+              <br>             
+
               <div class="form-group row">  
                 <label for="po_no" class="col-1 col-form-label text-right">PO No.</label>
                 <div class="col-2"> 
@@ -316,8 +329,12 @@
                   @endif
                 </div> 
                 <div class="col">
+                  <button type="button" class="btn btn-primary print_dv"> <i class="fa-lg fa-solid fa-print"></i> Print</button>                  
+                  <button type="button" class="btn btn-primary save-buttons update_dv">Save Changes</button>   
+                </div> 
+                {{-- <div class="col">
                   <button type="button" class="btn btn-primary save-buttons update_dv">Save Changes</button>  
-                </div>       
+                </div>        --}}
               </div>
               @endrole
             </form> 
@@ -333,7 +350,10 @@
       $(document).ready(function(){
         @include('funds_utilization.dv.script')   
         @include('scripts.common_script')  
+        
       });
+
+      
    </script>
 @endsection
 

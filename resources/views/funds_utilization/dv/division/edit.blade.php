@@ -42,13 +42,14 @@
         $or_no=$row->or_no;
         $or_date=$row->or_date;
       }     
+      
       $dv_month = date("m",strtotime($dv_date));
       $dv_year = date("Y",strtotime($dv_date));      
     @endphp
     <div class="card text-left">
        <div class="card-header">
           <h3 class="card-title">
-            Edit DV
+            Edit DV 
           </h3>            
        </div>         
        <div class="card-body">
@@ -181,19 +182,16 @@
               </div><br>
               <div class="form-group row">  
                 <label for="signatory_id" class="col-1 col-form-label text-right">A. Certified</label>
-                <div class="col-4"> 
-                  <select id="signatory1" name="signatory1" class="form-control dv-field select2bs4">   
-                    <option value="" selected hidden>Select Signatory</option>
-                    @foreach ($getDvSignatories as $row)
-                      <option value="{{ $row->fullname_first }}" 
-                        @if(($signatory1==strtoupper($row->fullname_first)) || ($signatory1==$row->fullname_first) ){{ "selected" }} @endif>
-                        {{ strtoupper($row->fullname_first) }}</option>
-                    @endforeach                           
-                  </select>
+                <div class="col-2"> 
+                  <input value="{{ $signatory1 ?? '' }}" id="signatory1" name="signatory1" class="form-control" readonly>    
                 </div> 
-                <label for="signatory_id" class="col-2 col-form-label text-right">&emsp;B. Approved for Payment</label> 
-                <div class="col-5"> 
-                  <select id="signatory2" name="signatory2" class="form-control dv-field select2bs4">   
+                <label for="signatory_id" class="col-1 col-form-label text-right">&emsp;B. Certified</label> 
+                <div class="col-2"> 
+                  <input value="{{ $getDvSignatory2->fullname_first }}" id="signatory2" name="signatory2" class="form-control" readonly>    
+                </div>   
+                <label for="signatory_id" class="col-2 col-form-label text-right">&emsp;D. Approved for Payment</label> 
+                <div class="col-4"> 
+                  <select id="signatory3" name="signatory3" class="form-control dv-field select2bs4">   
                     <option value="" selected hidden>Select Signatory</option>
                     @foreach ($getDvSignatories as $row)
                       <option value="{{ $row->fullname_first }}"
@@ -201,7 +199,7 @@
                         {{ strtoupper($row->fullname_first) }}</option>
                     @endforeach                           
                   </select>
-                </div>              
+                </div>            
               </div> 
               <div class="form-group row">  
                 <label for="po_no" class="col-1 col-form-label text-right">PO No.</label>

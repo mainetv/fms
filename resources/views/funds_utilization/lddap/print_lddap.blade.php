@@ -165,7 +165,8 @@
             $total_lddap_gross_amount += $row->total_dv_gross_amount;
             $total_lddap_net_amount += $row->total_dv_net_amount;           
             $dv_rs_net = DB::table('view_dv_rs_net')->where('dv_id', $dv_id)
-              ->where('is_active', 1)->where('is_deleted', 0)->get();                         
+              ->where('is_active', 1)->where('is_deleted', 0)->get();      
+              // dd($dv_rs_net);                   
             foreach($dv_rs_net as $row1){
               $total_tax = $row1->tax_one + $row1->tax_two + $row1->tax_twob + $row1->tax_three + $row1->tax_five + $row1->tax_six + $row1->wtax + $row1->other_tax;
               $gtotal_tax+=$total_tax;
@@ -195,8 +196,28 @@
                 {{ $allotment_class_acronym ?? null }}
               </td>
               <td class="text-right left-border-2">{{ number_format($total_dv_gross_amount,2) }}</td>              
-              <td class="text-right">@if($other_deductions > 0) {{ number_format($other_deductions,2) }} @endif</td>
-              <td class="text-right">@if($total_tax > 0) {{ number_format($total_tax,2) }} @endif</td>
+              <td class="text-right">
+                @php                 
+                $other_deductions_per_row = 0;
+                foreach($dv_rs_net as $row1){
+                  $other_deductions_per_row+=$row1->liquidated_damages+$row1->other_deductions;                
+                }
+                @endphp
+                @if($other_deductions_per_row > 0) 
+                  {{ number_format($other_deductions_per_row,2) }} 
+                  @endif
+              </td>
+              <td class="text-right">
+                @php                 
+                $total_tax_per_row = 0;
+                foreach($dv_rs_net as $row1){
+                    $total_tax_per_row += $row1->tax_one + $row1->tax_two + $row1->tax_twob + $row1->tax_three + $row1->tax_five + $row1->tax_six + $row1->wtax + $row1->other_tax;                    
+                }
+                @endphp
+                @if($total_tax_per_row > 0)
+                  {{ number_format($total_tax_per_row, 2) }}
+                @endif
+              </td>
               <td class="text-right">{{ number_format($total_dv_net_amount,2) }}</td>
             </tr>
               <?php
@@ -228,9 +249,9 @@
                 <td>Approved:</td>
               </tr>
               <tr class="text-center font-weight-bold">
-                <td><span class="underline-above">{{ strtoupper($signatory1) }}</span></td>
+                <td>{{ strtoupper($signatory1) }}</span></td>
                 <td></td>
-                <td><span class="underline-above">{{ strtoupper($signatory2) }}</span></td>
+                <td>{{ strtoupper($signatory2) }}</span></td>
               </tr>
               <tr class="text-center">
                 <td>Head of Accounting Division/Unit</td>
