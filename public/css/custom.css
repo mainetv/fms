@@ -57,6 +57,19 @@ td.activity1 {
   padding-left: 23px;
 }
 
+#tbl_chart_accounts tbody tr:hover {
+  background-color: #f2f2f2;
+  cursor: pointer;
+}
+
+#sticky-preview {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  border-bottom: 1px solid #ccc;
+  font-size: 0.9rem;
+}
+
 td.subactivity1 {
   text-align: left;
   padding-left: 35px;
@@ -163,7 +176,7 @@ table.fixedHeader-locked {
 }
 
 .ui-autocomplete {
-  z-index: 1050 !important; /* Ensure it's above other elements */
+  z-index: 1050 !important;
   max-height: 200px;
   overflow-y: auto;
   background-color: white;
@@ -289,35 +302,65 @@ div.action-buttons span {
 }
 
 .cell-padleft-2 {
-  padding-left: 70px; /* Increase padding for a specific cell */
+  padding-left: 60px; /* Increase padding for a specific cell */
+}
+
+tr.cell-pad td {
+  padding: 5px !important;
+}
+
+.border-2 {
+  border-top: 2px solid !important;
+  border-right: 2px solid !important;
+  border-bottom: 2px solid !important;
+  border-left: 2px solid !important;
 }
 
 .top-border-2 {
-  border-top: 2px solid;
+  border-top: 2px solid !important;;
 }
 
 .right-border-2 {
-  border-right: 2px solid;
+  border-right: 2px solid !important;;
 }
 
 .bottom-border-2 {
-  border-bottom: 2px solid;
+  border-bottom: 2px solid !important;
+}
+
+.table-borderless td.with-border,
+.table-borderless th.with-border {
+  border: 1px solid #000 !important;
+}
+
+.table-borderless td.with-left-border,
+.table-borderless th.with-left-border {
+  border-left: 1px solid #000 !important;
+}
+
+.table-borderless td.with-right-border,
+.table-borderless th.with-left-border {
+  border-right: 1px solid #000 !important;
+}
+
+.no-border {
+  border: 0 !important;
 }
 
 .left-border-2 {
-  border-left: 2px solid;
+  border-left: 2px solid !important;
 }
 .no-top-border {
-  border-top: none; /* Removes top border */
+  border-top: none !important; /* Removes top border */
 }
 .no-bottom-border {
-  border-bottom: none; /* Removes top border */
+  border-bottom: none !important; /* Removes top border */
 }
 .no-left-border {
-  border-left: none; /* Removes top border */
+  border-left: none !important; /* Removes top border */
 }
 .no-right-border {
-  border-right: none; /* Removes top border */
+  border-right: none !important; /* Removes top border */
 }
 .text-underlined {
   text-decoration: underline !important;
@@ -326,5 +369,33 @@ div.action-buttons span {
   display: inline-block;
   border-top: 1px solid black; /* Creates an underline above */
   padding-top: 5px; /* Adjust spacing between text and line */
+}
+.underline-sn {
+  display: inline-block;
+  border-bottom: 1px solid #000;
+  width: 150px;
+}
+.label-sn {
+  display: inline-block;
+  width: 100px;
+}
+.rs {
+  height: 100%;
+  border-left: 1px solid #000;
+  border-right: 1px solid #000;
+  border-bottom: 1px solid #000;
+  padding: 0;
+}
+.underline-sign {
+  display: inline-block;
+  border-bottom: 1px solid #000;
+  width: 330px;
+}
+
+.bottom-border-1{
+  border-bottom: 1px solid #000 !important;
+}
+.full-height-table{
+  height:100%;
 }
 /* maine */
