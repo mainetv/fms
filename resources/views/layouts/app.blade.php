@@ -2,16 +2,8 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
-  {{-- <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <meta name="csrf-token" content="{{ csrf_token() }}">
-  <meta http-equiv="refresh" content="{{ config('session.lifetime') * 60 }}">
-  <title>FMS</title> --}}
-
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
   <meta content="" name="author" />
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -34,7 +26,7 @@
   {{-- <link rel="stylesheet" href="{{ asset('plugins/sweetalert2/sweetalert2.min.css') }}"> --}}
   <!-- Select2 -->
   {{-- <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}"> --}}
-  {{-- <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">               --}}
+  {{-- <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}"> --}}
   <!-- iCheck -->
   {{-- <link rel="stylesheet" href="{{ asset('plugins/icheck-bootstrap/icheck-bootstrap.min.css') }}"> --}}
   <!-- bs-custom-file-input -->
@@ -43,6 +35,8 @@
   {{-- <link rel="stylesheet" href="{{ asset('plugins/daterangepicker/daterangepicker.css') }}"> --}}
   <!-- Scripts -->
   {{-- <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css"> --}}
+  {{-- <link rel="stylesheet" href="{{ asset('jquery-ui/1.12.1/jquery-ui.css') }}"> --}}
+  {{-- <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"> --}}
   @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 
   <style>
@@ -71,6 +65,7 @@
     }
   </script>
   @yield('css')
+  @livewireStyles
 </head>
 
 @php
@@ -143,7 +138,7 @@
         </li>
         <li class="nav-item">
           <a class="nav-link" href="{{ route('profile.show') }}" :active="request() - > routeIs('profile.show')">
-            {{ __('Edit Profile') }}
+            {{ __('Profile') }}
           </a>
         </li>
         {{-- Fullscreen --}}
@@ -171,14 +166,12 @@
     <!-- Main Sidebar Container -->
     <aside class="main-sidebar sidebar-dark-cyan elevation-4 nav-child-indent">
       <!-- Brand Logo -->
-      {{-- <a href="/fms/public" class="brand-link text-center">
-                  <img src="{{ asset('/images/pcarrd-logo-sm.png') }}" alt="FMS" class="brand-image  text-center img-circle elevation-3" style="opacity: 1">
-                  <span class="brand-text font-weight-bold">FMS</span>
-                </a> --}}
-      <a href="" class="brand-link text-center">
-        <span class="text-white font-weight-bold" style="font-size:22px;">
+      <a href="" class="brand-link d-flex justify-content-center align-items-center">
+        <span class="text-white font-weight-bold d-flex align-items-center" style="font-size:22px;margin-right: 37px;">
           <img src="{{ asset('images/pcarrd-logo-sm.png') }}" alt="logo-small"
-            class="brand-image img-circle logo-sm">&nbsp; FMS
+            class="brand-image img-circle logo-sm"
+            style="width: 25px; height: 25px; margin-right: 5px; margin-top: 3px;">
+          FMS
         </span>
       </a>
       <!-- Sidebar -->
@@ -267,6 +260,20 @@
       <!-- Content Header (Page header) -->
       <!-- Main content -->
       @yield('content')
+      @isset($slot)
+        <section class="content">
+          <div class="card">
+            <div class="card-header"></div>
+            <div class="card-body py-2">
+              <div class="row">
+                <div class="col-8 py-2">
+                  {{ $slot }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      @endisset
       <!-- /.content -->
     </div>
     <!-- /.content-wrapper -->
@@ -279,7 +286,7 @@
 
     <!-- Main Footer -->
     <footer class="main-footer text-sm noprint">
-      <strong>Copyright &copy; 2023 <a href="/fms/public">FMS</a>.</strong>All rights reserved.
+      <strong>Copyright &copy; 2022 <a href="/fms/public">FMS</a>.</strong>All rights reserved.
       <div class="float-right d-none d-sm-inline-block">
         <b>Version</b> 1.0
       </div>
@@ -327,6 +334,8 @@
   <!-- iCheck -->
   <script src="{{ asset('plugins/icheck-bootstrap/icheck.js') }}"></script>
   <script src="https://cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
+  <!-- Bootstrap Switch -->
+  <script src="{{ asset('plugins/bootstrap-switch/bootstrap-switch.min.js') }}"></script>
   <!-- DataTables  & Plugins -->
   @include('scripts.datatables_js')
 
@@ -336,6 +345,8 @@
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
       }
     });
+
+    $(".bootstrap-switch").bootstrapSwitch();
 
     $(".datepicker").datepicker({
       todayHighlight: true,
@@ -392,23 +403,40 @@
       return val;
     }
 
+    function formatAmount(value) {
+      if (!value) return '';
+
+      // Remove commas and non-numeric except dot
+      value = value.toString().replace(/,/g, '').replace(/[^\d.]/g, '');
+
+      // Split into integer and decimal
+      let parts = value.split('.');
+      let integer = parts[0] || '0';
+      let decimal = parts[1] || '';
+
+      if (decimal.length > 2) decimal = decimal.slice(0, 2);
+
+      // Add commas to integer part
+      integer = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+      // Only show decimal if user typed it
+      if (value.includes('.')) {
+        return decimal ? `${integer}.${decimal}` : `${integer}.`;
+      } else {
+        return integer;
+      }
+    }
+
+    $(document).on('blur', 'input.amount, input.tax', function () {
+      const formatted = formatAmount($(this).val());
+      $(this).val(formatted);
+    });
+
+
     $(document).ready(function() {
       @include('scripts.common_script')
 
-      $('input.amount').keyup(function(event) {
-
-        // skip for arrow keys
-        if (event.which >= 37 && event.which <= 40) {
-          event.preventDefault();
-        }
-
-        $(this).val(function(index, value) {
-          return value
-            .replace(/\D/g, "")
-            .replace(/([0-9])([0-9]{2})$/, '$1.$2')
-            .replace(/\B(?=(\d{3})+(?!\d)\.?)/g, ",");
-        });
-      });
+      
     });
   </script>
   @yield('jscript')

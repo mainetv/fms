@@ -14,13 +14,13 @@
               <input id="user_role" name="user_role" class="form-control user-roles-field"  required autofocus>                  
               <span class="is-invalid"><small id="user-role-error" class="error"></small></span>
           </div>
-          <div class="form-check form-check-inline">
+          {{-- <div class="form-check form-check-inline">
             <label for="users_is_active">Is Active</label>&nbsp;
             <input type="checkbox" id="users_is_active" name="users_is_active" class="form-check-input users-field" 
             @foreach ($view_users as $row)
               {{ $row->is_active=="yes"?true:false }}
             @endforeach>
-          </div>
+          </div> --}}
        </div>      
        <div class="modal-footer">
          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

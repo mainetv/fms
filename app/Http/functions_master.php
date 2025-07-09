@@ -15,8 +15,10 @@ use App\Models\LibrarySubactivityModel;
 use App\Models\PaymentModesModel;
 use App\Models\PayTypesModel;
 use App\Models\TaxTypesModel;
+use App\Models\UserRolesModel;
 use App\Models\ViewAllotmentStatusModel;
 use App\Models\ViewBpStatusModel;
+use App\Models\ViewHRMSUsersModel;
 use App\Models\ViewLibraryBankAccountsModel;
 use App\Models\ViewLibraryDvTransactionTypesModel;
 use App\Models\ViewLibraryPayeesModel;
@@ -25,6 +27,7 @@ use App\Models\ViewNotificationsModel;
 use App\Models\ViewRSTypesModel;
 use App\Models\ViewUsersHasRolesModel;
 use App\Models\ViewUsersModel;
+use Illuminate\Support\Carbon;
 
 function convert_number_to_words($number){ 
     if (($number < 0) || ($number > 999999999)) 
@@ -96,7 +99,36 @@ function convert_number_to_words($number){
     } 
 
     return $res; 
-} 
+}
+
+function parseNull($key, $row)
+{
+   if (!isset($row[$key])) {
+      return null; // If the key does not exist, return null
+   }
+
+   $value = $row[$key];
+   return ($value === 'NULL' || $value === '') ? null : $value;
+}
+
+function formatDate($date)
+{
+   if (!$date) {
+      return null; // If date is null or empty, return null
+   }
+
+   try {
+      // Attempt to parse the date in the expected format
+      return Carbon::createFromFormat('m/d/Y H:i', $date)->format('Y-m-d H:i:s');
+   } catch (\Exception $e) {
+      // If parsing fails, attempt to parse it with Carbon's flexible parser
+      try {
+         return Carbon::parse($date)->format('Y-m-d H:i:s');
+      } catch (\Exception $e) {
+         return null; // Return null if parsing still fails
+      }
+   }
+}
 
 function removeComma($number){
    $res=str_replace(",", "", $number);
@@ -153,13 +185,24 @@ function convert_number_format($number){
    return $res;
 }
 
+function getAllActiveStaff() {
+   $data = ViewHRMSUsersModel::orderBy('lname', 'ASC')->get();
+   return $data;
+}
+
+function getUserRoles()
+{
+   $data = UserRolesModel::orderBy('name', 'ASC')->get();
+   return $data;
+}
+
 function getNotifications($user_id){   
-   $data = ViewNotificationsModel::where('user_id_to',$user_id)->where('is_read', '0')->where('is_deleted', '0')->get();  
+   $data = ViewNotificationsModel::where('user_id_to',$user_id)->where('is_read', '0')->where('is_deleted', '0')->orderBy('created_at', 'DESC')->get();  
    return $data;
 }
 
 function getAllNotifications($user_id){   
-   $data = ViewNotificationsModel::where('user_id_to',$user_id)->where('is_deleted', '0')->get(); 
+   $data = ViewNotificationsModel::where('user_id_to',$user_id)->where('is_deleted', '0')->orderBy('created_at', 'DESC')->get(); 
    return $data;
 }
 
@@ -210,7 +253,7 @@ function getYearsH($year_selected){
 }
 
 function getAllActiveDivisions(){
-   $data = DivisionsModel::where("is_active", 1)->where("is_deleted", 0)->orderBy('division_acronym', 'ASC')->get(); 
+   $data = DivisionsModel::where("is_active", 1)->orderBy('division_acronym', 'ASC')->get(); 
    // dd($data);
    return $data;
 }
@@ -306,13 +349,13 @@ function getAllDivisions(){
 }
 
 function getRDDivisions(){
-   $data = DivisionsModel::where('cluster_id', 20)->where("is_active", 1)->where("is_deleted", 0)->orderBy('division_acronym', 'asc')->get();
+   $data = DivisionsModel::where('cluster_id', 20)->where("is_active", 1)->orderBy('division_acronym', 'asc')->get();
    // dd($data);
    return $data;
 }
 
 function getARMMSDivisions(){
-   $data = DivisionsModel::where('cluster_id', 21)->where("is_active", 1)->where("is_deleted", 0)->orderBy('division_acronym', 'asc')->get();
+   $data = DivisionsModel::where('cluster_id', 21)->where("is_active", 1)->orderBy('division_acronym', 'asc')->get();
    // dd($data);
    return $data;
 }
