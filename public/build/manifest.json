@@ -31,6 +31,30 @@
     "file": "assets/fa-v4compatibility-CxX3iInv.woff2",
     "src": "public/fonts/fontawesome-free-6.1.1-web/webfonts/fa-v4compatibility.woff2"
   },
+  "public/plugins/jquery-ui/images/ui-icons_444444_256x240.png": {
+    "file": "assets/ui-icons_444444_256x240-GTA-q0sF.png",
+    "src": "public/plugins/jquery-ui/images/ui-icons_444444_256x240.png"
+  },
+  "public/plugins/jquery-ui/images/ui-icons_555555_256x240.png": {
+    "file": "assets/ui-icons_555555_256x240-CljOKvYH.png",
+    "src": "public/plugins/jquery-ui/images/ui-icons_555555_256x240.png"
+  },
+  "public/plugins/jquery-ui/images/ui-icons_777620_256x240.png": {
+    "file": "assets/ui-icons_777620_256x240-C4dTUgMA.png",
+    "src": "public/plugins/jquery-ui/images/ui-icons_777620_256x240.png"
+  },
+  "public/plugins/jquery-ui/images/ui-icons_777777_256x240.png": {
+    "file": "assets/ui-icons_777777_256x240-BsZpZ7zC.png",
+    "src": "public/plugins/jquery-ui/images/ui-icons_777777_256x240.png"
+  },
+  "public/plugins/jquery-ui/images/ui-icons_cc0000_256x240.png": {
+    "file": "assets/ui-icons_cc0000_256x240-DZVHXwoN.png",
+    "src": "public/plugins/jquery-ui/images/ui-icons_cc0000_256x240.png"
+  },
+  "public/plugins/jquery-ui/images/ui-icons_ffffff_256x240.png": {
+    "file": "assets/ui-icons_ffffff_256x240-gcGIu4SD.png",
+    "src": "public/plugins/jquery-ui/images/ui-icons_ffffff_256x240.png"
+  },
   "resources/css/app.css": {
     "file": "assets/app-B3SRh887.css",
     "src": "resources/css/app.css",
@@ -43,7 +67,7 @@
     "isEntry": true
   },
   "resources/sass/app.scss": {
-    "file": "assets/app-0vesYUcu.css",
+    "file": "assets/app-B3smCiUH.css",
     "src": "resources/sass/app.scss",
     "isEntry": true
   }
