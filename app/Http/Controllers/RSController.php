@@ -422,6 +422,8 @@ class RSController extends Controller
          $title = "bursc";
       } elseif ($rs_type_id == 4) {
          $title = "burscac";
+      } elseif ($rs_type_id == 5) {
+         $title = "burslc";
       }
       $getAttachedAllotmentByRs =  ViewRsPapModel::where('rs_id', $rs_id)->where('is_active', 1)->where('is_deleted', 0)
          ->whereNull('notice_adjustment_date')->get();
@@ -462,7 +464,7 @@ class RSController extends Controller
       $getRsTransactionTypes = ViewLibraryRsTransactionTypesModel::where("is_active", 1)->where("is_deleted", 0)->get();
       $getRsSignatories = ViewLibrarySignatoriesModel::where('module_id', 5)->where("is_active", 1)->where("is_deleted", 0)->orderBy('fullname_first')->get();
       $getRsSignatory1b = ViewLibrarySignatoriesModel::where('module_id', 5)->where('is_default', 1)->where("is_active", 1)
-         ->where("is_deleted", 0)->orderBy('fullname_first')->get();
+         ->where("is_deleted", 0)->first();
       if ($rs_type_id == 1) {
          $title = "orsdivision";
       } elseif ($rs_type_id == 2) {
@@ -471,6 +473,9 @@ class RSController extends Controller
          $title = "burscdivision";
       } elseif ($rs_type_id == 4) {
          $title = "burscacdivision";
+      }
+      elseif ($rs_type_id == 5) {
+         $title = "burslcdivision";
       }
       $getAttachedAllotmentByRs =  ViewRsPapModel::where('rs_id', $rs_id)->where('is_active', 1)->where('is_deleted', 0)
          ->whereNull('notice_adjustment_date')->get();
@@ -1238,8 +1243,11 @@ class RSController extends Controller
    {
       $rs_data = ViewRSModel::where('id', $rs_id)->get();
       $rs_activity = ViewRSActivityModel::where('rs_id', $rs_id)->where('is_active', 1)->where('is_deleted', 0)->get();
+      $rs_activity = collect($rs_activity)->filter(); // removes null, false, empty
       $rs_documents = ViewRsDocumentModel::where('rs_id', $rs_id)->where('is_active', 1)->where('is_deleted', 0)->get();
+      $now = Carbon::now()->setTimezone('Asia/Manila')->format('l jS \of F Y h:i:s A');
       return \View::make('funds_utilization.rs.print_rs_p1')
+         ->with('now', $now)
          ->with('rs_data', $rs_data)
          ->with('rs_activity', $rs_activity)
          ->with('rs_documents', $rs_documents);
@@ -1250,7 +1258,9 @@ class RSController extends Controller
       $rs_data = ViewRSModel::where('id', $rs_id)->get();
       $rs_allotment = ViewRsPapModel::where('rs_id', $rs_id)->where('is_active', 1)->where('is_deleted', 0)->get();
       $rs_documents = ViewRsDocumentModel::where('rs_id', $rs_id)->where('is_active', 1)->where('is_deleted', 0)->get();
+      $now = Carbon::now()->setTimezone('Asia/Manila')->format('l jS \of F Y h:i:s A');
       return \View::make('funds_utilization.rs.print_rs_p2')
+         ->with('now', $now)
          ->with('rs_data', $rs_data)
          ->with('rs_allotment', $rs_allotment)
          ->with('rs_documents', $rs_documents);

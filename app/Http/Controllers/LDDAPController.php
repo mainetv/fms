@@ -17,7 +17,6 @@ use App\Models\ViewDVModel;
 use App\Models\ViewLDDAPDVModel;
 use App\Models\ViewLDDAPModel;
 use App\Models\ViewLibrarySignatoriesModel;
-use App\Models\ViewUsersHasRolesModel;
 use App\Models\ViewUsersModel;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -42,7 +41,7 @@ class LDDAPController extends Controller
 			"month_selected" => $month_selected,
 			"year_selected" => $year_selected,
 		];   
-		$divisions = DivisionsModel::where("is_active", 1)->where("is_deleted", 0)->orderBy('division_acronym', 'asc')->get();
+		$divisions = DivisionsModel::where("is_active", 1)->orderBy('division_acronym', 'asc')->get();
 		$years = FiscalYearsModel::where("is_active", 1)->where("is_deleted", 0)->orderBy('year', 'ASC')->get();
 		$getFunds = FundsModel::where("is_active", 1)->where("is_deleted", 0)->orderBy('fund')->get();	
 		$getNCA = NcaModel::where('fund_id', $fund_selected)->where('year', $year_selected)->where("is_active", 1)->where("is_deleted", 0)->get();		
