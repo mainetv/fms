@@ -16,7 +16,7 @@ class GlobalService
       $user_division_id = ViewUsersModel::where('id', $user_id)->pluck('division_id')->first();
 
       if ($module_id == 10) {
-         $administrators = ViewUsersHasRolesModel::where('id', '!=', $user_id)->where('role_id', '=', 0)
+         $administrators = ViewUsersHasRolesModel::where('id', '!=', $user_id)->where('role_id', '=', 1)
             ->where('is_active', 1)->where('is_deleted', 0)->get();
          if ($administrators->count() != 0) {
             foreach ($administrators as $value) {

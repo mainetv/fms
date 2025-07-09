@@ -1,29 +1,26 @@
-     
-<h4>User Accounts</h4>
+
 <div class="content">
   <div class="row">
     <div class="col">
-      <button id="add_new_user" type="button" class="btn btn-primary float-left" data-toggle="modal" data-target="#user_modal">
-        Add User
-      </button>
+      <div class="col-3">
+         <button id="btn_add_user" class="btn btn-outline-primary float-left">Add User</button>      
+      </div>
     </div>
   </div>
 </div>
 <div class="row py-3">
    <div class="col table-responsive">        
-      <table id="users_table" class="table table-bordered data-table">
+      <table id="tbl_users" class="table table-bordered data-table">
          <thead>
             <tr>
                <th>Employee Code</th>
-               <th>Last Name</th>
-               <th>First Name</th>
-               <th>Middle Name</th>
+               <th>Name</th>
                <th>Division</th>
-               <th>User Role</th>
+               <th>Roles</th>
                <th>Username</th>
                <th>Email</th>         
                <th>Active</th>         
-               <th>Action</th>
+               <th></th>
             </tr>     
          </thead>  
          <tbody></tbody>             

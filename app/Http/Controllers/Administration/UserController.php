@@ -3,17 +3,19 @@
 namespace App\Http\Controllers\Administration;;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Administration\UserStoreUpdateRequest;
 use App\Http\Requests\Utility\PasswordUpdateRequest;
 use App\Http\Requests\Utility\ProfileStoreUpdateRequest;
 use App\Models\User;
 use App\Models\ViewUsersModel;
+use App\Services\AdministrationService;
 use App\Services\UtilityService;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
    public function __construct(
-      private UtilityService $utilityService,
+      private AdministrationService $administrationService,
    ) {}
 
    public function index(Request $request)
@@ -27,59 +29,38 @@ class UserController extends Controller
          ->with(compact('user_id'), $user_id);
    }
 
-   public function store(ProfileStoreUpdateRequest $request)
-   {
-      if ($request->ajax()) {
-         // try {
-         //    $this->utilityService->createPayee($request->validated());
-         //    return response()->json(['message' => 'Payee added successfully.'], 200);
-         // } catch (\Exception $e) {
-         //    return response()->json(['error' => $e->getMessage()], 500);
-         // }
-      }
-   }
-
-   public function show($id)
-   {
-      $data = User::findOrFail($id);
-      return $data;
-   }
-
-   public function update(ProfileStoreUpdateRequest $request, $id)
+   public function store(UserStoreUpdateRequest $request)
    {
       if ($request->ajax()) {
          try {
-
-            return response()->json(['message' => 'Password saved successfully.'], 200);
+            $this->administrationService->createUserAccount($request->validated());
+            return response()->json(['message' => 'User account added successfully.'], 200);
          } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
          }
       }
    }
 
-   public function change_password(PasswordUpdateRequest $request)
+   public function show($id)
    {
-      dd($request->all());
-      // if ($request->ajax()) {
-      //    try {
-      //       dd($request->validated());
-      //       $this->utilityService->changePassword($request->validated());
-      //       return response()->json(['message' => 'Password saved successfully.'], 200);
-      //    } catch (\Exception $e) {
-      //       return response()->json(['error' => $e->getMessage()], 500);
-      //    }
-      // }
+      $user = User::with('roles')->findOrFail($id);
+
+      return response()->json([
+         'emp_code' => $user->emp_code,
+         'user_role_ids' => $user->roles->pluck('id'),
+      ]);
    }
 
-   public function destroy($id)
+
+   public function update(UserStoreUpdateRequest $request, $id)
    {
-      // try {
-      //    $this->utilityService->deletePayee($id);
-      //    return response()->json(['message' => 'Payee deleted successfully.'], 200);
-      // } catch (ModelNotFoundException $e) {
-      //    return response()->json(['error' => 'Payee not found.'], 404);
-      // } catch (Exception $e) {
-      //    return response()->json(['error' => $e->getMessage()], 500);
-      // }
+      if ($request->ajax()) {
+         try {
+            $this->administrationService->updateUserAccount($request->validated());
+            return response()->json(['message' => 'User account updated successfully.'], 200);
+         } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+         }
+      }
    }
 }

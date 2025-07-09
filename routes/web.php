@@ -1,8 +1,7 @@
 <?php
 
+use App\Http\Controllers\Administration\AdministrationController;
 use App\Http\Controllers\Administration\UserController;
-use App\Http\Controllers\Administration\UserRolesController;
-use App\Http\Controllers\Administration\UsersController;
 use App\Http\Controllers\AgencyBudgetProposalController;
 use App\Http\Controllers\AgencyCashProgramsController;
 use App\Http\Controllers\AgencyQuarterlyObligationProgramsController;
@@ -40,7 +39,6 @@ use App\Http\Controllers\LDDAPController;
 use App\Http\Controllers\LibraryExpenseAccountController;
 use App\Http\Controllers\LibraryObjectExpenditureController;
 use App\Http\Controllers\LibraryObjectSpecificController;
-use App\Http\Controllers\LibraryPayeesController;
 use App\Http\Controllers\NcaController;
 use App\Http\Controllers\QuarterlyObligationProgramsController;
 use App\Http\Controllers\RADAIController;
@@ -68,9 +66,12 @@ Route::get('/', function () {
 });
 
 Route::middleware(['auth'])->controller(GlobalController::class)->group(function () {
+   Route::get('/list-user-accounts', 'listUserAccounts')->name('listUserAccounts');
    Route::get('/list-payees', 'listPayees')->name('listPayees');
    Route::get('/search-payee-name', 'searchPayeeFirstName')->name('searchPayeeFirstName');
+   Route::get('/search-organization-name', 'searchPayeeOrganization')->name('searchPayeeOrganization');
    Route::get('/listPayeesByBankAccountNo', 'listPayeesByBankAccountNo')->name('listPayeesByBankAccountNo');
+   Route::get('/search-payee', 'searchPayee')->name('searchPayee');
 
    Route::get('/budget_preparation/bp_forms/{year}', 'bp_forms_byYear')->name('bp_forms_byYear');
    Route::get('/show_activity_by_division', 'show_activity_by_division')->name('show_activity_by_division');
@@ -90,14 +91,6 @@ Route::middleware(['auth'])->controller(GlobalController::class)->group(function
    Route::get('/timeline', 'timeline')->name('timeline');
    Route::get('/show_timeline_by_filter', 'show_timeline_by_filter')->name('show_timeline_by_filter');
 });
-
-// Route::middleware(['auth','role:Super Administrator|Administrator|Accounting Officer'])->controller(LibraryPayeesController::class)->group(function(){   
-//     Route::get('/library_payees/table', 'table')->name('library_payees.table');    
-//     Route::get('/library_payees/show', 'show')->name('payee.show');    
-//     Route::post('/library_payees/store', 'store')->name('library_payees.store');    
-//     Route::patch('/library_payees/update', 'update')->name('library_payees.update');    
-//     Route::patch('/library_payees/delete', 'delete')->name('library_payees.delete');    
-// });
 
 Route::middleware(['auth', 'role:Super Administrator|Administrator|Budget Officer'])->controller(LibraryPAPController::class)->group(function () {
    Route::get('/library_pap/table', 'table')->name('library_pap.table');
@@ -151,30 +144,24 @@ Route::middleware(['auth', 'role:Super Administrator|Administrator|Budget Office
    Route::get('/budget/maintenance', 'budget_maintenance')->name('global.budget_maintenance');
 });
 
-// Route::middleware(['auth','role:Super Administrator|Administrator|Accounting Officer|Budget Officer'])->controller(GlobalController::class)->group(function () {
-//     Route::get('/administration', 'administration')->name('global.administration');
-//     Route::get('/libraries', 'libraries')->name('global.libraries'); 
-// });
-
 Route::middleware(['auth', 'role:Super Administrator|Administrator'])->prefix('administration/')->name('administration.')->group(function () {
 
-   Route::resource('users', UsersController::class)->only([
-      'store',
-   ]);
-
-   Route::get('user_roles/table', [UserRolesController::class, 'table'])->name('user_roles.table');
-   Route::get('users/table', [UsersController::class, 'table'])->name('users.table');
-   Route::get('users/show', [UsersController::class, 'show'])->name('users.show');
-   Route::get('users/update', [UsersController::class, 'update'])->name('users.update');
-   Route::get('users/delete', [UsersController::class, 'delete'])->name('users.delete');
-
-   Route::get('delete', [UserRolesController::class, 'delete'])->name('user_roles.table');
-
-   Route::resource('', UsersController::class)->only([
+   Route::resource('', AdministrationController::class)->only([
       'index'
    ]);
 
-   Route::get('', [GlobalController::class, 'administration'])->name('index');
+   Route::resource('user', UserController::class)->only([
+      'index', 'store', 'show', 'update', 'destroy',
+   ]);
+
+   // Route::get('user_roles/table', [UserRolesController::class, 'table'])->name('user_roles.table');
+   // Route::get('users/table', [UsersController::class, 'table'])->name('users.table');
+   // Route::get('users/show', [UsersController::class, 'show'])->name('users.show');
+   // Route::get('users/update', [UsersController::class, 'update'])->name('users.update');
+   // Route::get('users/delete', [UsersController::class, 'delete'])->name('users.delete');
+
+
+   // Route::get('', [GlobalController::class, 'administration'])->name('index');
 });
 
 Route::middleware(['auth'])->prefix('utilities/')->name('utilities.')->group(function () {
@@ -183,22 +170,9 @@ Route::middleware(['auth'])->prefix('utilities/')->name('utilities.')->group(fun
    ]);
 
    Route::resource('payee', PayeeController::class)->only([
-      'index',
-      'store',
-      'show',
-      'update',
-      'destroy',
+      'index', 'store', 'show', 'update', 'destroy',
    ]);
 
-   Route::resource('profile', UserController::class)->only([
-      'index',
-      'store',
-      'show',
-      'update',
-      'destroy',
-   ]);
-
-   Route::patch('profile/change-password', [UserController::class, 'change_password'])->name('profile.change_password');
    Route::get('show_payees_by_bank_account_number', [PayeeController::class, 'show_payees_by_bank_account_number'])->name('show_payees_by_bank_account_number');
 });
 
@@ -368,6 +342,7 @@ Route::middleware(['auth', 'role:Super Administrator|Administrator|Accounting Of
       Route::get('/show_dv_by_division_month_year', 'show_dv_by_division_month_year')->name('show_dv_by_division_month_year');
       Route::get('/show_rs_by_payee', 'show_rs_by_payee')->name('show_rs_by_payee');
       Route::get('/show_rs_by_dv', 'show_rs_by_dv')->name('show_rs_by_dv');
+      Route::get('/show_chart_accounts', 'show_chart_accounts')->name('show_chart_accounts');
       Route::get('/show_dv_transaction_type', 'show_dv_transaction_type')->name('show_dv_transaction_type');
 
       Route::post('/funds_utilization/dv/store', 'store')->name('dv.store');

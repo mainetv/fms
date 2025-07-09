@@ -1,241 +1,293 @@
-{{-- table start --}}
-  var users_table = $('#users_table').DataTable({
-    processing: true,
-    serverSide: true,
-    responsive: true,
-    lengthChange: false,
-    autoWidth: false,
-    stateSave: true,
-    dom: 'Bfrtip',
-    ajax: {
-      url: "{{ route('administration.users.table') }}",
-      method: "GET",
-      data : {
-      '_token': '{{ csrf_token() }}'
+const requiredFields = [
+  { id: 'users_employee_code', event: 'change', isSelect: true },
+  { id: 'users_user_role_id', event: 'change', isSelect: true },
+];
+
+requiredFields.forEach(field => {
+  const element = $(`#${field.id}`);
+  if (element.length > 0) {
+    element.on(field.event, function() {
+      validateField($(this), field.isSelect);
+    });
+  }
+});
+
+@include('scripts.validation');
+
+function actionButtons($id) {
+  return `<center style="white-space:nowrap">              
+            <button class="btn_edit_user btn btn-xs btn-outline-info tippy-btn"  
+              data-id="${$id}"><i class="fa-solid fa-edit"></i>
+            </button>
+              </center>`;
+} 
+
+var tbl_users = $('#tbl_users').DataTable({
+  processing: true,
+  serverSide: true,
+  destroy: true,
+  ajax: {
+    url: "{{ route('listUserAccounts') }}",
+    method: "GET",
+    dataSrc: function (json) {
+      console.log('DataTables Ajax Response:', json); // check this in browser console
+      return json.data;
+    }
+  },
+  rowId: 'id',
+  order: [[1, 'asc']],
+  columns: [
+    { data: 'emp_code' },
+    { data: 'full_name' },
+    { data: 'division' },
+    { data: 'user_roles' },
+    { data: 'username' },
+    { data: 'email' },
+    { 
+      data: 'is_active',
+      render: function(data) {
+        return data ? 'Yes' : 'No';
       }
     },    
-    columns: [      
-      {data: 'emp_code', name: 'emp_code'},
-      {data: 'lname', name: 'lname'},
-      {data: 'fname', name: 'fname'},
-      {data: 'mname', name: 'mname'},
-      {data: 'division_acronym', name: 'division_acronym'},
-      {data: 'user_role', name: 'user_role'},
-      {data: 'username', name: 'username'},
-      {data: 'email', name: 'email'},      
-      {data: 'is_active', name: 'is_active',
-          render: function (data, type, row) {
-          if (type === 'display' || type === 'filter' ) {
-            return data=='1' ? 'Yes' : 'No';
-          }
-            return data;
-          }
-      },
-      {data: 'action', orderable: false, searchable: false}          
-    ],
-    buttons: [
-      "copy", "excel", "pdf", "print", "colvis"
-    ],
-  });
+    { 
+      data: "id",
+      orderable: false,
+      render: function(data, type, row) {
+        return actionButtons(data);
+      }
+    },
+  ]
+});
 
-{{-- table end --}}
+function init_add_user(){
+  $('.users-field')
+    .attr('disabled', false);
+    
+  $('#add_user.save-buttons')
+    .addClass('d-inline')
+    .removeClass('d-none')
+    .attr('disabled', false);  
+    
+  $('.update_user').addClass('d-none');
+}
 
-{{-- START --}}
-  {{-- modal start --}}
-    $('#user_modal').on('hide.bs.modal', function(){       
-      init_view_user();
-      clear_attributes();
-      clearFields
-    });  
+$('#btn_add_user').click(function (e) {  
+  e.preventDefault();          
+  init_add_user();     
+  clearFields();
+  $('#user_modal_header').html("Add User");
+  $('#user_modal').modal('toggle');              
+});
 
-    $('#user_modal').on('shown.bs.modal', function () {
-      $('#users_employee_code').focus();
-    })     
-  {{-- modal end --}}
-
-  {{-- view start --}}
-    function init_view_user(){
-      $('.users-field')
-        .val('')
-        .attr('disabled', true);
-
-      $('.save-buttons')
-        .removeClass('d-inline')
-        .addClass('d-none')
-        .attr('disabled', true);
-    }
-
-    function view_user(user_id){
-      var request = $.ajax({
-        method: "GET",
-        url: "{{ route('administration.users.show') }}",
-        data: {
-          '_token': '{{ csrf_token() }}',
-          'id' : user_id
-        }
-      });
-      return request;
-    }
-
-    $('#users_table').on('click', '.view-user', function(e){   
-      $('#user_modal_header').html("View User");     
-      user_id = $(this).parents('tr').data('id');
-      init_view_user();   
-      var request = view_user(user_id);   
-      request.then(function(data) {
-        if(data['status'] == 1){          
-          $('#users_employee_code').val(data['user']['emp_code'])   
-          $('#users_user_role_id').val(data['user']['user_role_id'])   
-          $('#users_username').val(data['user']['username'])   
-          if(data['user']['is_active'] == 1) {
-            $('#users_is_active').iCheck('check'); 
-          } 
-        }
-                      
-      })
-      $('#user_modal').modal('toggle');
-    })
-  {{-- view end --}}
-
-  {{-- add start --}}
-    function init_add_user(){
-      $('.users-field')
-        .attr('disabled', false);
-        
-      $('#add_user.save-buttons')
-        .addClass('d-inline')
-        .removeClass('d-none')
-        .attr('disabled', false);     
-        
-      $('#users_is_active').prop('checked', true);
-    }
-
-    $('#add_new_user').on('click', function(){ 
-      init_add_user( );         
-      $('#user_modal_header').html("Add User");
-      $('#user_modal').modal('toggle');    
-    })
-
-    $('#add_user').on('click', function(e){
-      e.prevenDefault;  
-      clear_attributes();  
-      $.ajax({
-        method: "POST",
-        url: "{{ route('administration.users.store') }}",
-        data: {
-        '_token': '{{ csrf_token() }}',
-        'emp_code' : $('#users_employee_code').val(),
-        'user_role_id' : $('#users_user_role_id').val(),
-        {{-- 'username' : $('#users_username').val(),
-        'password' : $('#users_password').val(), --}}
-        'is_active' :  ($('#users_is_active').iCheck('update')[0].checked ? 1  : 0)
-        },
-        success:function(data) {
-          console.log(data);
-          if(data.errors) {         
-              {{-- if(data.errors.emp_code){
-                $('#users_employee_code').addClass('is-invalid');
-                $('#employee-code-error').html(data.errors.emp_code[0]);
-              }   
-              if(data.errors.user_role_id){
-                $('#users_user_role_id').addClass('is-invalid');
-                $('#user-role-error').html(data.errors.user_role_id[0]);
-              } 
-              if(data.errors.username){
-                $('#users_username').addClass('is-invalid');
-                $('#username-error').html(data.errors.username[0]);
-              } 
-              if(data.errors.password){
-                $('#users_password').addClass('is-invalid');
-                $('#password-error').html(data.errors.password[0]);
-              }                          --}}
-          }
-          if(data.success) {
-            Swal.fire({
-              position: 'top-end',
-              icon: 'success',
-              title: 'User has been successfully added.',
-              showConfirmButton: false,
-              timer: 1500
-            }) 
-            $('#user_modal').modal('toggle');
-            $('#users_table').DataTable().ajax.reload();
-          }
-        },
-      });
-    })
-  {{-- add end    --}}
-  
-  {{-- update start --}}
-    function init_update_user(){
-      init_view_user()
-      $('.users-field')
-        .attr('disabled', false);
-
-      $('#update_user.save-buttons')
-        .addClass('d-inline')
-        .removeClass('d-none')
-        .attr('disabled', false);
-    }
-
-    $('#update_user').on('click', function(e){
-      e.preventDefault();
-      clear_attributes()
+$('.add_user').click(function (e) {
+  $.ajax({
+    method: 'POST',
+    url: '{{ route('administration.user.store') }}',       
+    data: $('#frm_user').serializeArray().concat(),           
+    success:function(response) {
+      $('#user_modal').modal('toggle');                     
       Swal.fire({
-        title: 'Are you sure you want to save changes?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes'
-      })
-      .then((result) => {
-        if (result.value) {
-          var request = $.ajax({
-            method: "PATCH",
-            url: "{{ route('administration.users.update') }}",
-            data: {
-              '_token': '{{ csrf_token() }}',
-              'emp_code' : $('#users_employee_code').val(),
-              'user_role_id' : $('#users_user_role_id').val(),
-              'username' : $('#user_username').val(),              
-              'password' : $('#users_password').val(),              
-              'is_active' :  ($('#users_is_active').iCheck('update')[0].checked ? 1  : 0)
-            },
-            success:function(data) {
-              console.log(data);
-              if(data.success) {
-                Swal.fire({
-                  position: 'top-end',
-                  icon: 'success',
-                  title: 'User has been successfully updated.',
-                  showConfirmButton: false,
-                  timer: 1500
-                })                        
-                $('#user_modal').modal('toggle')  
-                $('#users_table').DataTable().ajax.reload();
-              }                      
-            }                             
-          });                                
-        }       
-      })   
-    })
+        position: 'top-end',
+        icon: 'success',
+        title: 'User account added successfully.',
+        showConfirmButton: false,
+        timer: 1500
+      })  
+    },            
+    error: function (xhr) {
+      var response = JSON.parse(xhr.responseText);  
+      var $firstErrorField = null;
+      var firstErrorTop = Number.MAX_VALUE; 
 
-    $('#users_table').on('click', '.update-user', function(e){
-      $('#user_modal_header').html("Update User");         
-      init_update_user();
-      user_id = $(this).parents('tr').data('id');
-      var request = view_user(user_id);
-      request.then(function(data) {
-        if(data['status'] == 1){            
-          $('#users_employee_code').val(data['user']['emp_code'])   
-          $('#users_user_role_id').val(data['user']['user_role_id'])   
-          $('#users_username').val(data['user']['username'])  
-          if(data['user']['is_active'] == 1) {
-            $('#users_is_active').iCheck('check'); 
-          }  
-        }                      
-      })    
-      $('#user_modal').modal('toggle')       
-    })
-  {{-- update end --}}
+      requiredFields.forEach(field => {
+        const element = $('#' + field.id);
+        const feedbackElement = $('#' + field.id + '-feedback');
+        if (field.isTinyMCE) {
+          const editor = tinymce.get(field.id);
+          if (response.errors[field.id]) {
+            editor.getContainer().classList.add('is-invalid');
+            feedbackElement.html(response.errors[field.id][0]).show();
+          } else {
+            editor.getContainer().classList.remove('is-invalid');
+            feedbackElement.html('').hide();
+          }
+        } else {
+          if (response.errors[field.id]) {
+            if (element.is(':visible') && element.offset()) {
+              const fieldTop = element.offset().top;
+              if (fieldTop < firstErrorTop) {
+                  firstErrorField = element;
+                  firstErrorTop = fieldTop;
+              }
+            }
+            if (element.is('select')) {
+              element.next('span').addClass('is-invalid'); 
+            } else {
+              element.addClass('is-invalid');  
+            }
+            feedbackElement.html(response.errors[field.id][0]).show();
+          } else {
+            if (element.is('select')) {
+              element.next('span').removeClass('is-invalid');
+            } else {
+              element.removeClass('is-invalid');
+            }
+            feedbackElement.html('').hide();
+          }
+        }
+      });           
 
-{{-- END --}}
+      if ($firstErrorField && $firstErrorField.length > 0) {
+          $('html, body').animate({ scrollTop: $firstErrorField.offset().top - 100 }, 'slow');
+      }
+    }
+  }); 
+});   
+
+function init_edit_user(){
+  $('.users-field')
+    .attr('disabled', false);
+    
+  $('#update_user.save-buttons')
+    .addClass('d-inline')
+    .removeClass('d-none')
+    .attr('disabled', false);         
+}
+
+ $('#tbl_users').on('click', '.btn_edit_user', function (e) {
+  e.preventDefault(); 
+  init_edit_user();
+  var id = $(this).data('id'); 
+  $('#user_modal_header').html("Edit User");
+  $.ajax({
+    method: "GET",
+    url: '{{ route('administration.user.show', ':id') }}'.replace(':id', id),    
+    success: function(response) { 
+      $('#users_employee_code')
+        .val(response.emp_code)
+        .trigger('change');
+
+      $('#users_user_role_id')
+        .val(response.user_role_ids)
+        .trigger('change');
+    },       
+  });   
+  $('#user_modal').modal('toggle')   
+});
+
+{{--$('.update_user').click(function (e) {    
+  e.preventDefault();    
+  var id = $('#frm_cooperating_agency #id').val();
+  Swal.fire({
+    title: 'Are you sure you want to save changes?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes'
+  })
+  .then((result) => {        
+    if (result.value) {          
+      $.ajax({
+        method: 'PATCH',
+        url: '{{ route('administration.user.update', ':id') }}'.replace(':id', id),
+        data: $('#frm_cooperating_agency').serializeArray(),
+        success:function(response) {      
+          tbl_cooperating_agencies.ajax.reload();    
+          $('#cooperating_agency_modal').modal('toggle');                                     
+          Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: 'Cooperating agency edited successfully.',
+            showConfirmButton: false,
+            timer: 1500
+          })  
+        },
+        error: function (xhr) {
+          var response = JSON.parse(xhr.responseText);  
+          var $firstErrorField = null;
+          var firstErrorTop = Number.MAX_VALUE; 
+
+          cooperatingRequiredFields.forEach(field => {
+            const element = $('#' + field.id);
+            const feedbackElement = $('#' + field.id + '-feedback');
+            if (field.isTinyMCE) {
+              const editor = tinymce.get(field.id);
+              if (response.errors[field.id]) {
+                editor.getContainer().classList.add('is-invalid');
+                feedbackElement.html(response.errors[field.id][0]).show();
+              } else {
+                editor.getContainer().classList.remove('is-invalid');
+                feedbackElement.html('').hide();
+              }
+            } else {
+              if (response.errors[field.id]) {
+                if (element.is(':visible') && element.offset()) {
+                  const fieldTop = element.offset().top;
+                  if (fieldTop < firstErrorTop) {
+                      firstErrorField = element;
+                      firstErrorTop = fieldTop;
+                  }
+                }
+                if (element.is('select')) {
+                  element.next('span').addClass('is-invalid'); 
+                } else {
+                  element.addClass('is-invalid');  
+                }
+                feedbackElement.html(response.errors[field.id][0]).show();
+              } else {
+                if (element.is('select')) {
+                  element.next('span').removeClass('is-invalid');
+                } else {
+                  element.removeClass('is-invalid');
+                }
+                feedbackElement.html('').hide();
+              }
+            }
+          });           
+
+          if ($firstErrorField && $firstErrorField.length > 0) {
+              $('html, body').animate({ scrollTop: $firstErrorField.offset().top - 100 }, 'slow');
+          }
+        }   
+      });                                      
+    }       
+  })    
+}); 
+
+$('#tbl_users').on('click', '.btn_delete_user', function (e) {
+  e.preventDefault(); 
+  var id = $(this).data('id'); 
+  Swal.fire({
+    title: 'Are you sure you want to delete this cooperating agency?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes'
+  })
+  .then((result) => {        
+    if (result.value) {          
+      $.ajax({
+        method: 'DELETE', 
+        url: '{{ route('administration.user.destroy', ':id') }}'.replace(':id', id),
+        data: { id:id },
+        success:function(response) {      
+          tbl_cooperating_agencies.ajax.reload();                                   
+          Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: response.message,
+            showConfirmButton: false,
+            timer: 1500
+          })  
+        },  
+        error: function (xhr, status, error) {
+          Swal.fire({
+            position: 'top-end',
+            icon: 'error',
+            title: response.message,
+            showConfirmButton: false,
+            timer: 1500
+          });
+        }  
+      });                                      
+    }       
+  })  
+});   --}}

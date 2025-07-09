@@ -65,4 +65,9 @@ class User extends Authenticatable implements Auditable
    protected $appends = [
       'profile_photo_url',
    ];
+
+   public function userDetails()
+   {
+      return $this->belongsTo(ViewHRMSUsersModel::class, 'emp_code' ,'username');
+   }
 }
