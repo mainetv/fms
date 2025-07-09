@@ -2,6 +2,8 @@
 
 @php
 	$getAllActiveDivisions=getAllActiveDivisions();
+	$getRDDivisions=getRDDivisions();
+	$getARMMSDivisions=getARMMSDivisions();
 	$getYears=getYears();
 	$getRSTypes=getRSTypes();
 @endphp
@@ -36,16 +38,31 @@
 									{{ $row->request_status_type }}</option>
 							@endforeach    
 						</select>&emsp;
-						@role('Super Administrator|Administrator|Budget Officer')			
+						@role('Super Administrator|Administrator|Budget Officer|BPAC Chair')			
 						<label>Responsibility Center: </label> 			
-							<select name="division_id" id="division_id" onchange="changeFilter()">	
-								@if($rstype_id_selected==1)						
-									<option value="all">All</option>
+							<select name="division_id" id="division_id" onchange="changeFilter()">
+								@if($user_division_id == 20)
+									@foreach($getRDDivisions as $row)
+										<option value="{{ $row->id }}" {{ $division_id == $row->id ? 'selected' : '' }}>
+											{{ $row->division_acronym }}
+										</option>
+									@endforeach
+								@elseif($user_division_id == 21)
+									@foreach($getARMMSDivisions as $row)
+										<option value="{{ $row->id }}" {{ $division_id == $row->id ? 'selected' : '' }}>
+											{{ $row->division_acronym }}
+										</option>
+									@endforeach								
+								@elseif($user_division_id == 7)
+									@if($rstype_id_selected == 1)						
+										<option value="all" {{ $division_id == 'all' ? 'selected' : '' }}>All</option>
+									@endif
+									@foreach($getAllActiveDivisions as $row)
+										<option value="{{ $row->id }}" {{ $division_id == $row->id ? 'selected' : '' }}>
+											{{ $row->division_acronym }}
+										</option>
+									@endforeach
 								@endif
-								@foreach($getAllActiveDivisions as $row)
-									<option value="{{ $row->id }}" data-selected="{{ $row->id }}"
-										@if($division_id == $row->id) selected="true" @endif>{{ $row->division_acronym }}</option>
-								@endforeach
 							</select>
 						@else
 							<input type="text" id="division_id" value="{{ $division_id }}" hidden>

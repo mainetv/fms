@@ -594,13 +594,30 @@ class ReportsController extends Controller
    }
 
 	public function show_financial_summary(Request $request) {
+		function getFullSql($query)
+		{
+			$sql = $query->toSql();
+			foreach ($query->getBindings() as $binding) {
+				if (is_numeric($binding)) {
+					$value = $binding;
+				} elseif (is_null($binding)) {
+					$value = 'NULL';
+				} else {
+					$value = "'" . str_replace("'", "''", $binding) . "'";
+				}
+				$sql = preg_replace('/\?/', $value, $sql, 1);
+			}
+			return $sql;
+		}
+
 		$fund_id_selected=$request->fund_id_selected;
       $start_date=$request->start_date;
       $end_date=$request->end_date;		
       $filter=$request->view_filter;		
       $date_range_filter=$request->date_range_filter;	
-		$date_column = ($date_range_filter == 'rs') ? 'rs_date' : 'lddap_date';	
+		$date_column = ($date_range_filter == 'rs') ? 'rs_date' : 'lddap_check_date';	
 		$query = ViewFinancialSummary::where($date_column, '>=', $start_date)->where($date_column, '<=', $end_date);
+
 		if ($fund_id_selected !== 'All') {
 			$query->where('rs_type_id', $fund_id_selected);
 	  	}
@@ -609,34 +626,47 @@ class ReportsController extends Controller
 				$query->whereNull('dv_no');
 				break;
 		
-			case 'wDVwLDDAP':
+			case 'wDVwLDDAPorCheck':
 				$query->where(function ($q) {
 					$q->whereNotNull('dv_no')
 					->where('dv_no', '!=', '')
 					->where('dv_no', '!=', ' '); // Ensure it's not blank
 			
-					$q->whereNotNull('lddap_no')
-					->where('lddap_no', '!=', '')
-					->where('lddap_no', '!=', ' '); // Ensure it's not blank
+					$q->whereNotNull('lddap_check_no')
+					->where('lddap_check_no', '!=', '')
+					->where('lddap_check_no', '!=', ' '); // Ensure it's not blank
 			});
 				break;
 		
-			case 'wDVNoLDDAP':
+			case 'wDVNoLDDAPorCheck':
 				$query->where(function ($q) {
 					$q->whereNotNull('dv_no')->where('dv_no', '!=', '');
 				})
 				->where(function ($q) {
-					$q->whereNull('lddap_no')->orWhere('lddap_no', '');
+					$q->whereNull('lddap_check_no')->orWhere('lddap_check_no', '');
 				});
 				break;
 		}
 	  
 	  // Finalize query with grouping and ordering
-	  $data = $query->groupBy('rs_id')
-						 ->orderBy('rs_id', 'ASC')
+	  $data = $query->groupBy('dv_id')
+						 ->orderBy('dv_id', 'ASC')
 						 ->orderBy('objcode', 'ASC')
 						 ->orderBy('payee', 'ASC')
 						 ->get();
+		// dd([
+		// 	'raw_sql' => getFullSql($query),
+		// 	'sql_with_placeholders' => $query->toSql(),
+		// 	'bindings' => $query->getBindings(),
+		// 	'input_variables' => [
+		// 		'fund_id_selected' => $fund_id_selected,
+		// 		'start_date' => $start_date,
+		// 		'end_date' => $end_date,
+		// 		'filter' => $filter,
+		// 		'date_range_filter' => $date_range_filter,
+		// 		'date_column' => $date_column,
+		// 	],
+		// ]);
 		// if($fund_id_selected=='All'){
 		// 	if($filter=='All'){	
 		// 		$data = ViewFinancialSummary::where($date_column, '>=', $start_date)->where($date_column, '<=', $end_date)

@@ -32,8 +32,8 @@
 						<select class="select_filter" id="view_filter">
 							<option value="All">All</option>
 							<option value="NoDV">No DV</option>
-							<option value="wDVwLDDAP">With DV & LDDAP</option>
-							<option value="wDVNoLDDAP">With DV, No LDDAP</option>
+							<option value="wDVwLDDAPorCheck">With DV & LDDAP/Check</option>
+							<option value="wDVNoLDDAPorCheck">With DV, No LDDAP/Check</option>
 						</select>
 					</div>
 					<div class="col-5">
@@ -42,8 +42,8 @@
 							<input type="text" name="rs_date_range" id="rs_date_range" readonly/>
 						</div>
 						<div class="col-12">
-							<input type="radio" name="date_range_filter" id="lddap_filter" value="lddap"> <label>LDDAP date range:</label>
-							<input type="text" name="lddap_date_range" id="lddap_date_range" readonly/>
+							<input type="radio" name="date_range_filter" id="lddap_check_filter" value="lddap"> <label>LDDAP date range:</label>
+							<input type="text" name="lddap_check_date_range" id="lddap_check_date_range" readonly/>
 						</div>
 					</div>
 				</div>			
@@ -64,10 +64,10 @@
 @section('jscript')
 	<script type="text/javascript">   
 		$('input[name="date_range_filter"]').prop('checked', false);
-		$('#rs_date_range, #lddap_date_range').prop('disabled', true).val('');
+		$('#rs_date_range, #lddap_check_date_range').prop('disabled', true).val('');
 
 		// Initialize the date range pickers but don't set default values
-		$('#rs_date_range, #lddap_date_range').daterangepicker({
+		$('#rs_date_range, #lddap_check_date_range').daterangepicker({
         locale: { format: 'YYYY-MM-DD' },
         showDropdowns: true,
         autoUpdateInput: false // Prevents the field from auto-populating
@@ -76,9 +76,9 @@
 		$('input[name="date_range_filter"]').change(function () {
         if ($('#rs_filter').is(':checked')) {
             $('#rs_date_range').prop('disabled', false);
-            $('#lddap_date_range').prop('disabled', true).val(''); // Clear & disable LDDAP
-        } else if ($('#lddap_filter').is(':checked')) {
-            $('#lddap_date_range').prop('disabled', false);
+            $('#lddap_check_date_range').prop('disabled', true).val(''); // Clear & disable LDDAP
+        } else if ($('#lddap_check_filter').is(':checked')) {
+            $('#lddap_check_date_range').prop('disabled', false);
             $('#rs_date_range').prop('disabled', true).val(''); // Clear & disable RS
         }
     	}); 
@@ -91,8 +91,8 @@
         }
     	});
 
-		// Handle date selection for LDDAP
-		$('#lddap_date_range').on('apply.daterangepicker', function (ev, picker) {
+		// Handle date selection for LDDAP and Check
+		$('#lddap_check_date_range').on('apply.daterangepicker', function (ev, picker) {
 			if (!$(this).prop('disabled')) {
             $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
             loadRecords(); // Load records only on date selection
@@ -101,8 +101,8 @@
 		
 		// Handle fund and view filter change
 		$('#fund_id_selected, #view_filter').change(function () {
-        loadRecords();
-    	});
+			loadRecords();
+		});
 
 		function updateDateRange() {
 			let start_date = '';
@@ -113,12 +113,25 @@
 					let dates = $('#rs_date_range').val().split(' - ');
 					start_date = dates[0] || '';
 					end_date = dates[1] || '';
-			} else if ($('#lddap_filter').is(':checked') && !$('#lddap_date_range').prop('disabled')) {
-					let dates = $('#lddap_date_range').val().split(' - ');
+			} else if ($('#lddap_check_filter').is(':checked') && !$('#lddap_check_date_range').prop('disabled')) {
+					let dates = $('#lddap_check_date_range').val().split(' - ');
 					start_date = dates[0] || '';
 					end_date = dates[1] || '';
 			}
 
+			 // If either date is empty, default to today's date
+			if (!start_date || !end_date) {
+					const today = new Date();
+					const formattedToday = today.toISOString().split('T')[0]; // "YYYY-MM-DD"					
+					start_date = formattedToday;
+					end_date = formattedToday;
+					
+					// If no operator is selected, default to '=' for a single-day filter
+        if (!date_range_filter) {
+            date_range_filter = '=';
+        }
+			}
+			
 			return { start_date, end_date, date_range_filter };
 		}
 
@@ -130,6 +143,12 @@
 			var fund_id_selected = $('#fund_id_selected').val();
 			var view_filter = $('#view_filter').val();
 			var { start_date, end_date, date_range_filter } = getSelectedDateRange(); 
+
+			if (!start_date || !end_date || !date_range_filter) {
+        console.warn("Date range is incomplete. Records not loaded.");
+        return; // Exit the function early
+    	}
+
 			var records_table = $('#records_table').DataTable({				
 				destroy: true,
 				deferRender: true,
@@ -174,8 +193,8 @@
 					{data: 'total_dv_net_amount', title: 'DV Net Amount', width: '7%', className: 'dt-head-center dt-body-right gray3-bg',
 						render: $.fn.dataTable.render.number(',', '.', 2, '')
 					},
-					{data: 'lddap_date', title: 'LDDAP Date', width: '6%', className: 'dt-center'},
-					{data: 'lddap_no', title: 'LDDAP No.', width: '7%', className: 'dt-center'},
+					{data: 'lddap_check_date', title: 'LDDAP/Check Date', width: '6%', className: 'dt-center'},
+					{data: 'lddap_check_no', title: 'LDDAP/Check No.', width: '7%', className: 'dt-center'},
 				]
 			});			
 		}		
