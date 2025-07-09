@@ -21,10 +21,14 @@ class PayeeStoreUpdateRequest extends FormRequest
    */
    public function rules(): array
    {
-      $excludedActions = ['view', 'verify'];
-      
-      if (in_array($this->input('action'), $excludedActions)) {
-         return []; // Skip validation for these actions
+      $action = $this->input('action') ?? $this->json('action');
+
+      \Log::info('Action:', ['action' => $action]);
+
+      $excludedActions = ['view', 'toggleStatus'];
+
+      if (in_array($action, $excludedActions)) {
+         return []; // no validation rules needed
       }
 
       $rules = [
@@ -47,9 +51,7 @@ class PayeeStoreUpdateRequest extends FormRequest
       }
 
       return $rules;
-   }
-  
-  
+   }  
 
    public function messages()
    {

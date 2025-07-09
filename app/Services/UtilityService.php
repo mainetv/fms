@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\LibraryPayeesModel;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -14,8 +15,6 @@ class UtilityService
 
    public function createPayee($request)
    {
-      // dd($request);
-      dd($request['parent_id']);
       if ($request['payee_type_id'] == 1) {
          $first_name = $request['first_name'];
          $middle_initial = $request['middle_initial'];
@@ -47,7 +46,8 @@ class UtilityService
          'office_address' => $request['office_address'] ?? null,
          'email_address' => $request['email_address'] ?? null,
          'contact_no' => $request['contact_no'] ?? null,
-         'is_active' => isset($request['is_active']) ? 1 : 0,
+         'is_active' => 1,
+         'is_verified' => isset($request['is_verified']) ? 1 : 0,
       ]);
       $data->save();
 
@@ -56,30 +56,38 @@ class UtilityService
       }
 
       $module_id = 10;
-      $message = 'Created new payee:' . $payee;
+      $message = 'Created new payee: ' . $payee;
       $link = 'utilities/';
       $this->globalService->createNotification($module_id, $message, $link);
    }
 
    public function updatePayee($request, $id)
-   {
+   {       
       $action = $request['action'] ?? null;
-      $payee = null;
+      $parent_id = $request['parent_id'] ?? null;   
+      $payee = LibraryPayeesModel::find($id);
+      if (!$payee) {
+         throw new \Exception('Payee not found.');
+      }
       if ($action == 'update') {
+         if($parent_id==null){
+            $parent_id = $id;
+         }
          if ($request['payee_type_id'] == 1) {
             $first_name = $request['first_name'];
             $middle_initial = $request['middle_initial'];
             $last_name = $request['last_name'];
-            $payee = trim($first_name . ' ' . $middle_initial . ' ' . $last_name);
+            $formattedPayee = trim($first_name . ' ' . $middle_initial . ' ' . $last_name);
          } else {
             $organization_name = $request['organization_name'];
             $organization_acronym = $request['organization_acronym'];
-            $payee = $organization_acronym ? "$organization_name ($organization_acronym)" : $organization_name;
+            $formattedPayee = $organization_acronym ? "$organization_name ($organization_acronym)" : $organization_name;
          }
-         LibraryPayeesModel::find($id)->update([
-            'payee' => $payee,
+         $payee->update([
+            'payee' => $formattedPayee,
             'organization_name' => $organization_name ?? null,
             'organization_acronym' => $organization_acronym ?? null,
+            'parent_id' => $parent_id,
             'title' => $request['title'] ?? null,
             'first_name' => $first_name ?? null,
             'middle_initial' => $middle_initial ?? null,
@@ -93,36 +101,23 @@ class UtilityService
             'address' => $request['address'] ?? null,
             'office_address' => $request['office_address'] ?? null,
             'email_address' => $request['email_address'] ?? null,
-            'contact_no' => $request['contact_no'] ?? null,
-            'is_active' => isset($request['is_active']) ? 1 : 0,
+            'contact_no' => $request['contact_no'] ?? null,            
+            'is_verified' => isset($request['is_verified']) ? 1 : 0,
          ]);
-
          return 'updated';
-      } else if ($action == 'verify') {
-         LibraryPayeesModel::find($id)->update([
-            'is_verified' => 1,
-         ]);
-         return 'verified';
+      } elseif ($action == 'toggleStatus'){
+         $payee->update(['is_active' => $request['is_active']]);         
+         return 'toggleStatus';
       }
+      return 'unknown';
    }
 
    public function deletePayee($id)
    {
-      $data = User::findOrFail($id);
+      $data = LibraryPayeesModel::findOrFail($id);
       $data->delete();
 
       return true;
    }
 
-   public function changePassword($request)
-   {
-      $user = Auth::user();
-
-      if (!$user) {
-         throw new \Exception('User not found.');
-      }
-
-      $user->password = Hash::make($request['new_password']);
-      $user->save();
-   }
 }
